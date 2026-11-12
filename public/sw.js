@@ -1,0 +1,1 @@
+self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil(clients.matchAll({type:'window'}).then(windows=>{const existing=windows.find(w=>new URL(w.url).pathname==='/app');return existing?existing.focus():clients.openWindow('/app')}))});

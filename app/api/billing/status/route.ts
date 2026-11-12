@@ -1,0 +1,2 @@
+import {billingConfig} from '../../../../lib/billing';import {env} from 'cloudflare:workers';
+export async function GET(){const c=billingConfig();const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first<any>();return Response.json({configured:c.enabled&&Object.values(c.prices).every(Boolean)&&!!legal,mode:c.mode,legalConfigured:!!legal},{headers:{'Cache-Control':'no-store'}});}

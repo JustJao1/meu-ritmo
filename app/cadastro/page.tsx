@@ -1,0 +1,5 @@
+import {requireChatGPTUser,chatGPTSignOutPath} from '../chatgpt-auth';
+import PrivacyCenter from '../../components/privacy-center';
+import {env} from 'cloudflare:workers';import {redirect} from 'next/navigation';import Registration from '../../components/registration';
+export const dynamic='force-dynamic';
+export default async function Page(){const u=await requireChatGPTUser('/cadastro');const closed=await env.DB!.prepare('SELECT user_id FROM closed_accounts WHERE user_id=?').bind(u.userId).first();if(closed)return <main className="registration"><h1>Sua conta foi encerrada.</h1><p>Seus dados de organização e perfil foram excluídos. Registros de pagamento e segurança podem exigir atendimento separado.</p><a href="/privacidade">Privacidade e contato</a><PrivacyCenter closed/><p><a href={chatGPTSignOutPath('/')}>Sair</a></p></main>;const p=await env.DB!.prepare('SELECT username,name,accepted_at FROM profiles WHERE user_id=?').bind(u.userId).first<any>();if(p?.username&&p?.name&&p?.accepted_at)redirect('/app');return <Registration/>}

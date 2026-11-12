@@ -1,0 +1,1 @@
+ALTER TABLE `subscriptions` ADD `valid_until` integer;
