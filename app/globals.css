@@ -783,12 +783,12 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 
 /* Preferência de tipografia de títulos: aplicada depois dos estilos dos temas.
    O seletor usa a preferência do usuário sem modificar cores nem layout. */
-:root[data-title-style="original"] .content h1,
-:root[data-title-style="original"] .content h2,
-:root[data-title-style="original"] .content h3,
-:root[data-title-style="original"] .modal h1,
-:root[data-title-style="original"] .modal h2,
-:root[data-title-style="original"] .modal h3{
+:root[data-title-style="sans"] .content h1,
+:root[data-title-style="sans"] .content h2,
+:root[data-title-style="sans"] .content h3,
+:root[data-title-style="sans"] .modal h1,
+:root[data-title-style="sans"] .modal h2,
+:root[data-title-style="sans"] .modal h3{
   font-family:Manrope,'DM Sans',sans-serif;
   font-style:normal;
 }
@@ -803,3 +803,13 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
   font-style:normal;
   letter-spacing:-.025em;
 }
+
+/* Tipografia de títulos do painel: a preferência controla também títulos fora de .content. */
+:root[data-title-style="editorial"] .pageheading h1,
+:root[data-title-style="editorial"] .content :is(h1,h2,h3),
+:root[data-title-style="editorial"] .modal :is(h1,h2,h3),
+:root[data-title-style="editorial"] .panel :is(h1,h2,h3){font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.025em}
+:root[data-title-style="sans"] .pageheading h1,
+:root[data-title-style="sans"] .content :is(h1,h2,h3),
+:root[data-title-style="sans"] .modal :is(h1,h2,h3),
+:root[data-title-style="sans"] .panel :is(h1,h2,h3){font-family:Manrope,'DM Sans',sans-serif;font-style:normal}
