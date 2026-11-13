@@ -53,3 +53,8 @@
 }
 @media(max-width:390px){.landing .publicnav>.brand{font-size:14px}.landing .publicnav nav>a.androiddownloadlink{font-size:10px;padding-inline:5px}.landing .publicnav nav>a:last-child{min-width:68px;padding-inline:9px;gap:5px}}
 @media(prefers-reduced-motion:reduce){.landing .publicnav nav>a{transition:none}}
+
+/* Use the exact SVG shown in browser tabs, without recreating its lettering in CSS. */
+html body .brandmark.brandmark-icon{display:block;flex:0 0 auto;width:34px;height:34px;max-width:34px;object-fit:contain;padding:0;margin:0;background:transparent!important;border:0;border-radius:0;transform:none;letter-spacing:normal;line-height:normal}
+html body .sidebar .brandmark.brandmark-icon{width:30px;height:30px;max-width:30px}
+@media(max-width:760px){html body .sidebar .brandmark.brandmark-icon{width:26px;height:26px;max-width:26px}}
