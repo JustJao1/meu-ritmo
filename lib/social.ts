@@ -6,3 +6,19 @@ export function cooldownError(old:any,next:{username:string;name:string},now:num
 export async function socialRate(userId:string,kind:string,max:number,seconds:number){const window=Math.floor(Date.now()/1000/seconds);const row=await env.DB!.prepare('INSERT INTO social_rates(key,window,attempts) VALUES (?,?,1) ON CONFLICT(key) DO UPDATE SET window=excluded.window,attempts=CASE WHEN social_rates.window=excluded.window THEN social_rates.attempts+1 ELSE 1 END RETURNING attempts').bind(userId+':'+kind,window).first<{attempts:number}>();return !!row&&row.attempts<=max;}
 export async function publicProfile(userId:string){const p=await env.DB!.prepare('SELECT id,username,name,bio,username_changed_at,name_changed_at,accepted_at,avatar_key,suspended FROM profiles WHERE user_id=?').bind(userId).first<any>();return p?{...p,avatar:p.avatar_key?'/api/avatar?id='+p.id:null,avatar_key:undefined}:null;}
 export const templateSchema=z.array(z.object({title:z.string().trim().min(1).max(200),time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$|^$/)})).min(1).max(30);
+
+export async function communityAllowance(userId:string,charge=false){
+ const {userPlan}=await import('./entitlements');
+ const plan=await userPlan(userId);
+ if(plan!=='free')return {unlimited:true,remaining:900,allowed:true};
+ const now=new Date();
+ const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+ const key=userId+':community-minutes:'+day;
+ if(charge){
+  const row=await env.DB!.prepare("INSERT INTO social_rates(key,window,attempts) VALUES (?,0,15) ON CONFLICT(key) DO UPDATE SET attempts=MIN(900,social_rates.attempts+15) WHERE social_rates.attempts<900 RETURNING attempts").bind(key).first<{attempts:number}>();
+  if(!row)return {unlimited:false,remaining:0,allowed:false};
+ }
+ const row=await env.DB!.prepare('SELECT attempts FROM social_rates WHERE key=?').bind(key).first<{attempts:number}>();
+ const remaining=Math.max(0,900-(row?.attempts||0));
+ return {unlimited:false,remaining,allowed:remaining>0};
+}
