@@ -124,3 +124,49 @@
  .adminshell .memberaccess{grid-column:2;gap:6px}
  .adminshell .memberactions{grid-column:2;flex-direction:column;gap:12px}
 }
+
+/* Keep admin header on the selected theme; prevent the global light header rule leaking in. */
+.adminshell > .adminnav{
+ background:var(--paper)!important;
+ color:var(--ink)!important;
+ border-bottom:1px solid var(--admin-border);
+}
+.adminshell > .adminnav .brand,
+.adminshell > .adminnav .brandmark,
+.adminshell > .adminnav .brandmark span,
+.adminshell > .adminnav > span,
+.adminshell > .adminnav > a,
+.adminshell > .adminnav svg{
+ color:var(--ink)!important;
+ opacity:1;
+}
+.adminshell > .adminnav .brandmark{
+ background:var(--admin-surface)!important;
+ border:1px solid var(--admin-border);
+}
+.adminshell .adminsearch{
+ border:0!important;
+ background:transparent!important;
+ padding:0!important;
+ align-items:center;
+}
+.adminshell .adminsearch > label{
+ flex:1 1 400px;
+ border:1px solid var(--admin-border)!important;
+ border-radius:9px;
+ margin:0!important;
+}
+.adminshell .adminsearch > .secondary,
+.adminshell .adminsearch > .iconbtn{
+ margin:0!important;
+ border-radius:9px;
+}
+.adminshell .memberlist{overflow:hidden}
+.adminshell .memberrow:last-child{border-bottom:0}
+.adminshell .memberrow .memberactions{align-items:flex-start}
+.adminshell .memberrow .memberaccess small{overflow-wrap:anywhere}
+@media(max-width:700px){
+ .adminshell > .adminnav{flex-wrap:wrap;gap:12px;padding:16px 18px}
+ .adminshell > .adminnav > a:last-child{margin-left:0}
+ .adminshell .adminsearch > label{flex-basis:100%}
+}
