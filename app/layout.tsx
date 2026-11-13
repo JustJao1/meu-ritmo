@@ -4,6 +4,7 @@ import './public-theme-audit.css';
 import './landing-refinement.css';
 import './app-visual-consistency.css';
 import './typography-refinement.css';
+import './font-global-fix.css';
 import Analytics from '../components/analytics';
 import CookieConsent from '../components/cookie-consent';
 export const metadata:Metadata={title:'Mr: Meu ritmo · Seu dia em boa companhia',description:'Seu dia, suas contas e suas ideias em um lugar só.',icons:{icon:[{url:'/favicon-mr-v3.svg',type:'image/svg+xml'},{url:'/favicon-mr-v3.png',type:'image/png',sizes:'64x64'}],shortcut:'/favicon-mr-v3.svg'}};
