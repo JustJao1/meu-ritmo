@@ -1,3 +1,4 @@
+import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
 import {billingConfig} from '../../../../lib/billing';
 import {getUser} from '../../../session';
 import {appRole} from '../../../../lib/admin-access';
@@ -6,7 +7,7 @@ import {env} from 'cloudflare:workers';
 export async function GET(req:Request){
   const c=billingConfig();
   const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first<any>();
-  const result:Record<string,unknown>={configured:c.enabled&&Object.values(c.prices).every(Boolean)&&!!legal,mode:c.mode,legalConfigured:!!legal};
+  const result:Record<string,unknown>={configured:!EARLY_ACCESS_ACTIVE&&c.enabled&&Object.values(c.prices).every(Boolean)&&!!legal,earlyAccess:EARLY_ACCESS_ACTIVE,mode:c.mode,legalConfigured:!!legal};
   if(new URL(req.url).searchParams.get('diagnostic')==='1'){
     const user=await getUser();
     if(!user||await appRole(user)!=='owner')return Response.json({error:'Diagnóstico disponível somente ao proprietário autenticado.'},{status:403,headers:{'Cache-Control':'no-store'}});
