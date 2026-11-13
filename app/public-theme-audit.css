@@ -46,3 +46,17 @@
 @media(max-width:850px){.plancard:hover{transform:none}}
 @media(max-width:600px){.authpage{padding:22px 16px}.authsheet{margin:36px auto;padding:25px 20px}.billingtoggle{width:max-content}.plans{gap:13px}.plancard{padding:24px}}
 @media(prefers-reduced-motion:reduce){.plancard,.authsheet :is(input,select,textarea){transition:none}}
+
+/* Routine date selection: prevent white-on-light labels in dark themes.
+   Selected and unselected tiles always share the same theme foreground. */
+.routinedays>button{background:var(--paper);color:var(--ink);border:1px solid var(--line);min-height:68px}
+.routinedays>button strong{color:inherit;opacity:1}
+.routinedays>button.active,.routinedays>button.active:hover{
+  background:var(--paper);
+  color:var(--ink);
+  border:2px solid var(--accent,var(--blue));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent,var(--blue)) 18%,transparent);
+}
+.routinedays>button.active strong{color:var(--ink);opacity:1;text-shadow:none}
+.routinedays>button:hover:not(.active){background:var(--public-surface-raised);color:var(--ink)}
+.routinedays>button:focus-visible{outline:2px solid var(--accent,var(--blue));outline-offset:2px}
