@@ -394,3 +394,15 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 :root[data-theme="midnight"] .alerttabs [aria-pressed=true],:root[data-theme="forest"] .alerttabs [aria-pressed=true],:root[data-theme="espresso"] .alerttabs [aria-pressed=true],:root[data-theme="slate"] .alerttabs [aria-pressed=true],:root[data-theme="obsidian"] .alerttabs [aria-pressed=true],:root[data-theme="amethyst"] .alerttabs [aria-pressed=true],:root[data-theme="burgundy"] .alerttabs [aria-pressed=true],:root[data-theme="ocean"] .alerttabs [aria-pressed=true],:root[data-theme="graphite"] .alerttabs [aria-pressed=true],:root[data-theme="copper"] .alerttabs [aria-pressed=true],:root[data-theme="abyss"] .alerttabs [aria-pressed=true],:root[data-theme="blackout"] .alerttabs [aria-pressed=true],:root[data-theme="eclipse"] .alerttabs [aria-pressed=true],:root[data-theme="noir"] .alerttabs [aria-pressed=true],:root[data-theme="deep-space"] .alerttabs [aria-pressed=true],:root[data-theme="evergreen"] .alerttabs [aria-pressed=true]{background:var(--surface);color:var(--ink)}
 @media(max-width:650px){.dialog{padding:20px 17px;max-height:94dvh}.settingsgroup{margin-bottom:20px}.settingspanel .listbutton{min-height:48px}.alerttabs button{font-size:11px;padding:11px 5px;gap:5px}.alerttabs button svg{width:15px}.alertrow{flex-wrap:wrap}.alertrow .checkline{margin-left:auto}}
 @media(prefers-reduced-motion:reduce){.settingspanel .listbutton,.alerttabs button,.alertrow{transition:none!important}}
+
+/* Appearance gallery: distinct entitlement sections */
+.themegroupintro{margin:2px 0 19px;color:var(--muted);font-size:12px;line-height:1.55}
+.themegroup{margin:0 0 26px;padding:0 0 22px;border-bottom:1px solid var(--line)}
+.themegroup:last-of-type{border-bottom:0;margin-bottom:14px;padding-bottom:0}
+.themegroupheading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 11px;padding:0 2px}
+.themegroupheading strong{font-size:13px;letter-spacing:-.01em;font-weight:750;color:var(--ink)}
+.themegroupheading span{font-size:10px;color:var(--muted);text-align:right}
+.themegroup .themelist{display:grid;gap:8px}
+.themegroup .themelist>button{min-height:67px;border-radius:9px}
+.themegroup .themelist>button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){.themegroupheading{align-items:flex-start}.themegroupheading span{font-size:9px}.themegroup{margin-bottom:22px;padding-bottom:18px}}
