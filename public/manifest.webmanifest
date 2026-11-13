@@ -1,6 +1,6 @@
 {
-  "name": "Meu Ritmo",
-  "short_name": "Meu Ritmo",
+  "name": "Mr: Meu Ritmo",
+  "short_name": "Mr: Meu Ritmo",
   "description": "Organize rotina, agenda, gastos e notas pelo Meu Ritmo.",
   "id": "/app",
   "start_url": "/app",
