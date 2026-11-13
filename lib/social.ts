@@ -10,15 +10,16 @@ export const templateSchema=z.array(z.object({title:z.string().trim().min(1).max
 export async function communityAllowance(userId:string,charge=false){
  const {userPlan}=await import('./entitlements');
  const plan=await userPlan(userId);
- if(plan!=='free')return {unlimited:true,remaining:900,allowed:true};
+ if(plan==='pro')return {unlimited:true,remaining:0,allowed:true,plan};
+ const limit=plan==='plus'?6*60*60:15*60;
  const now=new Date();
  const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
  const key=userId+':community-minutes:'+day;
  if(charge){
-  const row=await env.DB!.prepare("INSERT INTO social_rates(key,window,attempts) VALUES (?,0,15) ON CONFLICT(key) DO UPDATE SET attempts=MIN(900,social_rates.attempts+15) WHERE social_rates.attempts<900 RETURNING attempts").bind(key).first<{attempts:number}>();
-  if(!row)return {unlimited:false,remaining:0,allowed:false};
+  const row=await env.DB!.prepare('INSERT INTO social_rates(key,window,attempts) VALUES (?,0,15) ON CONFLICT(key) DO UPDATE SET attempts=MIN(?,social_rates.attempts+15) WHERE social_rates.attempts<? RETURNING attempts').bind(key,limit,limit).first<{attempts:number}>();
+  if(!row)return {unlimited:false,remaining:0,allowed:false,plan};
  }
  const row=await env.DB!.prepare('SELECT attempts FROM social_rates WHERE key=?').bind(key).first<{attempts:number}>();
- const remaining=Math.max(0,900-(row?.attempts||0));
- return {unlimited:false,remaining,allowed:remaining>0};
+ const remaining=Math.max(0,limit-(row?.attempts||0));
+ return {unlimited:false,remaining,allowed:remaining>0,plan};
 }
