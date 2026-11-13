@@ -672,3 +672,34 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .monthgrid>button.istoday>span,.monthgrid>div.istoday>span{color:var(--ink)}
 .monthgrid>button:hover{background:var(--surface-hover,var(--theme-banner))}
 @media(max-width:600px){.calendarcolumns header{padding:13px 10px}.calendarcolumns header strong{font-size:22px}}
+
+/* Calendar selected/highlighted tiles: light surface always uses dark foreground,
+   independently of the active theme's default text color. */
+.calendarcolumns header.istoday,
+.calendarcolumns .istoday header,
+.monthgrid>button.istoday,
+.monthgrid>div.istoday{
+  background:#f0f1ee;
+  color:#20262a;
+  border-color:#c5cbc5;
+  box-shadow:inset 0 0 0 1px #c5cbc5;
+}
+.calendarcolumns header.istoday span,
+.calendarcolumns header.istoday strong,
+.calendarcolumns .istoday header span,
+.calendarcolumns .istoday header strong,
+.monthgrid>button.istoday>span,
+.monthgrid>div.istoday>span{
+  color:#20262a;
+  opacity:1;
+  text-shadow:none;
+}
+.calendarcolumns header.istoday span{font-weight:700}
+.calendarcolumns header.istoday strong{font-weight:800}
+.calendarcolumns header.istoday .calendaradd,
+.calendarcolumns .istoday .calendaradd{color:#20262a}
+.calendarcolumns header.istoday:hover,
+.monthgrid>button.istoday:hover{background:#e2e7e1;color:#20262a}
+.calendarcolumns header.istoday:hover span,
+.calendarcolumns header.istoday:hover strong,
+.monthgrid>button.istoday:hover>span{color:#20262a}
