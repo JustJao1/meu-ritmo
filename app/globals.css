@@ -41,13 +41,8 @@
 .authsheet input:not([type=checkbox]),.authsheet select{min-height:44px;padding:10px 12px}.authsheet input[type=checkbox]{min-width:18px;min-height:18px}
 
 
-/* MR: Meu Ritmo — interface system, progressive visual enhancement */
+/* Preserve the original Meu ritmo wordmark geometry and lettering. */
 :root{--mr-accent:#e9785d;--mr-ink:#263129;--mr-canvas:#faf9f5;--mr-surface:#fffefa;--mr-focus:#315b9d;--mr-fast:140ms;--mr-standard:220ms;--mr-slow:320ms;--mr-ease:cubic-bezier(.22,1,.36,1)}
-.brand{font-family:Manrope,'DM Sans',sans-serif;font-size:clamp(14px,1.2vw,19px);font-weight:760;letter-spacing:-.045em;gap:10px;line-height:1.1}
-.brandmark,.phonebar .brandmark{display:inline-grid;place-items:center;flex:none;width:39px;height:39px;padding:0;margin:0;line-height:1;font-family:Manrope,'DM Sans',sans-serif;font-size:17px;font-weight:850;font-style:normal;letter-spacing:-.085em;text-align:center;color:#263129;background:var(--mr-accent);border-radius:12px 12px 12px 4px;transform:none}
-.brandname{white-space:nowrap}
-.branddot{margin-left:-7px;margin-top:1px;font-size:8px}
-.phonebar .brandmark{width:30px;height:30px;font-size:13px;border-radius:9px 9px 9px 3px}
 .primary,.secondary,.iconbtn{transition:background-color var(--mr-standard) var(--mr-ease),border-color var(--mr-standard) var(--mr-ease),color var(--mr-standard) var(--mr-ease),box-shadow var(--mr-standard) var(--mr-ease),transform var(--mr-fast) var(--mr-ease)}
 .primary:active,.secondary:active,.iconbtn:active{transform:translateY(1px) scale(.985)}
 .primary:focus-visible,.secondary:focus-visible,.iconbtn:focus-visible{outline:3px solid var(--mr-focus);outline-offset:3px}
