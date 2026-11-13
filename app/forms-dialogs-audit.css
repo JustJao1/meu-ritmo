@@ -1,0 +1,47 @@
+/* Step 7: accessible, theme-aware forms and dialogs. No form or modal logic changes. */
+:is(.appframe,.adminshell) .overlay{padding:clamp(12px,3vw,28px);background:color-mix(in srgb,#101517 62%,transparent);overscroll-behavior:contain}
+:is(.appframe,.adminshell) .dialog{width:min(100%,620px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;background:var(--paper);color:var(--ink);border:1px solid var(--theme-divider);border-radius:11px;box-shadow:0 20px 75px #0005;padding:clamp(20px,3.2vw,33px)}
+:is(.appframe,.adminshell) .dialog.wide{width:min(100%,1000px)}
+:is(.appframe,.adminshell) .dialog>header{gap:16px;margin-bottom:22px;padding-bottom:15px;border-bottom:1px solid var(--theme-divider)}
+:is(.appframe,.adminshell) .dialog>header h2{font-size:clamp(21px,2.4vw,29px);line-height:1.2;color:var(--ink)}
+:is(.appframe,.adminshell) .dialog :is(h2,h3,h4,strong,label){color:var(--ink)}
+:is(.appframe,.adminshell) .dialog :is(p,li){font-size:13px;line-height:1.65}
+:is(.appframe,.adminshell) .dialog :is(label,legend){font-size:13px;font-weight:650;line-height:1.4}
+:is(.appframe,.adminshell) .dialog :is(small,.muted){font-size:12px;color:var(--theme-foreground-muted);line-height:1.6}
+:is(.appframe,.adminshell) .dialog :is(input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]):not([type=file]),select,textarea),
+.authpage .authsheet :is(input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]):not([type=file]),select,textarea),
+:is(.appframe,.adminshell) :is(.profileeditor,.privacycenter,.communitysearch,.adminsearch) :is(input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]):not([type=file]),select,textarea){
+ min-height:44px;width:100%;background:var(--paper);color:var(--ink);border:1px solid var(--theme-field-border);border-radius:7px;padding:11px 12px;font-size:14px;line-height:1.4;box-shadow:none
+}
+:is(.appframe,.adminshell,.authpage) :is(.dialog,.authsheet,.profileeditor,.privacycenter,.communitysearch,.adminsearch) :is(input,textarea)::placeholder{color:var(--theme-foreground-muted);opacity:1}
+:is(.appframe,.adminshell,.authpage) :is(.dialog,.authsheet,.profileeditor,.privacycenter,.communitysearch,.adminsearch) :is(input,textarea,select):not(:disabled):focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-color:var(--ink)}
+:is(.appframe,.adminshell,.authpage) :is(.dialog,.authsheet,.profileeditor,.privacycenter) :is(input,select,textarea):disabled{opacity:.65;cursor:not-allowed}
+:is(.appframe,.adminshell,.authpage) :is(.dialog,.authsheet,.profileeditor,.privacycenter) :is(input[type=checkbox],input[type=radio]){accent-color:var(--theme-accent-readable);min-width:17px;min-height:17px}
+:is(.appframe,.adminshell) .dialog .formrow{gap:14px;align-items:flex-start}
+:is(.appframe,.adminshell) .dialog .formrow>*{min-width:0}
+:is(.appframe,.adminshell) .dialog .dialogactions{gap:12px;flex-wrap:wrap;margin-top:25px;padding-top:19px;border-top:1px solid var(--theme-divider)}
+:is(.appframe,.adminshell) .dialog .dialogactions :is(button,a){min-height:44px;font-size:13px;font-weight:650;border-radius:7px}
+:is(.appframe,.adminshell) .dialog .dialogactions .primary{background:var(--ink);color:var(--paper)}
+:is(.appframe,.adminshell) .dialog .dialogactions .primary:hover{background:var(--theme-raised);color:var(--ink)}
+:is(.appframe,.adminshell) .dialog .dialogactions .danger{color:var(--ink);border:1px solid var(--theme-field-border);padding-inline:12px}
+:is(.appframe,.adminshell) :is(.warning,.adminerror,.adminnotice){background:var(--theme-raised);color:var(--ink);border:1px solid var(--theme-divider);border-radius:7px;padding:12px 14px;line-height:1.55}
+:is(.appframe,.adminshell) :is(.warning,.adminerror){border-left:3px solid var(--accent,var(--ink))}
+.authpage .authsheet{border:1px solid var(--theme-divider);border-radius:10px;box-shadow:0 12px 42px color-mix(in srgb,var(--ink) 8%,transparent)}
+.authpage .authsheet form{gap:19px}
+.authpage .authsheet label{gap:8px;font-size:13px;line-height:1.5}
+.authpage .authsheet .primary{min-height:46px;font-size:14px;font-weight:700}
+.authpage .authsheet :is(.autherror,.muted){font-size:12px;line-height:1.6}
+.authpage .authlinks{border-color:var(--theme-divider)}
+.authpage .authlinks a{color:var(--theme-accent-readable)}
+:is(.appframe,.adminshell) .dialog :is(a,.subtlelink){text-decoration-color:currentColor;color:var(--theme-accent-readable)}
+:is(.appframe,.adminshell) .dialog :is(a,.subtlelink):hover{color:var(--ink)}
+@media(max-width:650px){
+ :is(.appframe,.adminshell) .overlay{padding:10px;align-items:center}
+ :is(.appframe,.adminshell) .dialog{padding:21px 17px;border-radius:9px;max-height:calc(100dvh - 20px)}
+ :is(.appframe,.adminshell) .dialog .formrow{flex-wrap:wrap}
+ :is(.appframe,.adminshell) .dialog .formrow>*{flex:1 1 100%}
+ :is(.appframe,.adminshell) .dialog .dialogactions{gap:9px}
+ :is(.appframe,.adminshell) .dialog .dialogactions :is(button,a){flex:1 1 100%;justify-content:center;margin-right:0}
+ .authpage .authsheet{padding:23px 19px}
+}
+@media(prefers-reduced-motion:reduce){:is(.appframe,.adminshell) .dialog{scroll-behavior:auto}}
