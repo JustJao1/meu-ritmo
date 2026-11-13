@@ -56,7 +56,7 @@ test('all UI refinements load after the existing design and font sheets',()=>{
 
 test('all five authenticated areas and their visual hooks remain present',()=>{
   const app=file('app/ritmo.tsx');
-  const css=file('app/internal-pages-audit.css');
+  const css=file('app/internal-pages-audit.css')+file('app/workspace-redesign.css');
   for(const area of ['Hoje','Agenda','Gastos','Notas','Rotina'])assert.ok(app.includes(area),'Area '+area+' missing');
   for(const hook of ['.todaygrid','.eventrow','.financesummary','.notesgrid','.routinedays','.monthgrid','.settingspanel','.communityintro','.studiointro']){
     assert.ok(css.includes(hook),'Missing visual hook '+hook);
