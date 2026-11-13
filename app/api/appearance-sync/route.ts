@@ -1,6 +1,8 @@
 import {env} from 'cloudflare:workers';
 import {getUser} from '../../session';
-import {defaultAppearance,themes} from '../../../lib/plans';
+import {defaultAppearance,effectiveAppearance,themes} from '../../../lib/plans';
+import {userPlan} from '../../../lib/entitlements';
+import type {Data} from '../../../lib/ritmo-domain';
 import {hash} from '../../../lib/auth-server';
 
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, OPTIONS','Access-Control-Allow-Headers':'Authorization','Access-Control-Max-Age':'600','Cache-Control':'no-store'};
@@ -14,9 +16,10 @@ export async function GET(req:Request){
   const link=await env.DB!.prepare('SELECT user_id FROM appearance_links WHERE token_hash=? AND expires_at>?').bind(await hash(token),now).first<{user_id:string}>();
   if(!link)return json({error:'Vinculação expirada ou revogada.'},401);
   const row=await env.DB!.prepare('SELECT payload FROM accounts WHERE user_id=?').bind(link.user_id).first<{payload:string}>();
-  const raw=row?JSON.parse(row.payload)?.appearance:null;
-  const selected=themes.find(t=>t.id===raw?.theme)||themes[0];
-  const accent=typeof raw?.accent==='string'&&/^#[0-9a-fA-F]{6}$/.test(raw.accent)?raw.accent:selected.accent;
+  const data=row?JSON.parse(row.payload) as Data:null;
+  const appearance=data?effectiveAppearance(data,await userPlan(link.user_id)):defaultAppearance;
+  const selected=themes.find(t=>t.id===appearance.theme)||themes[0];
+  const accent=typeof appearance.accent==='string'&&/^#[0-9a-fA-F]{6}$/.test(appearance.accent)?appearance.accent:selected.accent;
   return json({theme:selected.id,accent,paper:selected.paper,side:selected.side,banner:selected.banner,ink:selected.ink});
  }catch{return json({error:'Não foi possível consultar a aparência.'},503);}
 }
