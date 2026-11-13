@@ -39,3 +39,32 @@
 .alerttabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.alerttabs button{display:flex;gap:7px;align-items:center;border:1px solid #c8c8bc;padding:10px}.alerttabs [aria-pressed=true]{background:var(--ink);color:var(--paper)}.alertrow{padding:16px 0;border-bottom:1px solid #d9d8cd;display:flex;align-items:center;gap:16px}.alertrow>button{flex:1;text-align:left;display:grid;gap:6px;min-width:0;overflow-wrap:anywhere}.alertrow small{color:#686a62}.alertcenter details{margin:20px 0}.alertcenter>.primary{margin:20px 0}.soundnotice{position:fixed;z-index:45;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:#fffdf7;border:1px solid #c9c9be;padding:12px 18px;max-width:650px;width:calc(100% - 40px);font-size:13px}.soundnotice button{font-weight:700;text-decoration:underline}.alarmnotice{position:fixed;z-index:110;inset:auto 20px 24px auto;max-width:460px;background:#fffdf7;border:2px solid #c65b45;padding:28px;box-shadow:0 8px 28px #2222;overflow-wrap:anywhere}.alarmnotice h2{margin:12px 0}.alarmnotice .dialogactions{gap:12px;flex-wrap:wrap}@media(max-width:600px){.soundnotice{bottom:82px;flex-wrap:wrap}.alarmnotice{inset:auto 12px 84px;max-width:none;padding:20px}.alertrow{align-items:flex-start}}
 
 .authsheet input:not([type=checkbox]),.authsheet select{min-height:44px;padding:10px 12px}.authsheet input[type=checkbox]{min-width:18px;min-height:18px}
+
+
+/* MR: Meu Ritmo — interface system, progressive visual enhancement */
+:root{--mr-accent:#e9785d;--mr-ink:#263129;--mr-canvas:#faf9f5;--mr-surface:#fffefa;--mr-focus:#315b9d;--mr-fast:140ms;--mr-standard:220ms;--mr-slow:320ms;--mr-ease:cubic-bezier(.22,1,.36,1)}
+.brand{font-family:Manrope,'DM Sans',sans-serif;font-size:clamp(14px,1.2vw,19px);font-weight:760;letter-spacing:-.045em;gap:10px;line-height:1.1}
+.brandmark,.phonebar .brandmark{display:inline-grid;place-items:center;flex:none;width:39px;height:39px;padding:0;margin:0;line-height:1;font-family:Manrope,'DM Sans',sans-serif;font-size:17px;font-weight:850;font-style:normal;letter-spacing:-.085em;text-align:center;color:#263129;background:var(--mr-accent);border-radius:12px 12px 12px 4px;transform:none}
+.brandname{white-space:nowrap}
+.branddot{margin-left:-7px;margin-top:1px;font-size:8px}
+.phonebar .brandmark{width:30px;height:30px;font-size:13px;border-radius:9px 9px 9px 3px}
+.primary,.secondary,.iconbtn{transition:background-color var(--mr-standard) var(--mr-ease),border-color var(--mr-standard) var(--mr-ease),color var(--mr-standard) var(--mr-ease),box-shadow var(--mr-standard) var(--mr-ease),transform var(--mr-fast) var(--mr-ease)}
+.primary:active,.secondary:active,.iconbtn:active{transform:translateY(1px) scale(.985)}
+.primary:focus-visible,.secondary:focus-visible,.iconbtn:focus-visible{outline:3px solid var(--mr-focus);outline-offset:3px}
+input:not([type=checkbox]):not([type=radio]),textarea,select{transition:border-color var(--mr-fast) ease,box-shadow var(--mr-fast) ease,background-color var(--mr-fast) ease}
+input:not([type=checkbox]):not([type=radio]):focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--mr-focus);outline-offset:2px}
+@keyframes mr-rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mr-fade{from{opacity:0}to{opacity:1}}
+@keyframes mr-progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.authsheet{animation:mr-rise .45s var(--mr-ease) both;border-radius:12px;box-shadow:0 16px 55px rgb(38 49 41 / .045)}
+.authsheet h1{max-width:16ch;text-wrap:balance}
+.authsheet form button[type=submit]{min-height:46px}
+.communityhead h1,.hero h1{text-wrap:balance}
+.communityintro{transition:background-color var(--mr-standard) ease,border-color var(--mr-standard) ease}
+.overlay{animation:mr-fade var(--mr-fast) ease-out both}
+.overlay .dialog{animation:mr-rise var(--mr-standard) var(--mr-ease) both}
+.socialpost{transition:border-color var(--mr-standard) ease,background-color var(--mr-standard) ease}
+.socialpost:hover{border-color:#c8c9bd}
+button:disabled{transform:none!important}
+@media(max-width:760px){.brand{gap:7px;font-size:14px}.brandmark{width:33px;height:33px;font-size:14px;border-radius:10px 10px 10px 3px}.publicnav{padding-inline:20px}.authsheet{box-shadow:none}.communityhead h1{max-width:18ch}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
