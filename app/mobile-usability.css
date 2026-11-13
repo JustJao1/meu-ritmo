@@ -31,3 +31,29 @@
  .mobile-quick-access{gap:5px}
  .mobile-quick-access :is(button,a){font-size:10px}
 }
+
+
+/* Explicit two-row mobile header: weather and actions never share the breadcrumb row. */
+.mobile-apps-link{display:none}
+@media(max-width:760px){
+ .appframe .topbar{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:center!important;height:auto!important;min-height:0!important;padding:13px 16px!important;gap:12px!important}
+ .appframe .topbar>.toplocation{display:flex!important;align-items:center!important;width:100%!important;max-width:100%!important;overflow:hidden!important;white-space:nowrap!important;font-size:13px!important}
+ .appframe .topbar>.toplocation>span:not(.toplocationdot),.appframe .topbar>.toplocation>svg{display:none!important}
+ .appframe .topbar>.toplocation strong{font-size:13px!important;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+ .appframe .topbar>.topactions{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto auto!important;align-items:center!important;width:100%!important;gap:9px!important;min-width:0!important}
+ .appframe .topactions>.mrweather{grid-column:1;grid-row:1;min-width:0!important;margin:0!important}
+ .appframe .topactions .mrweather-trigger{width:100%!important;max-width:100%!important;min-width:0!important;justify-content:flex-start!important;min-height:44px!important}
+ .appframe .topactions .mrweather-trigger span{max-width:none!important;min-width:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .appframe .topactions>.topsearchbtn{grid-column:2;grid-row:1;margin:0!important;width:42px!important;min-width:42px!important;height:44px!important}
+ .appframe .topactions>.iconbtn{grid-column:3;grid-row:1;margin:0!important;min-width:42px!important;min-height:44px!important}
+ .appframe .topactions>.mobileavatar{grid-column:4;grid-row:1;margin:0!important;width:40px!important;height:40px!important;min-width:40px!important}
+ .appframe .topactions>.mobile-apps-link{display:flex!important;grid-column:1/-1;grid-row:2;align-items:center;justify-content:center;gap:9px;min-height:43px;border:1px solid var(--ui-stroke,var(--line));border-radius:9px;background:var(--ui-surface,var(--paper));color:var(--ink);font-size:13px;font-weight:650;text-decoration:none}
+ .appframe .topactions>.mobile-apps-link:hover{color:var(--ink)}
+ .appframe .mrweather-panel{position:fixed!important;top:135px!important;left:12px!important;right:12px!important;width:auto!important;max-width:none!important;max-height:65vh!important}
+}
+@media(max-width:360px){
+ .appframe .topbar{padding-inline:10px!important}
+ .appframe .topbar>.topactions{gap:5px!important}
+ .appframe .topactions>.topsearchbtn{width:38px!important;min-width:38px!important}
+ .appframe .topactions>.iconbtn{min-width:38px!important}
+}
