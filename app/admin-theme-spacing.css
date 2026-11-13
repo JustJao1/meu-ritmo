@@ -46,3 +46,81 @@
 :root[data-title-style="editorial"] .adminshell :is(h1,h2,h3){font-family:Georgia,'Times New Roman',serif;font-weight:400}
 @media(max-width:900px){.adminshell .adminheading{align-items:flex-start}.adminshell .memberrow{gap:16px}.adminshell .memberactions{min-width:155px}}
 @media(max-width:700px){.adminshell .adminmain{padding:27px 18px 60px}.adminshell .adminheading{flex-direction:column;gap:18px}.adminshell .adminidentity{width:100%}.adminshell .adminscope{gap:12px}.adminshell .admintabbar{padding:8px}.adminshell .admintabbar nav{justify-content:flex-start;gap:4px}.adminshell .admintabbar nav button{font-size:12px;padding:11px 12px}.adminshell .adminsearch{gap:10px}.adminshell .adminsearch>label{flex:1 1 100%;min-width:0}.adminshell .memberrow{padding:19px 16px;gap:12px;flex-wrap:wrap}.adminshell .memberdetails{flex:1;min-width:0}.adminshell .memberaccess{min-width:0;flex:1 1 110px}.adminshell .memberactions{min-width:0;flex:1 1 155px;align-items:flex-start}.adminshell .memberactions>button{text-align:left}.adminshell .adminpagination{flex-wrap:wrap}.adminshell .adminpagination>span{order:3;flex:1 1 100%;text-align:center}}
+
+
+/* Admin surface repair: use the selected theme for every nested surface. */
+.adminshell{
+ --admin-muted:color-mix(in srgb,var(--ink) 76%,var(--paper) 24%);
+ --admin-border:color-mix(in srgb,var(--ink) 20%,transparent);
+ --admin-surface:color-mix(in srgb,var(--paper) 93%,var(--ink) 7%);
+ --admin-hover:color-mix(in srgb,var(--paper) 85%,var(--ink) 15%);
+ color:var(--ink);
+ background:var(--paper);
+}
+.adminshell :is(.adminnav,.adminmain,.adminheading,.adminsectionintro,.adminfooter){color:var(--ink)}
+.adminshell .adminnav{border-bottom:1px solid var(--admin-border);gap:24px;min-height:78px;height:auto;padding-block:14px}
+.adminshell .adminnav :is(a,span,svg){color:var(--ink)}
+.adminshell .adminmain{max-width:1360px;padding:48px clamp(22px,4vw,64px) 84px}
+.adminshell .adminheading{align-items:center;gap:42px;margin-bottom:40px}
+.adminshell .adminheading h1{margin:16px 0 12px;letter-spacing:-.035em}
+.adminshell :is(.adminheading p,.adminheading .eyebrow,.adminscope,.adminscope p,.adminsectionintro p,.adminfooter,.adminfootnote,.adminpagination span,.memberdetails>span,.memberdetails small,.memberaccess>small,.protectedowner,.auditlist p,.auditlist small,.grantlist p,.grantlist small){color:var(--admin-muted)}
+.adminshell .adminidentity{background:var(--admin-surface);border:1px solid var(--admin-border);min-width:230px;padding:20px 22px}
+.adminshell .adminidentity :is(strong,small,svg){color:var(--ink);opacity:1}
+.adminshell .adminidentity small{overflow-wrap:anywhere;line-height:1.5;margin-top:6px}
+.adminshell .adminscope{border-color:var(--admin-border);padding:24px 0;margin:32px 0 38px;gap:30px}
+.adminshell .adminscope strong{color:var(--ink);font-size:27px}
+.adminshell .admintabbar{background:var(--admin-surface);border-color:var(--admin-border);padding:12px 16px;min-height:72px;margin-bottom:36px}
+.adminshell .admintabbar nav{gap:8px 10px}
+.adminshell .admintabbar nav button{color:var(--ink);padding:13px 16px;min-height:46px;line-height:1.35}
+.adminshell .admintabbar nav button.active{background:var(--paper);color:var(--ink);border-color:var(--admin-border)}
+.adminshell .admintabbar nav button:hover{background:var(--admin-hover);color:var(--ink)}
+.adminshell .adminsearch{max-width:820px;display:flex;align-items:stretch;gap:14px;margin-bottom:42px}
+.adminshell .adminsearch>label{flex:1 1 380px;min-width:220px;min-height:52px;padding:8px 16px;background:var(--admin-surface);border:1px solid var(--admin-border);color:var(--ink)}
+.adminshell .adminsearch input{width:100%;background:transparent;color:var(--ink);font-size:14px;min-width:0}
+.adminshell .adminsearch input::placeholder{color:var(--admin-muted);opacity:1}
+.adminshell .adminsearch>.secondary,.adminshell .adminsearch>.iconbtn{background:var(--admin-surface);color:var(--ink);border:1px solid var(--admin-border);min-height:52px;padding:12px 19px;border-radius:8px}
+.adminshell .adminsearch>.iconbtn{min-width:52px;padding:12px}
+.adminshell .adminsectionintro{margin-bottom:30px}
+.adminshell .adminsectionintro h2{color:var(--ink);font-size:24px;margin:0 0 14px}
+.adminshell .adminsectionintro p{font-size:13px;line-height:1.8}
+.adminshell .memberlist{background:var(--admin-surface);border:1px solid var(--admin-border);border-radius:12px}
+.adminshell .memberrow{background:transparent;border-color:var(--admin-border);display:grid;grid-template-columns:48px minmax(0,1fr) minmax(130px,170px) minmax(175px,230px);align-items:center;gap:24px;padding:27px 26px;min-height:130px}
+.adminshell .memberavatar{width:46px;height:46px;background:var(--admin-hover);border:1px solid var(--admin-border);color:var(--ink)}
+.adminshell .memberdetails{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.adminshell .memberdetails strong{color:var(--ink);font-size:14px;font-weight:650;line-height:1.5}
+.adminshell .memberdetails>span,.adminshell .memberdetails small{margin:0;line-height:1.5;overflow-wrap:anywhere}
+.adminshell .memberdetails>span{font-size:12px}
+.adminshell .memberdetails small{font-size:11px}
+.adminshell .memberaccess{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.adminshell .memberaccess>small{font-size:11px;line-height:1.4}
+.adminshell .memberactions{min-width:0;display:flex;align-items:flex-start;justify-content:center;gap:12px}
+.adminshell .memberactions>button,.adminshell .protectedowner{color:var(--ink);font-size:12px;line-height:1.45;text-align:left}
+.adminshell .memberactions>button{padding:3px 0;display:inline-flex;align-items:center;gap:9px}
+.adminshell .memberactions>button:hover{text-decoration:underline}
+.adminshell .accesspill{padding:6px 10px;font-size:11px}
+.adminshell .adminpagination{margin:34px 0;gap:20px}
+.adminshell .adminpagination>button,.adminshell .adminpagination>span{color:var(--ink);font-size:12px}
+.adminshell :is(.promolist article,.grantlist article,.auditlist>article,.dialog,.commandtarget,.promocode){background:var(--admin-surface);color:var(--ink);border-color:var(--admin-border)}
+.adminshell :is(.promolist,.grantlist,.auditlist){gap:18px}
+.adminshell :is(.promolist article,.grantlist article,.auditlist>article){padding:24px}
+.adminshell :is(.promolist article,.grantlist article,.auditlist>article) :is(h2,h3,strong,dd,code){color:var(--ink)}
+.adminshell .adminfooter{border-color:var(--admin-border);padding-top:24px}
+@media(max-width:950px){
+ .adminshell .memberrow{grid-template-columns:46px minmax(0,1fr) minmax(120px,150px);gap:18px}
+ .adminshell .memberactions{grid-column:2/-1;flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:12px 24px}
+}
+@media(max-width:700px){
+ .adminshell .adminmain{padding:30px 18px 64px}
+ .adminshell .adminheading{align-items:stretch;gap:22px;margin-bottom:30px}
+ .adminshell .adminidentity{min-width:0}
+ .adminshell .adminscope{margin:25px 0 30px;padding:20px 0;flex-wrap:wrap;gap:12px}
+ .adminshell .admintabbar{padding:10px;margin-bottom:28px}
+ .adminshell .admintabbar nav{gap:6px}
+ .adminshell .admintabbar nav button{padding:11px 12px}
+ .adminshell .adminsearch{gap:10px;margin-bottom:30px}
+ .adminshell .adminsearch>label{flex:1 1 100%;min-width:0}
+ .adminshell .memberrow{grid-template-columns:42px minmax(0,1fr);gap:14px;padding:22px 18px}
+ .adminshell .memberavatar{width:42px;height:42px}
+ .adminshell .memberaccess{grid-column:2;gap:6px}
+ .adminshell .memberactions{grid-column:2;flex-direction:column;gap:12px}
+}
