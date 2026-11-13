@@ -6,7 +6,7 @@ import {mkdtemp,readFile,readdir,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 const dir=await mkdtemp(join(tmpdir(),'ritmo-api-test-'));
-const virtual={name:'test-runtime',setup(b){b.onResolve({filter:/chatgpt-auth$/},()=>({path:'auth',namespace:'test'}));b.onResolve({filter:/^cloudflare:workers$/},()=>({path:'env',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},({path})=>({contents:path==='auth'?'export async function getChatGPTUser(){return globalThis.__testUser||null}':'export const env=globalThis.__testEnv;'}));}};
+const virtual={name:'test-runtime',setup(b){b.onResolve({filter:/session$/},()=>({path:'auth',namespace:'test'}));b.onResolve({filter:/^cloudflare:workers$/},()=>({path:'env',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},({path})=>({contents:path==='auth'?'export async function getUser(){return globalThis.__testUser||null}':'export const env=globalThis.__testEnv;'}));}};
 const db=new DatabaseSync(':memory:');for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())db.exec(await readFile('drizzle/'+file,'utf8'));
 const binding={prepare(sql){const st=db.prepare(sql);let args=[];return {bind(...a){args=a;return this},async first(){return st.get(...args)||null},async run(){const r=st.run(...args);return {meta:{changes:r.changes}}}}}};
 globalThis.__testEnv={DB:binding};

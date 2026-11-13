@@ -1,0 +1,1 @@
+export function safeReturnPath(value:string){if(!value.startsWith('/')||value.startsWith('//')||/[\\\u0000-\u001f\u007f]/.test(value))return '/app';const u=new URL(value,'https://local.invalid');return u.origin==='https://local.invalid'&&!/^\/(entrar|sair|api\/auth|nova-senha)/.test(u.pathname)?u.pathname+u.search:'/app';}

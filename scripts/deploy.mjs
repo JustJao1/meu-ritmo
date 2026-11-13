@@ -1,0 +1,11 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+const required=['CLOUDFLARE_ACCOUNT_ID','CLOUDFLARE_API_TOKEN','CLOUDFLARE_D1_DATABASE_ID','SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','SESSION_ENCRYPTION_KEY'];
+for(const name of required)if(!process.env[name])throw Error('Configure '+name+' como segredo da publicação.');
+const config=JSON.parse(await readFile('wrangler.jsonc','utf8'));if(!/^[\da-f-]{36}$/i.test(process.env.CLOUDFLARE_D1_DATABASE_ID)||process.env.CLOUDFLARE_D1_DATABASE_ID.startsWith('00000000'))throw Error('Configure um banco D1 real.');config.d1_databases[0].database_id=process.env.CLOUDFLARE_D1_DATABASE_ID;await writeFile('wrangler.jsonc',JSON.stringify(config,null,2)+'\n');
+const run=(args,input)=>{const r=spawnSync(process.execPath,args,{stdio:input?['pipe','inherit','inherit']:'inherit',input,env:process.env});if(r.status!==0)process.exit(r.status||1)};
+run(['node_modules/wrangler/bin/wrangler.js','d1','migrations','apply','DB','--remote']);
+run(['node_modules/vinext/dist/cli.js','build']);
+run(['node_modules/wrangler/bin/wrangler.js','deploy','--config','dist/server/wrangler.json']);
+const names=['SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','SESSION_ENCRYPTION_KEY','SUPABASE_SERVICE_ROLE_KEY','ADMIN_OWNER_EMAIL','ADMIN_OWNER_USER_ID','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_PLUS_MONTH_PRICE','STRIPE_PLUS_YEAR_PRICE','STRIPE_PRO_MONTH_PRICE','STRIPE_PRO_YEAR_PRICE','BILLING_TEST_ENABLED'];
+const secrets=Object.fromEntries(names.filter(k=>process.env[k]).map(k=>[k,process.env[k]]));run(['node_modules/wrangler/bin/wrangler.js','secret','bulk','--name','meu-ritmo'],JSON.stringify(secrets));

@@ -1,7 +1,7 @@
-import { getChatGPTUser } from '../../../chatgpt-auth';
+import { getUser } from '../../../session';
 import { billingConfig, stripe } from '../../../../lib/billing';
 import { env } from 'cloudflare:workers';
-export async function POST(req: Request) { const user = await getChatGPTUser(); if (!user)
+export async function POST(req: Request) { const user = await getUser(); if (!user)
     return Response.json({ error: 'Entre na sua conta.' }, { status: 401 }); if (req.headers.get('origin') !== new URL(req.url).origin)
     return Response.json({ error: 'Origem inválida' }, { status: 403 }); if (!billingConfig().enabled)
     return Response.json({ error: 'Gerenciamento de assinatura ainda não configurado.' }, { status: 503 }); try {

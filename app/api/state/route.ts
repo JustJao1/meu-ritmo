@@ -3,10 +3,10 @@ import {appRole,registerMember} from '../../../lib/admin-access';
 import {planAccess} from '../../../lib/entitlements';
 import {userPlan} from '../../../lib/entitlements';
 import {paidChangeError} from '../../../lib/plans';
-import { getChatGPTUser } from '../../chatgpt-auth';
+import { getUser } from '../../session';
 import { env } from 'cloudflare:workers';
 import { stateInput } from '../../../lib/state-validation';
-export async function GET() { const u = await getChatGPTUser(); if (!u)
+export async function GET() { const u = await getUser(); if (!u)
     return Response.json({ error: 'Entre na sua conta.' }, { status: 401 }); try {
     await registerMember(u);
     const row = await env.DB!.prepare('SELECT payload, revision FROM accounts WHERE user_id = ?').bind(u.userId).first<{
@@ -18,7 +18,7 @@ export async function GET() { const u = await getChatGPTUser(); if (!u)
 catch {
     return Response.json({ error: 'Não foi possível carregar seus dados. Tente novamente.' }, { status: 503 });
 } }
-export async function PUT(req: Request) { const u = await getChatGPTUser(); if (!u)
+export async function PUT(req: Request) { const u = await getUser(); if (!u)
     return Response.json({ error: 'Entre na sua conta.' }, { status: 401 }); if (req.headers.get('origin') !== new URL(req.url).origin)
     return Response.json({ error: 'Origem inválida' }, { status: 403 }); try {
     const raw = await req.text();

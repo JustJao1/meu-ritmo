@@ -1,5 +1,5 @@
 import type {Appearance} from './plans';
-export type Kind = 'task' | 'event' | 'expense' | 'note' | 'reminder';
+export type Kind = 'task' | 'event' | 'expense' | 'note' | 'reminder' | 'alarm' | 'message';
 export type Item = {
     id: string;
     type: Kind;
@@ -19,6 +19,8 @@ export type Item = {
     days: string[];
     notify: boolean;
     checks: string[];
+    soundAlarm?: boolean;
+    enabled?: boolean;
     sticker?: string;
     completedDates?: string[];
     skipDates?: string[];

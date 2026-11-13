@@ -1,0 +1,4 @@
+import {occurs,isDone,type Item} from './ritmo-domain';
+export function alertMoment(now:Date,timezone:string){return {date:new Intl.DateTimeFormat('en-CA',{timeZone:timezone}).format(now),time:new Intl.DateTimeFormat('pt-BR',{timeZone:timezone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now)}}
+export function dueAlerts(items:Item[],now:Date,timezone:string){const {date,time}=alertMoment(now,timezone);return items.filter(i=>i.enabled!==false&&(i.notify||i.type==='alarm'||i.soundAlarm)&&i.time===time&&occurs(i,date)&&!isDone(i,date)).map(item=>({item,key:item.id+':'+date+':'+time}));}
+export function snoozedAlert(item:Item,now:Date,timezone:string):Item{const {date,time}=alertMoment(new Date(now.getTime()+10*60000),timezone);return {...item,id:crypto.randomUUID(),date,time,repeat:'none',days:[],completedDates:[],skipDates:[],done:false,enabled:true,archived:false};}
