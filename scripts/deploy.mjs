@@ -7,5 +7,5 @@ const run=(args,input)=>{const r=spawnSync(process.execPath,args,{stdio:input?['
 run(['node_modules/wrangler/bin/wrangler.js','d1','migrations','apply','DB','--remote']);
 run(['node_modules/vinext/dist/cli.js','build']);
 run(['node_modules/wrangler/bin/wrangler.js','deploy','--config','dist/server/wrangler.json']);
-const names=['SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','SESSION_ENCRYPTION_KEY','SUPABASE_SERVICE_ROLE_KEY','ADMIN_OWNER_EMAIL','ADMIN_OWNER_USER_ID','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_PLUS_MONTH_PRICE','STRIPE_PLUS_YEAR_PRICE','STRIPE_PRO_MONTH_PRICE','STRIPE_PRO_YEAR_PRICE','BILLING_TEST_ENABLED'];
+const names=['SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','SESSION_ENCRYPTION_KEY','SUPABASE_SERVICE_ROLE_KEY','ADMIN_OWNER_EMAIL','ADMIN_OWNER_USER_ID','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_PLUS_MONTH_PRICE','STRIPE_PLUS_YEAR_PRICE','STRIPE_PRO_MONTH_PRICE','STRIPE_PRO_YEAR_PRICE','BILLING_TEST_ENABLED','BILLING_MODE','BILLING_LIVE_ENABLED','BILLING_WEBHOOK_READY'];
 const secrets=Object.fromEntries(names.filter(k=>process.env[k]).map(k=>[k,process.env[k]]));run(['node_modules/wrangler/bin/wrangler.js','secret','bulk','--name','meu-ritmo'],JSON.stringify(secrets));
