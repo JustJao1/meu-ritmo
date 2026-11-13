@@ -9,7 +9,7 @@ type Grant={id:string;user_id:string;email:string;plan:Plan;ends_at:number;sourc
 type Audit={actor_email:string;action:string;target:string;details:string;created_at:number};
 type PanelData={members:Member[];promotions:Promo[];grants:Grant[];audit:Audit[];hasMore:boolean;totalMembers:number};
 const date=(n:number)=>new Date(n*1000).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'});
-const sources:Record<string,string>={manual:'Concessão administrativa',promo:'Código promocional',subscription:'Assinatura',free:'Gratuito'};
+const sources:Record<string,string>={manual:'Concessão administrativa',promo:'Código promocional',subscription:'Assinatura',early_access:'Acesso antecipado',free:'Gratuito'};
 const actions:Record<string,string>={admin_added:'Administrador adicionado',admin_removed:'Administrador removido',plan_granted:'Plano concedido',grant_revoked:'Acesso revogado',promo_created:'Código criado',promo_enabled:'Código reativado',promo_disabled:'Código desativado',promo_redeemed:'Código resgatado'};
 const nextMonth=()=>{const d=new Date();d.setDate(d.getDate()+30);return d.toISOString().slice(0,10)};
 export default function AdminPanel({role,email}:{role:'owner'|'admin';email:string}){
