@@ -813,3 +813,9 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 :root[data-title-style="sans"] .content :is(h1,h2,h3),
 :root[data-title-style="sans"] .modal :is(h1,h2,h3),
 :root[data-title-style="sans"] .panel :is(h1,h2,h3){font-family:Manrope,'DM Sans',sans-serif;font-style:normal}
+
+/* Prévia imediata da escolha de fonte no estúdio de aparência */
+.titlefontpreview{display:flex;flex-direction:column;gap:9px;padding:18px 20px;margin:12px 0 24px;border:1px solid var(--line,#d9ded5);border-radius:9px;background:var(--paper,#fff);color:var(--ink,#293029)}
+.titlefontpreview>span{font-size:11px;font-weight:600;opacity:.75}
+.titlefontpreview>strong{display:block;font-size:clamp(24px,3vw,35px);line-height:1.2;overflow-wrap:anywhere}
+.titlefontpreview>small{font-size:11px;opacity:.7}
