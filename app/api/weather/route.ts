@@ -1,4 +1,4 @@
-const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'public, max-age=180, s-maxage=300','X-Content-Type-Options':'nosniff'}});
+const json=(value:unknown,status=200)=>Response.json(value,{status,headers:{'Cache-Control':'public, max-age=60, s-maxage=120','X-Content-Type-Options':'nosniff'}});
 export async function GET(request:Request){
  const p=new URL(request.url).searchParams;
  const mode=p.get('mode');
