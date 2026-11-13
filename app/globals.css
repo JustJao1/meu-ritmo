@@ -703,3 +703,28 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .calendarcolumns header.istoday:hover span,
 .calendarcolumns header.istoday:hover strong,
 .monthgrid>button.istoday:hover>span{color:#20262a}
+
+
+/* Public pages and pricing: theme-aware surfaces and legible plan comparisons */
+.authpage{background:var(--paper);color:var(--ink)}
+.authsheet{background:color-mix(in srgb,var(--paper) 88%,var(--ink) 12%);border:1px solid color-mix(in srgb,var(--ink) 17%,transparent);border-radius:14px;box-shadow:0 22px 55px color-mix(in srgb,var(--ink) 9%,transparent)}
+.authsheet :is(input,select,textarea){background:var(--paper);color:var(--ink);border:1px solid color-mix(in srgb,var(--ink) 34%,transparent);border-radius:7px;min-height:45px}
+.authsheet :is(input,select,textarea):focus-visible{outline:2px solid var(--accent,var(--blue));outline-offset:2px}
+.authsheet small,.authsheet .eyebrow{color:color-mix(in srgb,var(--ink) 72%,var(--paper))}
+.authsheet .primary{background:var(--ink);color:var(--paper);border-radius:7px}
+.herotext>p,.planpitch p{color:color-mix(in srgb,var(--ink) 72%,var(--paper))}
+.plans{align-items:stretch;gap:18px}
+.plancard{display:flex;flex-direction:column;min-width:0;padding:clamp(22px,2.4vw,34px);border-radius:12px;background:color-mix(in srgb,var(--paper) 94%,var(--ink) 6%);border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 4%,transparent);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.plancard:hover{transform:translateY(-3px);box-shadow:0 15px 32px color-mix(in srgb,var(--ink) 10%,transparent)}
+.plancard.featured{background:color-mix(in srgb,var(--theme-banner,var(--green)) 72%,var(--paper));border:1.5px solid color-mix(in srgb,var(--ink) 28%,transparent)}
+.plancard>.eyebrow{font-size:12px;letter-spacing:1.5px;color:var(--ink);font-weight:700}
+.plancard>p{font-size:13px;line-height:1.6;color:color-mix(in srgb,var(--ink) 78%,var(--paper))}
+.planprice{font-size:clamp(30px,3vw,42px);font-weight:700;line-height:1.2;letter-spacing:-1.5px;color:var(--ink);font-variant-numeric:tabular-nums}
+.planprice small{font-size:12px;font-weight:500;color:color-mix(in srgb,var(--ink) 72%,var(--paper));letter-spacing:0}
+.plancard>button{min-height:46px;font-size:13px;font-weight:650;border-radius:7px}
+.plancard li{font-size:13px;line-height:1.5;color:color-mix(in srgb,var(--ink) 84%,var(--paper));margin:13px 0}
+.plancard li svg{color:var(--ink);opacity:.8}
+.plancard ul{margin-top:24px}
+.planfoot{font-size:12px!important;color:color-mix(in srgb,var(--ink) 70%,var(--paper))!important}
+@media(max-width:850px){.plans{grid-template-columns:1fr}.plancard{padding:25px}.plancard:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){.plancard{transition:none}.plancard:hover{transform:none}}
