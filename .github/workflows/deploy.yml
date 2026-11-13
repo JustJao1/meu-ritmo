@@ -1,0 +1,38 @@
+name: Publicar Meu Ritmo
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - name: Publicar na conta do proprietário
+        run: npm run deploy
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SESSION_ENCRYPTION_KEY: ${{ secrets.SESSION_ENCRYPTION_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ADMIN_OWNER_EMAIL: ${{ secrets.ADMIN_OWNER_EMAIL }}
+          ADMIN_OWNER_USER_ID: ${{ secrets.ADMIN_OWNER_USER_ID }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PLUS_MONTH_PRICE: ${{ secrets.STRIPE_PLUS_MONTH_PRICE }}
+          STRIPE_PLUS_YEAR_PRICE: ${{ secrets.STRIPE_PLUS_YEAR_PRICE }}
+          STRIPE_PRO_MONTH_PRICE: ${{ secrets.STRIPE_PRO_MONTH_PRICE }}
+          STRIPE_PRO_YEAR_PRICE: ${{ secrets.STRIPE_PRO_YEAR_PRICE }}
+          BILLING_TEST_ENABLED: ${{ secrets.BILLING_TEST_ENABLED }}
