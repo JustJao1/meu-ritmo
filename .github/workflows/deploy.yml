@@ -36,6 +36,7 @@ jobs:
           STRIPE_PRO_MONTH_PRICE: ${{ secrets.STRIPE_PRO_MONTH_PRICE }}
           STRIPE_PRO_YEAR_PRICE: ${{ secrets.STRIPE_PRO_YEAR_PRICE }}
           BILLING_TEST_ENABLED: ${{ secrets.BILLING_TEST_ENABLED }}
+          EARLY_ACCESS_ENABLED: 'true'
           BILLING_MODE: ${{ secrets.BILLING_MODE }}
           BILLING_LIVE_ENABLED: ${{ secrets.BILLING_LIVE_ENABLED }}
           BILLING_WEBHOOK_READY: ${{ secrets.BILLING_WEBHOOK_READY }}
