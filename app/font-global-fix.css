@@ -1,0 +1,12 @@
+/* One bundled font throughout the website, including authenticated screens.
+   The family is served from existing local files; no third-party font dependency. */
+:root{--font-ui:"Meu Ritmo UI",Arial,sans-serif}
+@font-face{font-family:"Meu Ritmo UI";src:url("/fonts/MeuRitmo-Regular.ttf") format("truetype");font-style:normal;font-weight:400 500;font-display:swap}
+@font-face{font-family:"Meu Ritmo UI";src:url("/fonts/MeuRitmo-Semibold.ttf") format("truetype");font-style:normal;font-weight:501 699;font-display:swap}
+@font-face{font-family:"Meu Ritmo UI";src:url("/fonts/MeuRitmo-Bold.ttf") format("truetype");font-style:normal;font-weight:700 900;font-display:swap}
+html body,html body :is(h1,h2,h3,h4,h5,h6,p,span,small,strong,em,b,i,label,button,a,input,textarea,select,option,summary,li,td,th,blockquote,figcaption,time,output,legend,caption,div){font-family:var(--font-ui)!important}
+html body{font-weight:500}
+html body :is(h1,h2,h3,h4,h5,h6){font-weight:700;letter-spacing:-.035em}
+html body :is(button,.primary,.secondary,.brand,label){font-weight:600}
+html body :is(code,pre,kbd,samp),html body :is(code,pre,kbd,samp) *{font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important}
+html body .brandmark{font-family:var(--font-ui)!important}
