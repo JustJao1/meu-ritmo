@@ -1,0 +1,19 @@
+{
+  "name": "Meu Ritmo",
+  "short_name": "Meu Ritmo",
+  "description": "Organize rotina, agenda, gastos e notas pelo Meu Ritmo.",
+  "id": "/app",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f6f1",
+  "theme_color": "#f7f6f1",
+  "icons": [
+    {
+      "src": "/favicon-mr-v3.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
