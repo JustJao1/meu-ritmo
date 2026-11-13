@@ -1,0 +1,48 @@
+/* Public-facing theme consistency. Visual-only: no auth, billing or data changes. */
+:root{
+  --public-surface:color-mix(in srgb,var(--paper) 96%,var(--ink) 4%);
+  --public-surface-raised:color-mix(in srgb,var(--paper) 91%,var(--ink) 9%);
+  --public-outline:color-mix(in srgb,var(--ink) 20%,transparent);
+  --public-subtle:color-mix(in srgb,var(--ink) 76%,var(--paper));
+}
+.authpage{background:var(--paper);color:var(--ink);min-height:100svh}
+.authpage>.brand{display:inline-flex;align-items:center;gap:9px;color:var(--ink)}
+.authsheet{background:var(--public-surface);color:var(--ink);border:1px solid var(--public-outline);border-radius:8px;box-shadow:0 12px 45px color-mix(in srgb,var(--ink) 6%,transparent);max-width:490px;margin:clamp(45px,8vh,95px) auto;padding:clamp(26px,4vw,43px)}
+.authsheet h1{color:var(--ink);font-size:clamp(30px,3.3vw,42px);letter-spacing:-.045em;line-height:1.12}
+.authsheet label{color:var(--ink);font-weight:600}
+.authsheet :is(input:not([type="checkbox"]),select,textarea){background:var(--paper);color:var(--ink);border:1px solid var(--public-outline);border-radius:6px;min-height:48px;transition:border-color .16s,box-shadow .16s}
+.authsheet :is(input:not([type="checkbox"]),select,textarea):focus-visible{border-color:var(--accent,var(--blue));outline:2px solid var(--accent,var(--blue));outline-offset:1px}
+.authsheet input::placeholder{color:var(--public-subtle)}
+.authsheet small,.authsheet .eyebrow{color:var(--public-subtle)}
+.authsheet .primary{background:var(--ink);color:var(--paper);border:1px solid var(--ink);min-height:48px;border-radius:6px}
+.authsheet .primary:hover{background:var(--public-surface-raised);color:var(--ink);transform:none}
+.authlinks a{color:var(--ink);text-underline-offset:4px}
+.authlinks a:hover{color:var(--accent,var(--blue))}
+.autherror{color:var(--ink);background:var(--public-surface-raised);border-left:3px solid var(--accent,var(--blue))}
+.plancomparison{color:var(--ink)}
+.planintro h3{color:var(--ink);line-height:1.15;letter-spacing:-.04em}
+.planintro p{color:var(--public-subtle);font-size:13px;line-height:1.65}
+.billingtoggle{background:var(--public-surface-raised);border:1px solid var(--public-outline);border-radius:7px;padding:3px}
+.billingtoggle button{color:var(--ink);background:transparent;border-radius:5px;min-height:35px}
+.billingtoggle button.active{background:var(--ink);color:var(--paper)}
+.plans{align-items:stretch;gap:16px}
+.plancard,.plancard.featured{background:var(--public-surface);color:var(--ink);border:1px solid var(--public-outline);border-radius:8px;box-shadow:none;min-width:0;display:flex;flex-direction:column}
+.plancard.featured{background:var(--public-surface-raised);border-color:color-mix(in srgb,var(--ink) 33%,transparent)}
+.plancard:hover{border-color:color-mix(in srgb,var(--ink) 35%,transparent);box-shadow:0 8px 26px color-mix(in srgb,var(--ink) 6%,transparent);transform:translateY(-2px)}
+.plancard>.eyebrow{color:var(--ink);letter-spacing:.11em}
+.plancard>p,.plancard li,.plancard .equivalent{color:var(--public-subtle);font-size:13px;line-height:1.55}
+.plancard .planprice,.plancard .planprice small{color:var(--ink)}
+.plancard .planprice small{font-size:12px;letter-spacing:0}
+.plancard li svg{color:var(--ink);opacity:.8}
+.plancard>button.primary{background:var(--ink);color:var(--paper);border:1px solid var(--ink)}
+.plancard>button.secondary{background:transparent;color:var(--ink);border:1px solid var(--public-outline)}
+.plancard>button:is(.primary,.secondary):hover{background:var(--public-surface-raised);color:var(--ink);border-color:var(--ink);transform:none}
+.plancard .plantry{margin-top:auto;color:var(--ink);border-top:1px solid var(--public-outline)}
+.plancard .plantry:hover{color:var(--accent,var(--blue))}
+.planprinciples,.planprinciples strong,.planfoot{color:var(--public-subtle)!important}
+.planprinciples svg{color:var(--ink)}
+.earlyaccessbar,.earlyaccessnotice{background:var(--public-surface-raised);color:var(--ink);border-color:var(--public-outline)}
+.earlyaccessnotice p{color:var(--public-subtle)}
+@media(max-width:850px){.plancard:hover{transform:none}}
+@media(max-width:600px){.authpage{padding:22px 16px}.authsheet{margin:36px auto;padding:25px 20px}.billingtoggle{width:max-content}.plans{gap:13px}.plancard{padding:24px}}
+@media(prefers-reduced-motion:reduce){.plancard,.authsheet :is(input,select,textarea){transition:none}}
