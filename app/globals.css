@@ -819,3 +819,9 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .titlefontpreview>span{font-size:11px;font-weight:600;opacity:.75}
 .titlefontpreview>strong{display:block;font-size:clamp(24px,3vw,35px);line-height:1.2;overflow-wrap:anywhere}
 .titlefontpreview>small{font-size:11px;opacity:.7}
+
+/* Administration entry follows the active appearance instead of forcing green. */
+.adminentry{background:var(--paper)!important;border-color:var(--line)!important;color:var(--ink)!important}
+.adminentry small{color:var(--muted)!important}
+.adminshortcut{color:inherit}
+.mobile-admin-link{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex:0 0 36px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:var(--paper)}
