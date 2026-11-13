@@ -63,3 +63,86 @@ input:not([type=checkbox]):not([type=radio]):focus-visible,textarea:focus-visibl
 button:disabled{transform:none!important}
 @media(max-width:760px){.brand{gap:7px;font-size:14px}.brandmark{width:33px;height:33px;font-size:14px;border-radius:10px 10px 10px 3px}.publicnav{padding-inline:20px}.authsheet{box-shadow:none}.communityhead h1{max-width:18ch}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* 2026 visual overhaul: editorial workspace, compact navigation, purposeful surfaces */
+:root{--paper:#f7f6f1;--ink:#273029;--muted:#667064;--line:#dfe2d8;--coral:#e9785d;--green:#e7eee0}
+body{background:var(--paper);font-size:14px;-webkit-font-smoothing:antialiased}
+h1,h2,h3{letter-spacing:-.045em}
+.appframe{background:linear-gradient(90deg,#e9ede4 0,#e9ede4 244px,#f7f6f1 244px)}
+.sidebar{width:244px;padding:30px 16px 18px;background:#e9ede4;border-right:1px solid #d8ded1}
+.sidebar .brand{margin:0 0 34px 9px;gap:10px;font-size:19px;letter-spacing:-.055em}
+.sidebar .brandmark{flex:none}
+.sidebar .workspace{background:#f9faf5;border:1px solid #d5ddce;border-radius:9px;padding:13px 12px;margin-bottom:22px;box-shadow:0 2px 7px #22331908}
+.sidebar nav{gap:4px}
+.sidebar nav>button{position:relative;border-radius:8px;min-height:45px;padding:10px 13px;font-size:13px;transition:background .18s,color .18s,transform .18s}
+.sidebar nav>button:hover{background:#f7f9f2;transform:translateX(2px)}
+.sidebar nav>button.active{background:#fffdf7;color:#283d2c;box-shadow:0 2px 10px #263a2510;font-weight:700}
+.sidebar nav>button.active:before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--coral)}
+.sidebar .quickadd{border-radius:8px;min-height:46px;margin-top:19px;transition:transform .18s,background .18s}
+.sidebar .quickadd:hover{transform:translateY(-2px)}
+.sidebar .sidebottom{margin-top:auto}
+.appbody{margin-left:244px}
+.topbar{height:74px;padding:0 clamp(24px,3.5vw,62px);background:#fffdf9;border-bottom:1px solid #e6e5db}
+.topbar>div:first-child{font-size:12px;gap:11px}
+.topbar strong{font-weight:700;color:#2d392e}
+.topactions{gap:10px}
+.topactions .iconbtn{width:39px;height:39px;border-radius:9px}
+.topactions .iconbtn:hover{background:#f1f2e9}
+.content{max-width:1510px;padding:clamp(28px,3.4vw,54px) clamp(24px,3.5vw,62px) 65px}
+.pageheading{margin-bottom:34px;align-items:flex-end}
+.pageheading h1{font-size:clamp(31px,3vw,47px);line-height:1.1;font-weight:720;margin:10px 0 10px;letter-spacing:-.055em}
+.pageheading p{font-size:13px;line-height:1.65;color:#6a7368}
+.pageheading .eyebrow{font-size:10px;letter-spacing:.13em;color:#8b776b}
+.pageheading>.primary{min-height:43px;padding:11px 17px;border-radius:7px;font-size:12px}
+.daybanner{background:#e3ebdb;border-radius:10px 10px 10px 3px;min-height:200px;padding:32px 38px;margin-bottom:39px;border:1px solid #d9e3d0}
+.daybanner h2{font-size:clamp(23px,2.2vw,32px);max-width:25ch;line-height:1.16}
+.daybanner p{font-size:12px;line-height:1.65}
+.todaygrid{grid-template-columns:minmax(0,1.6fr) minmax(280px,.9fr);gap:clamp(26px,3vw,50px)}
+.todayleft,.todayright{min-width:0}
+.sectionheading{margin-bottom:17px;padding-bottom:11px;border-bottom:1px solid #dfe2d8}
+.sectionheading h2{font-size:18px;font-weight:750}
+.sectionheading>button{font-size:11px;color:#576c53}
+.taskrow,.expenserow{min-height:58px;transition:background .16s ease,padding .16s ease}
+.taskrow:hover,.expenserow:hover{background:#fffdf9;padding-left:10px;padding-right:10px}
+.tasktitle{font-size:13px;line-height:1.5}
+.remindercard,.blanknote{border:1px solid #e2e3d8;border-radius:8px}
+.financesummary{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(22px,4vw,70px);background:#e7eddf;border:1px solid #dce4d4;border-radius:10px 10px 10px 3px;padding:clamp(23px,3vw,42px);margin-bottom:32px}
+.financesummary .moneylarge{font-variant-numeric:tabular-nums;letter-spacing:-.055em}
+.expenserow .expenseicon{border-radius:9px;background:#ebede4}
+.notesgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.notesgrid .note{transition:transform .2s var(--mr-ease),box-shadow .2s ease;border-radius:7px}
+.notesgrid .note:hover{transform:translateY(-3px);box-shadow:0 12px 25px #2633290c}
+.routinegroup{border-radius:9px;overflow:hidden}
+.routinedays,.datecontrols,.toolbar{gap:8px}
+.monthgrid{border-radius:9px;overflow:hidden;border:1px solid #dce0d6;border-right:0;border-bottom:0;background:#fffefa}
+.monthgrid>strong{background:#edf0e8;font-weight:700;color:#5e6b5c}
+.monthgrid>button{transition:background .18s ease}
+.monthgrid>button:hover{background:#f3f4e9}
+.community{max-width:1200px;margin-inline:auto}
+.communityhead{padding-bottom:24px;border-bottom:1px solid var(--line)}
+.communityhead h1{font-size:clamp(29px,3vw,43px);line-height:1.15}
+.socialpost{background:#fffefa;border:1px solid #e1e2d9;border-radius:9px;padding:clamp(18px,2vw,28px);margin-bottom:12px}
+.socialpost:hover{border-color:#bfcab9;box-shadow:0 8px 24px #25342608}
+.communitytabs{border-bottom:1px solid #d9ded4}
+.communitytabs button{min-height:44px}
+.publicnav{height:88px;max-width:1460px;padding-inline:clamp(22px,5vw,80px)}
+.publicnav nav{gap:clamp(14px,2.5vw,36px)}
+.hero{max-width:1460px;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);padding:clamp(55px,6vw,95px) clamp(22px,5vw,80px) 95px;min-height:620px;align-items:center}
+.hero h1{font-size:clamp(50px,6vw,91px);line-height:1.02;letter-spacing:-.065em}
+.herotext>p{font-size:15px;max-width:470px}
+.herobuttons .primary{min-height:49px;padding:12px 21px}
+.previewpaper{border-radius:4px;box-shadow:0 24px 55px #2b302b13}
+.publicsection{max-width:1320px;margin:90px auto;padding:0 clamp(22px,5vw,70px)}
+.publicsection>h2{font-size:clamp(29px,3vw,43px);line-height:1.17;max-width:19ch}
+.features{gap:clamp(25px,4vw,65px)}
+.features>div{padding-top:18px;border-top:2px solid #dfe3d9}
+.authpage{background:radial-gradient(circle at 85% 10%,#f1e5db 0,transparent 32%),#f7f6f1}
+.authsheet{background:#fffefa;border:1px solid #e4e2d8;border-radius:9px;padding:clamp(24px,3vw,39px)}
+.dialog{border-radius:12px;box-shadow:0 24px 80px #17221930}
+@media(min-width:1450px){.appframe{background:linear-gradient(90deg,#e9ede4 0,#e9ede4 244px,#f7f6f1 244px)}.content{padding-top:52px}}
+@media(max-width:1100px){.todaygrid{grid-template-columns:minmax(0,1.25fr) minmax(250px,1fr);gap:23px}.content{padding-inline:28px}.topbar{padding-inline:28px}.notesgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{gap:10px}}
+@media(max-width:900px){.appframe{background:#f7f6f1}.sidebar{width:210px}.appbody{margin-left:210px}.sidebar .brand{font-size:16px}.content{padding:26px 23px 60px}.topbar{padding-inline:23px}.todaygrid{grid-template-columns:1fr}.financesummary{gap:25px}}
+@media(max-width:760px){.appframe{display:block}.sidebar{display:none}.appbody{margin-left:0}.topbar{height:60px;padding-inline:19px}.content{padding:24px 18px calc(110px + env(safe-area-inset-bottom))}.pageheading{align-items:flex-start;gap:16px;margin-bottom:25px}.pageheading h1{font-size:clamp(29px,7vw,39px)}.pageheading>.primary{min-height:40px}.daybanner{padding:24px 21px;min-height:160px;margin-bottom:27px}.daybanner h2{font-size:24px}.todaygrid{grid-template-columns:1fr;gap:30px}.notesgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.financesummary{grid-template-columns:1fr;gap:22px;padding:23px}.monthgrid>div,.monthgrid>button{height:75px;padding:4px}.monthgrid>strong{padding:8px 2px;font-size:9px}.monthgrid small{font-size:8px}.bottomnav{background:#fffefa;box-shadow:0 -6px 24px #2730290a;padding-top:8px}.bottomnav button{min-width:0;flex:1;padding:5px 2px;gap:5px}.bottomnav button.active{color:#273d2a}.bottomnav button.active:after{content:"";width:17px;height:3px;background:var(--coral);border-radius:3px}.mobilefab{width:52px;height:52px;bottom:calc(85px + env(safe-area-inset-bottom));box-shadow:0 8px 25px #2730292b}.hero{grid-template-columns:1fr;min-height:auto;padding:42px 22px 70px;gap:32px}.hero h1{font-size:clamp(49px,11vw,72px)}.publicnav{padding-inline:20px}.features{grid-template-columns:1fr;gap:24px}.publicsection{margin:55px auto}.communityhead h1{font-size:31px}.socialpost{padding:17px}}
+@media(max-width:440px){.pageheading{flex-wrap:wrap}.pageheading>.primary{width:100%;justify-content:center}.notesgrid{grid-template-columns:1fr}.publicnav nav{gap:10px}.hero h1{font-size:48px}.financesummary .moneylarge{font-size:30px}.topactions{gap:3px}}
+@media(prefers-reduced-motion:reduce){.taskrow,.expenserow,.notesgrid .note,.socialpost,.sidebar nav>button{transition:none!important}}
