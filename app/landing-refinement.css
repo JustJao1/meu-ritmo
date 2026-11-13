@@ -1,0 +1,44 @@
+
+/* Landing page editorial refinement: scoped to the public homepage. */
+.landing{--landing-width:1160px;background:var(--paper);color:var(--ink)}
+.landing .publicnav{max-width:var(--landing-width);margin-inline:auto}
+.landing .hero{max-width:var(--landing-width);margin-inline:auto;min-height:min(720px,calc(100svh - 110px));padding-top:clamp(60px,8vw,115px);padding-bottom:clamp(60px,7vw,95px);align-items:center}
+.landing .herotext h1{font-size:clamp(64px,6.4vw,102px);line-height:.98;letter-spacing:-.07em;margin:26px 0 28px}
+.landing .herotext h1 em{letter-spacing:-.045em}
+.landing .herotext>p{max-width:460px;font-size:15px;line-height:1.75}
+.landing .herobuttons{margin-top:27px}
+.landing .featurestrip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:19px max(22px,calc((100vw - var(--landing-width))/2));justify-content:space-between;gap:20px}
+.landing .featurestrip span{font-size:11px;white-space:nowrap}
+.landing .publicsection{max-width:var(--landing-width);margin:0 auto;padding:clamp(78px,8vw,116px) 0;scroll-margin-top:65px}
+.landing #como{display:grid;grid-template-columns:minmax(250px,.9fr) minmax(0,1.6fr);column-gap:clamp(50px,8vw,125px);align-items:start}
+.landing #como>.eyebrow{grid-column:1;grid-row:1;margin:0 0 20px}
+.landing #como>h2{grid-column:1;grid-row:2;font-size:clamp(37px,3.3vw,51px);line-height:1.12;letter-spacing:-.055em;margin:0;max-width:430px}
+.landing #como .features{grid-column:2;grid-row:1 / span 3;display:grid;grid-template-columns:1fr;gap:0;margin:0}
+.landing #como .features article{display:grid;grid-template-columns:52px 1fr;column-gap:18px;align-items:start;border-top:1px solid var(--line);padding:23px 0 24px;min-width:0}
+.landing #como .features article:first-child{padding-top:0;border-top:0}
+.landing #como .featureicon{grid-column:1;grid-row:1 / span 2;width:42px;height:42px}
+.landing #como .features h3{grid-column:2;margin:0 0 7px;font-size:17px;line-height:1.35;letter-spacing:-.02em}
+.landing #como .features p{grid-column:2;margin:0;max-width:440px;font-size:13px;line-height:1.7;color:var(--public-subtle,var(--muted))}
+.landing #planos{padding-top:clamp(70px,7vw,100px);border-top:1px solid var(--line)}
+.landing #planos>.eyebrow{display:block;margin-bottom:17px}
+.landing #planos>h2{max-width:660px;font-size:clamp(37px,4vw,55px);line-height:1.1;letter-spacing:-.055em;margin:0 0 30px}
+.landing #planos .earlyaccessnotice{margin-bottom:30px;padding:17px 22px;background:transparent;border:1px solid var(--line);border-left:3px solid var(--accent,var(--coral));border-radius:5px;box-shadow:none}
+.landing #planos .earlyaccessnotice strong{font-size:14px}
+.landing #planos .earlyaccessnotice p{font-size:12px;line-height:1.65}
+.landing #planos .planintro{gap:20px;margin:0 0 22px}
+.landing #planos .planintro h2{font-size:25px;letter-spacing:-.035em}
+.landing #planos .plans{gap:13px;align-items:stretch}
+.landing #planos .plancard,.landing #planos .plancard.featured{border-radius:7px;padding:28px 27px 25px;box-shadow:none;transition:border-color .18s,transform .18s}
+.landing #planos .plancard{background:var(--paper)}
+.landing #planos .plancard.featured{background:var(--public-surface);border-color:color-mix(in srgb,var(--ink) 38%,transparent)}
+.landing #planos .plancard>.eyebrow{font-size:11px;letter-spacing:.13em}
+.landing #planos .plancard>p{font-size:12px;margin:10px 0}
+.landing #planos .planprice{font-size:clamp(30px,3vw,40px);margin:24px 0 18px}
+.landing #planos .plancard ul{margin-top:25px}
+.landing #planos .plancard li{font-size:12px;line-height:1.55;margin:11px 0}
+.landing #planos .plancard>button{min-height:44px;font-size:12px}
+.landing #planos .planfoot{font-size:11px!important;line-height:1.7}
+.landing .publicfooter{max-width:var(--landing-width);margin-inline:auto;padding:25px 0}
+@media(max-width:1220px){.landing .hero,.landing .publicsection,.landing .publicnav,.landing .publicfooter{margin-left:clamp(24px,5vw,65px);margin-right:clamp(24px,5vw,65px)}.landing .featurestrip{padding-inline:clamp(24px,5vw,65px)}}
+@media(max-width:900px){.landing #como{grid-template-columns:1fr;gap:0}.landing #como>.eyebrow,.landing #como>h2,.landing #como .features{grid-column:1;grid-row:auto}.landing #como>h2{max-width:640px;margin-bottom:30px}.landing #como .features{max-width:680px}.landing .featurestrip{flex-wrap:wrap;justify-content:center}.landing .hero{min-height:auto}.landing #planos .plans{grid-template-columns:1fr}.landing #planos .plancard{max-width:none}}
+@media(max-width:600px){.landing .hero,.landing .publicsection,.landing .publicnav,.landing .publicfooter{margin-left:20px;margin-right:20px}.landing .hero{padding-top:45px;padding-bottom:55px}.landing .herotext h1{font-size:clamp(52px,12vw,76px)}.landing .herotext>p{font-size:14px}.landing .featurestrip{padding:16px 20px;gap:12px 20px;justify-content:flex-start}.landing .featurestrip span{font-size:10px}.landing .publicsection{padding:65px 0}.landing #como>h2,.landing #planos>h2{font-size:37px}.landing #como .features article{grid-template-columns:44px 1fr;column-gap:14px}.landing #planos .planintro{align-items:flex-start;flex-direction:column}.landing #planos .plancard,.landing #planos .plancard.featured{padding:25px 23px}.landing .publicfooter{gap:15px;flex-wrap:wrap}}

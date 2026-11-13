@@ -1,0 +1,52 @@
+/* Unified application visual language. Theme-aware, presentation only. */
+:root{
+ --ui-surface:color-mix(in srgb,var(--paper) 94%,var(--ink) 6%);
+ --ui-surface-hover:color-mix(in srgb,var(--paper) 88%,var(--ink) 12%);
+ --ui-stroke:color-mix(in srgb,var(--ink) 21%,transparent);
+ --ui-stroke-strong:color-mix(in srgb,var(--ink) 38%,transparent);
+ --ui-text-muted:color-mix(in srgb,var(--ink) 76%,var(--paper));
+ --ui-focus:var(--accent,var(--blue));
+}
+.appframe,.authpage,.landing{color:var(--ink)}
+.appframe :is(.sidebar,.topbar,.appbody,.maincontent,.panel,.modal,.modalcontent,.settingspage,.drawer){color:var(--ink)}
+.appframe :is(.topbar,.sidebar,.panel,.modal,.modalcontent,.drawer){border-color:var(--ui-stroke)}
+.appframe .sidebar{background:var(--theme-side,var(--ui-surface));border-right-color:var(--ui-stroke)}
+.appframe .sidebar nav>button{color:var(--ui-text-muted);border:1px solid transparent}
+.appframe .sidebar nav>button:hover{color:var(--ink);background:var(--ui-surface-hover)}
+.appframe .sidebar nav>button.active{color:var(--ink);background:var(--ui-surface);border-color:var(--ui-stroke)}
+.appframe :is(.workspace,.quickadd,.planpitch,.sideutility){border-color:var(--ui-stroke)}
+.appframe :is(.topbar,.appbody){background:var(--paper)}
+.appframe :is(.workspace,.topsearchbtn,.iconbtn,.sideutility):hover{background:var(--ui-surface-hover);color:var(--ink)}
+.appframe :is(.card,.statcard,.notecard,.taskcard,.expensecard,.routinegroup,.calendarcolumns,.monthgrid,.profile,.settingscard){border-color:var(--ui-stroke)}
+.appframe :is(.card,.statcard,.notecard,.taskcard,.expensecard,.settingscard){background:var(--ui-surface);color:var(--ink)}
+.appframe :is(.card,.statcard,.notecard,.taskcard,.expensecard,.settingscard):hover{border-color:var(--ui-stroke-strong)}
+.appframe :is(.muted,small,.subtle,.description,.empty,.hint){color:var(--ui-text-muted)}
+.appframe :is(input:not([type=checkbox]):not([type=radio]),textarea,select){background:var(--paper);color:var(--ink);border-color:var(--ui-stroke);border-radius:6px}
+.appframe :is(input,textarea)::placeholder{color:var(--ui-text-muted)}
+.appframe :is(button,a,input,textarea,select):focus-visible,.authpage :is(button,a,input,textarea,select):focus-visible{outline:2px solid var(--ui-focus);outline-offset:3px}
+.appframe :is(.primary,.quickadd){background:var(--ink);color:var(--paper)}
+.appframe :is(.primary,.quickadd):hover{background:var(--ui-surface-hover);color:var(--ink);box-shadow:inset 0 0 0 1px var(--ui-stroke-strong)}
+.appframe .secondary{color:var(--ink);border-color:var(--ui-stroke)}
+.appframe .secondary:hover{background:var(--ui-surface-hover)}
+.appframe :is(.panel,.modal,.modalcontent,.drawer){background:var(--paper);color:var(--ink)}
+.appframe :is(.panel,.modal,.modalcontent,.drawer) :is(h1,h2,h3,strong,label){color:var(--ink)}
+.appframe .monthgrid{background:var(--paper);border-color:var(--ui-stroke)}
+.appframe .monthgrid>strong{background:var(--ui-surface);color:var(--ink)}
+.appframe .monthgrid>button:hover{background:var(--ui-surface-hover);color:var(--ink)}
+.appframe .routinedays>button{transition:background .18s,border-color .18s}
+.appframe :is(.billingtoggle,.segmented){background:var(--ui-surface);border:1px solid var(--ui-stroke)}
+.appframe :is(.billingtoggle,.segmented) .active{background:var(--ink);color:var(--paper)}
+.appframe :is(.earlyaccessbar,.demobanner,.errorbar){border-color:var(--ui-stroke)}
+.authpage .authsheet{background:var(--ui-surface);border-color:var(--ui-stroke)}
+.authpage .authlinks{border-color:var(--ui-stroke)}
+.authpage .authsheet>form{gap:15px}
+.authpage .authsheet p{line-height:1.65}
+.authpage .authsheet .primary{width:100%}
+body :is(.landing,.appframe,.authpage) :is(.eyebrow,.sidebottomlabel){letter-spacing:.12em}
+@media(max-width:700px){
+ .appframe :is(.card,.statcard,.notecard,.taskcard,.expensecard){max-width:100%}
+ .appframe :is(.panel,.modal,.modalcontent,.drawer){max-width:100vw}
+}
+@media(prefers-reduced-motion:reduce){
+ .appframe :is(button,a,input,textarea,select),.landing :is(button,a){transition:none}
+}
