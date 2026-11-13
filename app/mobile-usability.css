@@ -1,0 +1,33 @@
+/* Mobile workspace: keep the existing theme and make essential actions reachable. */
+.mobile-quick-access{display:none}
+@media(max-width:760px){
+ .appframe .topbar{height:auto;min-height:70px;padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+ .appframe .toplocation{min-width:0;overflow:hidden;display:flex;gap:6px;white-space:nowrap;font-size:12px}
+ .appframe .toplocation>span:not(.toplocationdot){display:none}
+ .appframe .toplocation strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+ .appframe .topactions{display:flex;gap:8px;min-width:0}
+ .appframe .topsearchbtn{width:40px;min-width:40px;min-height:40px;padding:0;justify-content:center}
+ .appframe .topactions>.iconbtn{min-width:40px;min-height:40px}
+ .appframe .topactions>.mobileavatar{width:38px;height:38px;min-width:38px}
+ .appframe .mrweather{position:static;min-width:0}
+ .appframe .mrweather-trigger{max-width:105px;min-width:40px;padding:9px;min-height:40px;gap:5px}
+ .appframe .mrweather-trigger span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58px;font-size:12px}
+ .appframe .mrweather-panel{max-width:calc(100vw - 32px);width:min(340px,calc(100vw - 32px));right:16px;left:auto}
+ .appframe .content{padding-inline:18px}
+ .appframe .pageheading{min-width:0}
+ .appframe .pageheading h1{overflow-wrap:anywhere}
+ .mobile-quick-access{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:-8px 0 23px}
+ .mobile-quick-access :is(button,a){display:flex;min-width:0;min-height:76px;align-items:center;justify-content:center;flex-direction:column;gap:8px;padding:10px 4px;border:1px solid var(--ui-stroke,var(--line));border-radius:10px;background:var(--ui-surface,var(--paper));color:var(--ink);font-size:11px;font-weight:600;text-align:center}
+ .mobile-quick-access :is(button,a):active{transform:scale(.98)}
+ .mobile-quick-access :is(button,a) span{overflow-wrap:anywhere}
+ .appframe .daybanner{margin-bottom:24px}
+}
+@media(max-width:370px){
+ .appframe .topbar{padding-inline:10px;gap:5px}
+ .appframe .topactions{gap:3px}
+ .appframe .topsearchbtn{width:36px;min-width:36px}
+ .appframe .mrweather-trigger{max-width:75px}
+ .appframe .mrweather-trigger span{max-width:28px}
+ .mobile-quick-access{gap:5px}
+ .mobile-quick-access :is(button,a){font-size:10px}
+}
