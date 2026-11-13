@@ -58,3 +58,27 @@
 @media(max-width:1080px){.appframe .todaygrid{grid-template-columns:1fr}.appframe .todayright{grid-template-columns:repeat(2,minmax(0,1fr))}.appframe .notesgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.appframe .todayright{grid-template-columns:1fr}.appframe .notesgrid{grid-template-columns:1fr}.appframe .communityintro{flex-wrap:wrap;padding:19px}.appframe .communityintro p{flex:1 1 100%}.appframe .communitytabs{overflow-x:auto;scrollbar-width:thin}.appframe .monthgrid>strong{padding:8px 0;font-size:10px}.appframe .monthgrid>:is(button,div){height:90px;padding:6px 4px}.appframe .toolbar .searchfield{flex:1 1 100%}.appframe .expenserow{gap:10px}}
 @media(prefers-reduced-motion:reduce){.appframe :is(.eventrow,.expenserow,.taskrow){transition:none}}
+
+/* Sidebar utilities: roomier actions and an always-available vertical scroll. */
+@media(min-width:761px){
+ .appframe .sidebar{overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink) 35%,transparent) transparent;padding-bottom:18px}
+ .appframe .sidebar::-webkit-scrollbar{width:7px}
+ .appframe .sidebar::-webkit-scrollbar-track{background:transparent}
+ .appframe .sidebar::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 35%,transparent);border-radius:20px}
+ .appframe .sidebar::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--ink) 55%,transparent)}
+ .appframe .sidebottom{margin-top:clamp(22px,4vh,46px);padding-top:17px;gap:6px;flex:0 0 auto;border-top:1px solid var(--theme-divider)}
+ .appframe .sidebottomlabel{padding:0 11px 7px;font-size:10px;letter-spacing:.1em;line-height:1.5}
+ .appframe .planpitch{padding:15px 13px;margin-bottom:11px}
+ .appframe .sideutility{display:flex;align-items:center;flex:0 0 auto;gap:12px;width:100%;min-height:47px;padding:12px 13px;border:1px solid transparent;border-radius:8px;font-size:12px;font-weight:600;line-height:1.45;text-align:left;color:var(--theme-foreground-muted);transition:background .16s ease,border-color .16s ease,color .16s ease}
+ .appframe .sideutility svg{width:19px;height:19px;flex-shrink:0;color:var(--theme-foreground-muted)}
+ .appframe .sideutility:hover{background:var(--page-panel);border-color:var(--theme-divider);color:var(--ink);transform:none}
+ .appframe .sideutility:hover svg{color:var(--ink)}
+ .appframe .sideutility:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+ .appframe .sidebar .profile{margin-top:15px;padding:18px 5px 10px;min-height:65px;flex-shrink:0;border-top:1px solid var(--theme-divider)}
+}
+@media(max-height:740px) and (min-width:761px){
+ .appframe .sidebar{padding-top:19px}
+ .appframe .sidebottom{margin-top:18px}
+ .appframe .sidebar .brand{margin-bottom:16px}
+}
+@media(prefers-reduced-motion:reduce){.appframe .sideutility{transition:none}}
