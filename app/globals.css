@@ -772,3 +772,10 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .topsearchbtn{margin-right:4px}
 .topactions>.mrweather{margin-right:8px}
 @media(max-width:650px){.topactions{gap:9px}.topactions>.mrweather{margin-right:4px}}
+
+/* Comunidade: separar campo de busca, ação principal e atualização */
+.communitysearch{display:flex;align-items:center;gap:12px!important;max-width:760px;padding:10px!important;box-sizing:border-box}
+.communitysearch>label{flex:1 1 auto;min-width:0;margin:0!important}
+.communitysearch>.secondary{flex:0 0 auto;margin:0!important;min-width:82px}
+.communitysearch>.iconbtn{flex:0 0 40px;width:40px;height:40px;min-width:40px;margin:0!important;display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:600px){.communitysearch{gap:9px!important;padding:9px!important;flex-wrap:wrap}.communitysearch>label{flex:1 1 100%}.communitysearch>.secondary{flex:1 1 auto}.communitysearch>.iconbtn{flex:0 0 42px}}
