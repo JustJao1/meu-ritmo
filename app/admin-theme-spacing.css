@@ -1,0 +1,48 @@
+/* Admin workspace follows the existing appearance tokens. No palette resets. */
+.adminshell{background:var(--paper);color:var(--ink);min-height:100vh}
+.adminshell :is(.adminnav,.adminscope,.admintabbar,.memberrow,.grantlist article,.auditlist>article,.adminfooter){border-color:color-mix(in srgb,var(--ink) 17%,transparent)}
+.adminshell :is(.adminnav>span,.adminheading .eyebrow,.adminheading p,.adminscope,.adminscope p,.adminsectionintro p,.adminpagination>span,.adminfootnote,.adminfooter,.memberdetails>span,.memberdetails small,.memberaccess>small,.protectedowner,.auditlist p,.auditlist small,.grantlist p,.grantlist small){color:color-mix(in srgb,var(--ink) 72%,var(--paper))}
+.adminshell .adminscope strong{color:var(--ink)}
+.adminshell .adminidentity{background:var(--theme-side);border-color:color-mix(in srgb,var(--ink) 16%,transparent);padding:17px 20px;border-radius:9px;min-width:230px}
+.adminshell .adminidentity :is(svg,strong,small){color:var(--ink)}
+.adminshell .adminmain{max-width:1320px;padding:clamp(30px,4vw,60px) clamp(24px,4vw,60px) 80px}
+.adminshell .adminheading{gap:32px;margin-bottom:36px}
+.adminshell .adminheading h1{font-size:clamp(32px,3.5vw,46px);line-height:1.15;margin:14px 0}
+.adminshell .adminheading p{font-size:14px;line-height:1.65}
+.adminshell .adminscope{margin:30px 0 34px;padding:22px 0;gap:28px;font-size:13px}
+.adminshell .adminscope p{font-size:12px}
+.adminshell .admintabbar{background:var(--theme-side);border:1px solid color-mix(in srgb,var(--ink) 17%,transparent);border-radius:10px;padding:8px 12px;margin-bottom:30px;min-height:64px;align-items:center}
+.adminshell .admintabbar nav{flex-wrap:wrap;gap:5px 8px}
+.adminshell .admintabbar nav button{border:0;border-radius:7px;padding:13px 15px;min-height:44px;color:var(--ink);font-size:13px;gap:9px}
+.adminshell .admintabbar nav button.active{background:var(--paper);color:var(--ink);box-shadow:0 1px 5px color-mix(in srgb,var(--ink) 14%,transparent);font-weight:700}
+.adminshell .admintabbar nav button:hover{background:color-mix(in srgb,var(--paper) 75%,transparent)}
+.adminshell .adminsearch{max-width:790px;gap:13px;margin-bottom:34px;flex-wrap:wrap}
+.adminshell .adminsearch>label{background:var(--paper);color:var(--ink);border-color:color-mix(in srgb,var(--ink) 25%,transparent);border-radius:8px;min-height:48px;padding:10px 15px;min-width:220px}
+.adminshell .adminsearch input{color:var(--ink);font-size:13px}
+.adminshell .adminsearch>.secondary{min-height:46px;padding:11px 20px;font-size:12px}
+.adminshell .adminsearch .iconbtn{min-width:44px;min-height:44px;display:grid;place-items:center;color:var(--ink)}
+.adminshell .adminsectionintro{margin:0 0 25px}
+.adminshell .adminsectionintro h2{font-size:23px;margin-bottom:12px}
+.adminshell .adminsectionintro p{font-size:12px;line-height:1.7;max-width:900px}
+.adminshell .memberlist{border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);border-radius:10px;overflow:hidden;background:color-mix(in srgb,var(--paper) 94%,var(--ink) 6%)}
+.adminshell .memberrow{padding:25px 23px;gap:24px;min-height:112px}
+.adminshell .memberrow:last-child{border-bottom:0}
+.adminshell .memberavatar{width:42px;height:42px;background:var(--theme-side);color:var(--ink);border-color:color-mix(in srgb,var(--ink) 17%,transparent)}
+.adminshell .memberdetails strong{font-size:14px;font-weight:650}
+.adminshell .memberdetails>span{font-size:12px;margin-top:5px}
+.adminshell .memberdetails small{font-size:11px;margin-top:8px}
+.adminshell .memberaccess{min-width:145px;gap:6px}
+.adminshell .memberaccess>small{font-size:11px}
+.adminshell .memberactions{min-width:200px;gap:14px}
+.adminshell .memberactions>button{font-size:12px;color:var(--ink);padding:5px 0}
+.adminshell .accesspill{font-size:11px;padding:5px 9px}
+.adminshell .promolist article{background:color-mix(in srgb,var(--paper) 95%,var(--ink) 5%);border-color:color-mix(in srgb,var(--ink) 17%,transparent);border-radius:9px;padding:24px}
+.adminshell .promocode,.adminshell .commandtarget{background:var(--theme-side);color:var(--ink);border-color:color-mix(in srgb,var(--ink) 20%,transparent)}
+.adminshell .adminpagination{margin:28px 0;gap:18px}
+.adminshell .adminpagination>button{font-size:12px}
+.adminshell .adminpagination>span{font-size:11px}
+.adminshell .dialog{background:var(--paper);color:var(--ink)}
+.adminshell .commandtarget strong,.adminshell .commandexplanation{color:var(--ink)}
+:root[data-title-style="editorial"] .adminshell :is(h1,h2,h3){font-family:Georgia,'Times New Roman',serif;font-weight:400}
+@media(max-width:900px){.adminshell .adminheading{align-items:flex-start}.adminshell .memberrow{gap:16px}.adminshell .memberactions{min-width:155px}}
+@media(max-width:700px){.adminshell .adminmain{padding:27px 18px 60px}.adminshell .adminheading{flex-direction:column;gap:18px}.adminshell .adminidentity{width:100%}.adminshell .adminscope{gap:12px}.adminshell .admintabbar{padding:8px}.adminshell .admintabbar nav{justify-content:flex-start;gap:4px}.adminshell .admintabbar nav button{font-size:12px;padding:11px 12px}.adminshell .adminsearch{gap:10px}.adminshell .adminsearch>label{flex:1 1 100%;min-width:0}.adminshell .memberrow{padding:19px 16px;gap:12px;flex-wrap:wrap}.adminshell .memberdetails{flex:1;min-width:0}.adminshell .memberaccess{min-width:0;flex:1 1 110px}.adminshell .memberactions{min-width:0;flex:1 1 155px;align-items:flex-start}.adminshell .memberactions>button{text-align:left}.adminshell .adminpagination{flex-wrap:wrap}.adminshell .adminpagination>span{order:3;flex:1 1 100%;text-align:center}}
