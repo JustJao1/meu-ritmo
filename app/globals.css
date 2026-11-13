@@ -280,3 +280,56 @@ h1,h2,h3{letter-spacing:-.045em}
 :root[data-theme="noir"]{--surface:#1b191d;--surface-hover:#2b252c}
 :root[data-theme="deep-space"]{--surface:#1b1a2c;--surface-hover:#2a2841}
 :root[data-theme="evergreen"]{--surface:#17241e;--surface-hover:#22352b}
+
+
+/* Sidebar utilities, account and global search refinement */
+.sidebar{padding-bottom:0}
+.sidebottom{padding-top:15px;display:flex;flex-direction:column;gap:3px}
+.sidebottomlabel{padding:0 13px 9px;font-size:9px;font-weight:750;letter-spacing:.14em;color:var(--muted);opacity:.75}
+.planpitch{margin:0 0 13px;padding:18px 15px 17px;background:var(--theme-banner,#e0e8cf);border:1px solid var(--line);border-radius:9px 9px 9px 3px}
+.planpitch .eyebrow{font-size:9px;letter-spacing:.11em;color:var(--muted)}
+.planpitch p{font-size:17px;line-height:1.35;font-weight:750;letter-spacing:-.045em;margin:10px 0 15px}
+.planpitch button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:10px 0 0;border-top:1px solid var(--line);font-size:11px;font-weight:700;transition:color .18s ease}
+.planpitch button:hover{color:var(--accent)}
+.planpitch button svg{transition:transform .18s ease}
+.planpitch button:hover svg{transform:translate(2px,-2px)}
+.sideutility{width:100%;min-height:42px;display:flex;align-items:center;gap:12px;padding:10px 13px;color:var(--muted);border-radius:7px;font-size:12px;text-align:left;transition:background .17s ease,color .17s ease,transform .17s ease}
+.sideutility svg{width:18px;height:18px;flex:none;stroke-width:1.75}
+.sideutility:hover{background:var(--surface-hover,#f8faf3);color:var(--ink);transform:translateX(2px)}
+.sideutility:focus-visible,.profile .iconbtn:focus-visible,.topsearchbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sidebar .profile{display:flex;align-items:center;gap:11px;margin-top:14px;padding:16px 5px 19px;border-top:1px solid var(--line);min-width:0}
+.sidebar .profile .avatar{width:37px;height:37px;flex:none;border:2px solid var(--accent);background:var(--paper);color:var(--ink)}
+.sidebar .profile>div{min-width:0;flex:1}
+.sidebar .profile strong{font-size:12px;font-weight:750;color:var(--ink);line-height:1.5}
+.sidebar .profile small{font-size:10px;color:var(--muted)}
+.sidebar .profile .iconbtn{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;flex:none;transition:background .17s,transform .17s}
+.sidebar .profile .iconbtn:hover{background:var(--surface-hover,#f8faf3);transform:translateX(2px)}
+.topbar{position:relative;gap:18px}
+.toplocation{display:flex;align-items:center;gap:11px;min-width:0;white-space:nowrap}
+.toplocationdot{width:7px;height:7px;background:var(--accent);border-radius:50%;flex:none}
+.toplocation>span:not(.toplocationdot){color:var(--muted)}
+.toplocation strong{color:var(--ink);font-size:12px;font-weight:750}
+.topactions{display:flex;align-items:center;gap:9px}
+.topsearchbtn{display:flex;align-items:center;gap:10px;min-width:195px;min-height:37px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper);color:var(--muted);font-size:11px;text-align:left;transition:border-color .17s,background .17s,box-shadow .17s}
+.topsearchbtn:hover{border-color:var(--accent);background:var(--surface-hover,#f1f4eb);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 9%,transparent)}
+.topsearchbtn>span{flex:1}
+.topsearchbtn kbd{font-size:10px;min-width:20px;text-align:center;padding:2px 5px;border:1px solid var(--line);border-radius:4px}
+.topactions .iconbtn{border:1px solid transparent;display:grid;place-items:center}
+.topactions .iconbtn:hover{border-color:var(--line)}
+.searchfield{position:relative;display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;background:var(--surface,var(--paper));border:1px solid var(--line);border-radius:9px;transition:border-color .18s ease,box-shadow .18s ease}
+.searchfield:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.searchfield svg{flex:none;color:var(--muted)}
+.toolbar .searchfield input,.searchfield input{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;min-height:42px;width:100%;padding:8px 0;font-size:12px;color:var(--ink)}
+.searchfield input::placeholder{color:var(--muted);opacity:.8}
+.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.toolbar>button{min-height:43px;border:1px solid var(--line);padding:9px 14px;border-radius:8px;background:var(--surface,var(--paper));transition:background .17s,border-color .17s}
+.toolbar>button:hover{background:var(--surface-hover,#edf0e8);border-color:var(--accent)}
+.adminsearch,.communitysearch{border:1px solid var(--line);background:var(--surface,var(--paper));border-radius:9px;min-height:44px;transition:border-color .18s,box-shadow .18s}
+.adminsearch:focus-within,.communitysearch:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:root[data-theme="midnight"] .planpitch,:root[data-theme="forest"] .planpitch,:root[data-theme="espresso"] .planpitch,:root[data-theme="slate"] .planpitch,:root[data-theme="obsidian"] .planpitch,:root[data-theme="graphite"] .planpitch,:root[data-theme="blackout"] .planpitch,:root[data-theme="abyss"] .planpitch,:root[data-theme="eclipse"] .planpitch,:root[data-theme="noir"] .planpitch,:root[data-theme="deep-space"] .planpitch,:root[data-theme="evergreen"] .planpitch,:root[data-theme="amethyst"] .planpitch,:root[data-theme="burgundy"] .planpitch,:root[data-theme="ocean"] .planpitch,:root[data-theme="copper"] .planpitch{background:var(--theme-banner);border-color:var(--line)}
+:root[data-theme="midnight"] .topsearchbtn,:root[data-theme="forest"] .topsearchbtn,:root[data-theme="espresso"] .topsearchbtn,:root[data-theme="slate"] .topsearchbtn,:root[data-theme="obsidian"] .topsearchbtn,:root[data-theme="graphite"] .topsearchbtn,:root[data-theme="blackout"] .topsearchbtn,:root[data-theme="abyss"] .topsearchbtn,:root[data-theme="eclipse"] .topsearchbtn,:root[data-theme="noir"] .topsearchbtn,:root[data-theme="deep-space"] .topsearchbtn,:root[data-theme="evergreen"] .topsearchbtn,:root[data-theme="amethyst"] .topsearchbtn,:root[data-theme="burgundy"] .topsearchbtn,:root[data-theme="ocean"] .topsearchbtn,:root[data-theme="copper"] .topsearchbtn{background:var(--surface);border-color:var(--line);color:var(--muted)}
+@media(max-height:790px) and (min-width:761px){.sidebar{overflow-y:auto;scrollbar-width:thin}.sidebottom{margin-top:18px}.sidebar .brand{margin-bottom:20px}.sidebar nav>button{min-height:39px;padding-block:7px}.sidebar .quickadd{min-height:40px;margin-top:12px}.planpitch{padding:13px;margin-bottom:7px}.planpitch p{margin:7px 0 10px}.sideutility{min-height:36px;padding-block:7px}.sidebar .profile{padding-block:11px}}
+@media(max-width:1100px){.topsearchbtn{min-width:150px}.topbar{gap:9px}.topactions{gap:4px}.savestatus{display:none}}
+@media(max-width:760px){.toplocation{gap:7px}.toplocationdot{width:6px;height:6px}.topsearchbtn{min-width:39px;width:39px;height:39px;padding:0;justify-content:center;border-radius:9px}.topsearchbtn>span,.topsearchbtn kbd{display:none}.topactions{gap:3px}.toplocation strong{font-size:11px}.toolbar{gap:9px}.toolbar .searchfield{width:100%;flex-basis:100%}.toolbar>button{flex:1;justify-content:center}.topbar{padding-inline:15px}}
+@media(prefers-reduced-motion:reduce){.planpitch button svg,.sideutility,.sidebar .profile .iconbtn,.topsearchbtn,.searchfield{transition:none!important}}
