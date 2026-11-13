@@ -728,3 +728,11 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .planfoot{font-size:12px!important;color:color-mix(in srgb,var(--ink) 70%,var(--paper))!important}
 @media(max-width:850px){.plans{grid-template-columns:1fr}.plancard{padding:25px}.plancard:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){.plancard{transition:none}.plancard:hover{transform:none}}
+
+
+/* Campanha temporária de acesso antecipado */
+.earlyaccessbar{position:relative;z-index:12;padding:12px 22px;text-align:center;background:color-mix(in srgb,var(--theme-banner,#e9eddf) 82%,var(--paper,#faf9f5));color:var(--ink,#2b302b);border-bottom:1px solid color-mix(in srgb,var(--ink,#2b302b) 20%,transparent);font-size:13px;font-weight:650;line-height:1.5}
+.earlyaccessnotice{padding:20px 24px;margin:0 0 26px;border-radius:12px;background:color-mix(in srgb,var(--theme-banner,#e9eddf) 76%,var(--paper,#faf9f5));border:1px solid color-mix(in srgb,var(--ink,#2b302b) 24%,transparent);color:var(--ink,#2b302b)}
+.earlyaccessnotice strong{font-size:17px;letter-spacing:-.2px}
+.earlyaccessnotice p{font-size:13px;line-height:1.65;margin:7px 0 0;color:color-mix(in srgb,var(--ink,#2b302b) 85%,var(--paper,#faf9f5))}
+@media(max-width:600px){.earlyaccessbar{font-size:12px;padding:11px 14px}.earlyaccessnotice{padding:17px}}
