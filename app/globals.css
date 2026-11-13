@@ -744,3 +744,25 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .earlyaccessbar .earlyaccessclose:hover{background:color-mix(in srgb,currentColor 10%,transparent);opacity:1}
 .earlyaccessbar .earlyaccessclose:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 @media(max-width:600px){.earlyaccessbar{padding-left:36px;padding-right:42px}.earlyaccessbar .earlyaccessclose{right:5px}}
+
+/* Previsão do tempo — integrada aos temas existentes */
+.mrweather{position:relative;display:inline-flex;align-items:center;min-width:0;color:var(--ink)}
+.mrweather-trigger{display:inline-flex;align-items:center;gap:7px;border:1px solid color-mix(in srgb,var(--ink) 15%,transparent);border-radius:12px;padding:9px 12px;background:color-mix(in srgb,var(--paper) 90%,var(--ink) 10%);color:var(--ink);font:inherit;font-size:12px;font-weight:650;cursor:pointer}
+.mrweather-trigger:hover{border-color:var(--accent)}
+.mrweather-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(365px,calc(100vw - 26px));max-height:min(620px,75vh);overflow:auto;z-index:200;padding:18px;border-radius:18px;background:var(--paper);color:var(--ink);border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);box-shadow:0 16px 45px #0002;text-align:left;font-size:13px}
+.mrweather-heading,.mrweather-search{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.mrweather-heading{margin-bottom:14px;font-size:15px}
+.mrweather-heading button,.mrweather-search button{display:grid;place-items:center;flex-shrink:0;width:32px;height:32px;border:1px solid color-mix(in srgb,var(--ink) 15%,transparent);border-radius:9px;background:transparent;color:inherit;cursor:pointer}
+.mrweather-search input{min-width:0;flex:1;height:34px;padding:0 10px;border:1px solid color-mix(in srgb,var(--ink) 20%,transparent);border-radius:9px;background:var(--paper);color:var(--ink)}
+.mrweather-results{display:grid;gap:2px;margin-top:6px}
+.mrweather-results button{padding:9px;text-align:left;border:0;border-radius:8px;background:transparent;color:inherit;cursor:pointer}
+.mrweather-results button:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.mrweather-now{display:flex;flex-direction:column;gap:5px;margin:16px 0}
+.mrweather-now strong{font-size:36px;line-height:1.15;font-weight:700}
+.mrweather-now small,.mrweather-days small,.mrweather-credit{opacity:.7}
+.mrweather-days{display:grid;gap:0}
+.mrweather-days>div{display:grid;grid-template-columns:72px 1fr auto;align-items:center;gap:6px;padding:9px 0;border-top:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+.mrweather-days>div small{grid-column:2/4}
+.mrweather-credit{display:block;margin-top:12px;font-size:10px}
+.mrweather-public{display:flex;justify-content:flex-end;padding:8px max(24px,calc((100vw - 1200px)/2));position:relative;z-index:20}
+@media(max-width:650px){.mrweather-trigger{padding:8px}.mrweather-trigger span{max-width:125px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrweather-panel{position:fixed;top:85px;left:13px;right:13px;width:auto;max-height:75vh}.mrweather-public{padding:10px 20px}.topactions .mrweather-trigger span{max-width:85px}}
