@@ -1,7 +1,8 @@
+import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
 import { getUser } from '../../../session';
 import { billingConfig, stripe } from '../../../../lib/billing';
 import { env } from 'cloudflare:workers';
-export async function POST(req: Request) { const user = await getUser(); if (!user)
+export async function POST(req: Request) { if(EARLY_ACCESS_ACTIVE)return Response.json({error:'Durante o acesso antecipado, todos os recursos estão liberados gratuitamente. Nenhuma nova cobrança será iniciada.'},{status:503}); const user = await getUser(); if (!user)
     return Response.json({ error: 'Entre na sua conta.' }, { status: 401 }); if (req.headers.get('origin') !== new URL(req.url).origin)
     return Response.json({ error: 'Origem inválida' }, { status: 403 }); const config = billingConfig(); if (!config.enabled)
     return Response.json({ error: 'Stripe em modo de teste não configurado. Nenhuma cobrança foi feita.' }, { status: 503 }); try {
