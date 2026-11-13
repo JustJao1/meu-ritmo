@@ -1,0 +1,60 @@
+/* Step 5: internal page audit. Presentation only; the palette remains unchanged. */
+.appframe{--page-panel:color-mix(in srgb,var(--paper) 91%,var(--ink) 9%);--page-subtle:color-mix(in srgb,var(--ink) 77%,var(--paper));--page-border:color-mix(in srgb,var(--ink) 22%,transparent)}
+.appframe .content{width:100%;min-width:0}
+.appframe .todaygrid{grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:clamp(20px,3vw,35px)}
+.appframe .todaygrid>:is(.todayleft,.todayright){min-width:0}
+.appframe .todayright{gap:16px}
+.appframe :is(.eventrow,.expenserow,.taskrow,.remindercard){color:var(--ink);border-color:var(--page-border)}
+.appframe .eventrow{border-radius:7px;padding:16px;transition:background .15s,border-color .15s}
+.appframe .eventrow.coral{background:color-mix(in srgb,var(--theme-banner) 60%,var(--paper));border-left:3px solid var(--coral,#e9785d)}
+.appframe .eventrow.blue{background:color-mix(in srgb,var(--theme-banner) 45%,var(--paper));border-left:3px solid var(--blue,#3b56a2)}
+.appframe .eventrow :is(h3,p,small),.appframe .eventtime{color:var(--ink)}
+.appframe .eventrow:hover,.appframe .expenserow:hover,.appframe .taskrow:hover{background:var(--page-panel)}
+.appframe .remindercard{background:var(--page-panel);border-radius:8px}
+.appframe .expenseicon{background:var(--page-panel);color:var(--ink)}
+.appframe .expenserow strong{font-size:13px;font-weight:650}
+.appframe .expenserow small{font-size:12px;color:var(--page-subtle)}
+.appframe .financeopen{color:var(--ink)}
+.appframe .financebuttons{gap:10px}
+.appframe .notesgrid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+.appframe .notesgrid .note{min-width:0;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);border-radius:7px;box-shadow:0 4px 12px color-mix(in srgb,var(--ink) 5%,transparent)}
+.appframe .notesgrid .note h3{overflow-wrap:anywhere}
+.appframe .notesgrid .note p{overflow-wrap:anywhere}
+.appframe .notesgrid .note:focus-within{outline:2px solid var(--ink);outline-offset:2px}
+.appframe .toolbar{align-items:center}
+.appframe .toolbar .searchfield{min-width:min(210px,100%)}
+.appframe .routinedays>button{min-width:0;background:var(--paper);color:var(--ink);border:1px solid var(--page-border)}
+.appframe .routinedays>button.active{background:var(--paper);color:var(--ink);border:2px solid var(--accent,var(--blue))}
+.appframe .monthgrid{border-color:var(--page-border)}
+.appframe .monthgrid>strong{background:var(--page-panel);color:var(--ink);border-color:var(--page-border)}
+.appframe .monthgrid>:is(button,div){border-color:var(--page-border)}
+.appframe .monthgrid>:is(button,div) span{color:inherit}
+.appframe .calendaradd{color:var(--page-subtle);font-size:11px;min-height:36px}
+.appframe .calendaradd:hover{color:var(--ink)}
+.appframe .settingspanel .settingsintro{font-size:14px;line-height:1.7;color:var(--page-subtle);margin-bottom:24px}
+.appframe .settingspanel .settingsgrouplabel{color:var(--page-subtle);font-size:11px}
+.appframe .settingspanel .listbutton{color:var(--ink);background:var(--page-panel);border:1px solid var(--page-border);border-radius:8px;min-height:49px;font-size:13px}
+.appframe .settingspanel .listbutton:hover{background:color-mix(in srgb,var(--paper) 83%,var(--ink) 17%);border-color:var(--ink)}
+.appframe .settingspanel .settingszone select{background:var(--paper);color:var(--ink);border:1px solid var(--page-border)}
+.appframe .communityintro{background:var(--theme-banner);color:var(--ink);border:1px solid var(--page-border);border-radius:8px;gap:16px}
+.appframe .communityintro :is(p,button,svg){color:var(--ink);font-size:13px}
+.appframe .communitytabs{border-bottom:1px solid var(--page-border)}
+.appframe .communitytabs button{color:var(--page-subtle);font-size:12px;min-height:43px}
+.appframe .communitytabs button:hover,.appframe .communitytabs button.active{color:var(--ink)}
+.appframe .communityprivacy{background:var(--page-panel);border:1px solid var(--page-border);color:var(--page-subtle);font-size:12px;line-height:1.65;border-radius:7px}
+.appframe .communitysearch{min-width:0}
+.appframe .communitysearch input{min-width:0;color:var(--ink);background:var(--paper)}
+.appframe .studiointro :is(.eyebrow,p){color:var(--page-subtle)}
+.appframe .studiointro .eyebrow{font-size:10px}
+.appframe .studiointro h3{font-size:clamp(23px,2.5vw,30px)}
+.appframe .studiotabs{border-color:var(--page-border)}
+.appframe .studiotabs button{color:var(--page-subtle)}
+.appframe .studiotabs button.active{color:var(--ink)}
+.appframe .studiocontrols :is(input,select,textarea){background:var(--paper);color:var(--ink);border-color:var(--page-border)}
+.adminshell{color:var(--ink);background:var(--paper)}
+.adminshell .adminmain{max-width:1300px}
+.adminshell :is(.adminnav,.admintabbar,.adminsectionintro){border-color:color-mix(in srgb,var(--ink) 22%,transparent)}
+.adminshell :is(input,textarea,select){color:var(--ink);border-color:color-mix(in srgb,var(--ink) 26%,transparent)}
+@media(max-width:1080px){.appframe .todaygrid{grid-template-columns:1fr}.appframe .todayright{grid-template-columns:repeat(2,minmax(0,1fr))}.appframe .notesgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.appframe .todayright{grid-template-columns:1fr}.appframe .notesgrid{grid-template-columns:1fr}.appframe .communityintro{flex-wrap:wrap;padding:19px}.appframe .communityintro p{flex:1 1 100%}.appframe .communitytabs{overflow-x:auto;scrollbar-width:thin}.appframe .monthgrid>strong{padding:8px 0;font-size:10px}.appframe .monthgrid>:is(button,div){height:90px;padding:6px 4px}.appframe .toolbar .searchfield{flex:1 1 100%}.appframe .expenserow{gap:10px}}
+@media(prefers-reduced-motion:reduce){.appframe :is(.eventrow,.expenserow,.taskrow){transition:none}}
