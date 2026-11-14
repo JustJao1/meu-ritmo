@@ -3,6 +3,9 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"As cobranças ainda não estão habilitadas. Os cupons serão validados diretamente pelo Meu Ritmo quando o checkout for liberado.":["Payments are not enabled yet. Coupons will be checked by Meu Ritmo when checkout becomes available.","Los pagos aún no están habilitados. Meu Ritmo validará los cupones cuando se active el pago."],
+"Planos mensais e anuais com renovação recorrente, cancelamento pelo perfil e liberação após confirmação do pagamento pelo provedor.":["Monthly and annual subscriptions renew automatically. Cancel from your profile; access is granted after the provider confirms payment.","Suscripciones mensuales y anuales con renovación automática. Cancela desde tu perfil; el acceso se concede tras la confirmación del pago."],
+
 "Bom ter você por aqui.":["Good to have you here.","Qué bueno tenerte aquí."],
 "Seu espaço começa aqui.":["Your space starts here.","Tu espacio empieza aquí."],
 "Recupere seu acesso.":["Recover your account.","Recupera tu acceso."],
