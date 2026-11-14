@@ -3,6 +3,14 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"tarefas para adaptar":["tasks to adapt","tareas para adaptar"],
+"O acesso gratuito à comunidade é de 15 minutos por dia, no horário de Brasília.":["Free community access is 15 minutes per day, based on Brasília time.","El acceso gratuito a la comunidad es de 15 minutos al día, según la hora de Brasilia."],
+"O plano Plus inclui 6 horas de comunidade por dia. Seu tempo será renovado amanhã, no horário de Brasília.":["Plus includes six hours of community access per day. Your time resets tomorrow (Brasília time).","Plus incluye seis horas diarias de comunidad. Tu tiempo se renovará mañana (hora de Brasilia)."],
+"Assine o Plus para ter 6 horas diárias.":["Subscribe to Plus for six hours a day.","Suscríbete a Plus para disfrutar de seis horas al día."],
+"Assine o Pro para acesso ilimitado.":["Subscribe to Pro for unlimited access.","Suscríbete a Pro para tener acceso ilimitado."],
+"Seu tempo gratuito terminou hoje. Volte amanhã ou assine o Plus.":["Your free access has ended for today. Come back tomorrow or subscribe to Plus.","Tu acceso gratuito terminó por hoy. Vuelve mañana o suscríbete a Plus."],
+"Suas 6 horas terminaram hoje. Volte amanhã ou assine o Pro.":["Your six hours are up for today. Come back tomorrow or subscribe to Pro.","Tus seis horas de hoy han terminado. Vuelve mañana o suscríbete a Pro."],
+"Tempo restante hoje: ":["Time remaining today: ","Tiempo restante hoy: "],
 "Desfazer":["Undo","Deshacer"],
 "Pular por enquanto":["Skip for now","Omitir por ahora"],
 "Voltar aos planos":["Back to plans","Volver a los planes"],
