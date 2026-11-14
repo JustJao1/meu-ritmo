@@ -3,6 +3,8 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Use a mesma aparência no Meu Ritmo App sem sincronizar suas notas, gastos ou outros dados. Gere uma chave e informe-a nas configurações do aplicativo. A chave permite consultar somente o tema e a cor escolhidos; mantenha-a privada.":["Use the same appearance in Meu Ritmo App without syncing notes, expenses or other data. Generate a key and enter it in the app settings. The key only accesses your selected theme and color; keep it private.","Usa la misma apariencia en Meu Ritmo App sin sincronizar notas, gastos ni otros datos. Genera una clave e introdúcela en los ajustes de la aplicación. La clave solo permite consultar el tema y el color elegidos; mantenla privada."],
+"Gerar chave para o app":["Generate app key","Generar clave para la aplicación"],
 "Gerencie sua conta, preferências e informações em um só lugar.":["Manage your account, preferences and information in one place.","Gestiona tu cuenta, preferencias e información en un solo lugar."],
 "CONTA E PERSONALIZAÇÃO":["ACCOUNT AND PERSONALIZATION","CUENTA Y PERSONALIZACIÓN"],
 "Meu perfil e acessos":["My profile and access","Mi perfil y accesos"],
