@@ -148,7 +148,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
         const rows = data.items.filter(x => x.type === 'expense').sort((a,b)=>a.date.localeCompare(b.date));
         const cell = (value:unknown) => {
             const raw = String(value ?? '');
-            const safe = /^[\\s]*[=+@-]/.test(raw) && !/^-?\\d+(?:[.,]\\d+)?$/.test(raw) ? "'" + raw : raw;
+            const safe = /^\s*[=+@-]/.test(raw) && !/^-?\d+(?:[.,]\d+)?$/.test(raw) ? "'" + raw : raw;
             return '"' + safe.replace(/"/g,'""') + '"';
         };
         const header = ['Data','Descrição','Categoria','Valor (R$)','Recorrência','Observações'];
