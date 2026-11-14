@@ -3,6 +3,19 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Bom ter você por aqui.":["Good to have you here.","Qué bueno tenerte aquí."],
+"Seu espaço começa aqui.":["Your space starts here.","Tu espacio empieza aquí."],
+"Recupere seu acesso.":["Recover your account.","Recupera tu acceso."],
+"Confira seu e-mail.":["Check your email.","Revisa tu correo electrónico."],
+"Escolha uma nova senha.":["Choose a new password.","Elige una nueva contraseña."],
+"Sair da sua conta?":["Sign out of your account?","¿Cerrar sesión?"],
+"Criar minha conta":["Create my account","Crear mi cuenta"],
+"Enviar link de recuperação":["Send recovery link","Enviar enlace de recuperación"],
+"Confirmar código":["Confirm code","Confirmar código"],
+"Salvar nova senha":["Save new password","Guardar nueva contraseña"],
+"Sair da conta":["Sign out","Cerrar sesión"],
+"Aguarde…":["Please wait…","Espera…"],
+
 "5 temas e exportação JSON":["5 themes and JSON export","5 temas y exportación JSON"],
 "9 temas adicionais, 6 cores e estilo editorial":["9 additional themes, 6 accent colors and editorial style","9 temas adicionales, 6 colores de acento y estilo editorial"],
 "Registre seus dados pessoais antes de participar.":["Complete your profile before joining.","Completa tu perfil antes de participar."],
