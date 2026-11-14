@@ -36,3 +36,22 @@
 :root :is(.authpage,.landing) a:hover{color:var(--theme-accent-readable)}
 :root :is(.authpage,.landing) :is(button,a,input,select,textarea):focus-visible{outline-color:var(--ink)}
 @media(prefers-contrast:more){.appframe :is(.sidebar,.topbar,.dialog,.settingspanel .listbutton,.communityintro){border-color:var(--ink)}}
+
+/* Relatórios: respeita as cores do tema ativo, inclusive no modo escuro. */
+.appframe .premiumstudio .studiointro .eyebrow,
+.appframe .premiumstudio .studiointro p,
+.appframe .premiumstudio .reportcover p,
+.appframe .premiumstudio .reportdisclosure,
+.appframe .premiumstudio .reportchart span,
+.appframe .premiumstudio .studiotabs > button:not(.active){
+  color:var(--theme-foreground-muted,var(--ink));
+}
+.appframe .premiumstudio .reportcover{
+  background:var(--theme-raised,var(--paper));
+  color:var(--ink);
+  border:1px solid var(--theme-divider,var(--line));
+}
+.appframe .premiumstudio .reportcover > svg{color:var(--ink)}
+.appframe .premiumstudio .reportcover :is(h4,p){color:var(--ink)}
+.appframe .premiumstudio .reportchart > div > div{background:var(--theme-raised,var(--paper))}
+.appframe .premiumstudio .reportchart i{background:var(--theme-accent-readable,var(--accent))}
