@@ -13,7 +13,6 @@ const translations:Record<string,[string,string]>={
 "Enviar link de recuperação":["Send recovery link","Enviar enlace de recuperación"],
 "Confirmar código":["Confirm code","Confirmar código"],
 "Salvar nova senha":["Save new password","Guardar nueva contraseña"],
-"Sair da conta":["Sign out","Cerrar sesión"],
 "Aguarde…":["Please wait…","Espera…"],
 
 "5 temas e exportação JSON":["5 themes and JSON export","5 temas y exportación JSON"],
