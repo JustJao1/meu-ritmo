@@ -10,3 +10,13 @@ html body :is(h1,h2,h3,h4,h5,h6){font-weight:700;letter-spacing:-.035em}
 html body :is(button,.primary,.secondary,.brand,label){font-weight:600}
 html body :is(code,pre,kbd,samp),html body :is(code,pre,kbd,samp) *{font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important}
 html body .brandmark{font-family:var(--font-ui)!important}
+
+/* Acabamento tipográfico das telas de acesso, sem alterar o restante do site. */
+.authpage .authsheet h1{font-family:var(--font-ui)!important;font-size:clamp(28px,4vw,34px);font-weight:600!important;letter-spacing:-.045em;line-height:1.16;max-width:22ch;text-wrap:pretty;margin:13px 0 24px}
+.authpage .authsheet .eyebrow{font-size:10px;font-weight:600!important;letter-spacing:.11em}
+.authpage .authsheet label{font-size:13px;font-weight:500!important;letter-spacing:-.008em}
+.authpage .authsheet input,.authpage .authsheet select{font-size:14px;font-weight:400!important;letter-spacing:0}
+.authpage .authsheet .primary{font-size:13px;font-weight:600!important;letter-spacing:-.01em}
+.authpage .authsheet .authlinks a{font-size:13px;font-weight:500!important;text-underline-offset:3px}
+.authpage .authsheet .autherror{font-size:13px;line-height:1.55}
+@media(max-width:600px){.authpage .authsheet h1{font-size:29px}}
