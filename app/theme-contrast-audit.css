@@ -138,3 +138,12 @@
 .overlay .premiumstudio .mocknote :is(h4,p,span,svg) {
   color:#5d522c;
 }
+
+/* O mesmo saldo aparece em Hoje e Gastos: a regra nao pode depender de .todayright. */
+.appframe .financecontent .budgetbalance,
+.appframe .financecontent .budgetbalance > span{
+ color:var(--theme-foreground-muted);
+}
+.appframe .financecontent.budget-within .budgetbalance > strong{
+ color:var(--ink);
+}
