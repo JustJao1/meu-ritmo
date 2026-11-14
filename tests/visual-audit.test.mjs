@@ -129,3 +129,14 @@ test('Create choices retain contrast on hover and keyboard focus',()=>{
  assert.ok(styles.includes(' .createchoicetext strong'),'Card titles must remain legible');
  assert.ok(styles.includes(' .createchoicetext :is(small,span)'),'Card supporting text must remain legible');
 });
+
+test('modal type selection and advanced options use theme contrast',()=>{
+ const css=file('app/theme-contrast-audit.css');
+ const app=file('app/ritmo.tsx');
+ assert.ok(app.includes('className="typepicker"'));
+ assert.ok(app.includes('<summary>{t("Mais opções")}</summary>'));
+ assert.ok(css.includes('.overlay .dialog .typepicker > button.active'));
+ assert.ok(css.includes('color:var(--paper);'),'Selected category must contrast with var(--ink) background');
+ assert.ok(css.includes('.overlay .dialog form details > summary{color:var(--theme-foreground-muted)}'));
+ assert.ok(css.includes('.overlay .dialog form details > summary:is(:hover,:focus-visible){color:var(--ink)}'));
+});
