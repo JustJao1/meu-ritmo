@@ -46,3 +46,5 @@ CREATE TABLE IF NOT EXISTS asaas_coupon_uses (
  used_at INTEGER NOT NULL,
  PRIMARY KEY(coupon_id,user_id)
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS asaas_one_open_order_per_user ON asaas_orders(user_id) WHERE status IN ('creating','pending','active');
