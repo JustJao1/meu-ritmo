@@ -30,7 +30,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     user?: string;
 }) {
     const {t,locale}=useLocale();
-    const currency=(v:number)=>currency(v,locale);
+    const currency=(v:number)=>money(v,locale);
     const [publicPage, setPublicPage] = useState(landing), [demo, setDemo] = useState(false), [area, setArea] = useState(initialArea), [data, setData] = useState<Data>(initial), [loaded, setLoaded] = useState(false), [status, setStatus] = useState(''), [error, setError] = useState(''), [modal, setModal] = useState<Item | null>(null), [panel, setPanel] = useState(''), [guide, setGuide] = useState(0), [query, setQuery] = useState(''), [selected, setSelected] = useState(today), [view, setView] = useState('Semana'), [filter, setFilter] = useState('Todas'), [archived, setArchived] = useState(false), [annual, setAnnual] = useState(false), [toast, setToast] = useState(''), [undo, setUndo] = useState<Data | null>(null), [permission, setPermission] = useState('default'), [saving, setSaving] = useState(false);
     const [showEarlyAccess,setShowEarlyAccess]=useState(true);
     useEffect(()=>{try{setShowEarlyAccess(localStorage.getItem('mr-early-access-dismissed')!=='1');}catch{}},[]);
