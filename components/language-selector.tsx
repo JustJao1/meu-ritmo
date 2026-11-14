@@ -3,6 +3,12 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Registre seus dados pessoais antes de participar.":["Complete your profile before joining.","Completa tu perfil antes de participar."],
+"Chave de vinculação do aplicativo":["App pairing key","Clave de vinculación de la aplicación"],
+"Sincronização visual do aplicativo":["App appearance sync","Sincronización visual de la aplicación"],
+"Vinculação do app revogada.":["App link revoked.","Vinculación de la aplicación revocada."],
+"Entre na sua conta para vincular o app.":["Sign in to connect the app.","Inicia sesión para vincular la aplicación."],
+"Distribuição em":["Breakdown for","Distribución de"],
 "Observações":["Notes","Observaciones"],
 "Registre o motivo para o histórico administrativo.":["Record the reason for the administrative history.","Registra el motivo para el historial administrativo."],
 "Permissões de administrador restritas ao papel atribuído.":["Administrator permissions are restricted to the assigned role.","Los permisos de administrador están limitados al cargo asignado."],
