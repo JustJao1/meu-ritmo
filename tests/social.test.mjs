@@ -11,7 +11,44 @@ test('respostas, bloqueio bilateral e denúncias respeitam permissões',async()=
 function png(){const crc=b=>{let c=0xffffffff;for(const v of b){c^=v;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0)}return(c^0xffffffff)>>>0};const chunk=(type,data)=>{const b=Buffer.concat([Buffer.from(type),data]),n=Buffer.alloc(4),c=Buffer.alloc(4);n.writeUInt32BE(data.length);c.writeUInt32BE(crc(b));return Buffer.concat([n,b,c])};const h=Buffer.from([0,0,0,1,0,0,0,1,8,6,0,0,0]);return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',h),chunk('tEXt',Buffer.from('private\0SECRET_METADATA')),chunk('IDAT',deflateSync(Buffer.from([0,255,0,0,255]))),chunk('IEND',Buffer.alloc(0))])}
 test('foto recusa SVG e remove metadados PNG no servidor',async()=>{who('bob');assert.equal((await api.avatar.POST(new Request('https://test.example/api/avatar',{method:'POST',headers:{origin:'https://test.example','Content-Type':'image/svg+xml'},body:'<svg/>'}))).status,400);const r=await api.avatar.POST(new Request('https://test.example/api/avatar',{method:'POST',headers:{origin:'https://test.example','Content-Type':'image/png'},body:png()}));assert.equal(r.status,200);assert.equal(objects.size,1);assert(!Buffer.from([...objects.values()][0].body).includes(Buffer.from('SECRET_METADATA')));});
 test('descontos podem ser rascunhados sem pagamento e não liberam planos gratuitos',async()=>{who('bob');assert.equal((await request('discount',{action:'create'})).status,403);who('owner');const r=await request('discount',{action:'create',code:'DESCONTO10',label:'Primeira cobrança',plan:'all',kind:'percent',value:10,expiresAt:Math.floor(Date.now()/1000)+86400,maxUses:10});assert.equal(r.status,200);assert.equal(db.prepare('SELECT stripe_id FROM discount_codes WHERE code=?').get('DESCONTO10').stripe_id,null);});
-test('checkout usa preço do servidor, aceita termos e aplica cupom só no plano autorizado',async()=>{globalThis.__socialEnv.BILLING_TEST_ENABLED='true';globalThis.__socialEnv.STRIPE_SECRET_KEY='sk_test_unit';globalThis.__socialEnv.STRIPE_WEBHOOK_SECRET='whsec_unit';globalThis.__socialEnv.STRIPE_PLUS_MONTH_PRICE='price_plus';globalThis.__socialEnv.STRIPE_PLUS_YEAR_PRICE='price_plus_year';globalThis.__socialEnv.STRIPE_PRO_MONTH_PRICE='price_pro';globalThis.__socialEnv.STRIPE_PRO_YEAR_PRICE='price_pro_year';db.prepare("INSERT INTO service_settings(key,value) VALUES ('legal',?)").run(JSON.stringify({name:'Operador de teste',taxId:'00000000000',address:'Endereço de teste',email:'owner@test.example'}));db.prepare('UPDATE discount_codes SET stripe_id=?,plan=? WHERE code=?').run('promo_test','plus','DESCONTO10');const original=globalThis.fetch;let sent;globalThis.fetch=async(url,init)=>{const path=String(url);if(path.includes('promotion_codes/promo_test'))return Response.json({active:true,max_redemptions:10,times_redeemed:0});if(path.endsWith('/customers'))return Response.json({id:'cus_test'});if(path.endsWith('/checkout/sessions')){sent=new URLSearchParams(init.body);return Response.json({url:'https://checkout.stripe.com/c/test'})}throw Error('Network denied in test')};try{who('bob');assert.equal((await request('checkout',{price:'__proto__',acceptTerms:true})).status,400);assert.equal((await request('checkout',{price:'plus_month'})).status,400);assert.equal((await request('checkout',{price:'pro_month',acceptTerms:true,discountCode:'DESCONTO10'})).status,400);assert.equal((await request('checkout',{price:'plus_month',acceptTerms:true,discountCode:'DESCONTO10'})).status,200);assert.equal(sent.get('line_items[0][price]'),'price_plus');assert.equal(sent.get('discounts[0][promotion_code]'),'promo_test');}finally{globalThis.fetch=original;globalThis.__socialEnv.BILLING_TEST_ENABLED='false'}});
+test('checkout Asaas valida plano, termos e cupom no servidor antes da contratação',async()=>{
+  const e=globalThis.__socialEnv;
+  e.ASAAS_API_KEY='sandbox-test-key';
+  e.ASAAS_MODE='sandbox';
+  e.ASAAS_WEBHOOK_TOKEN='a'.repeat(48);
+  e.ASAAS_WEBHOOK_READY='true';
+  e.ASAAS_BILLING_ENABLED='true';
+  db.prepare("INSERT INTO service_settings(key,value) VALUES ('legal',?)").run(JSON.stringify({name:'Operador de teste',taxId:'00000000000',address:'Endereço de teste',email:'owner@test.example'}));
+  db.prepare("UPDATE discount_codes SET plan='plus' WHERE code='DESCONTO10'").run();
+  const original=globalThis.fetch;
+  let subscriptionRequest;
+  globalThis.fetch=async(url,init)=>{
+    const path=String(url);
+    if(path.includes('/customers?'))return Response.json({data:[]});
+    if(path.endsWith('/customers'))return Response.json({id:'cus_test'});
+    if(path.endsWith('/subscriptions')&&init?.method==='POST'){
+      subscriptionRequest=JSON.parse(init.body);
+      return Response.json({id:'sub_test'});
+    }
+    if(path.includes('/subscriptions/sub_test/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
+    throw Error('Network denied in test: '+path);
+  };
+  const payer={name:'Bob Teste',cpfCnpj:'52998224725'};
+  try{
+    who('bob');
+    assert.equal((await request('checkout',{...payer,price:'__proto__',acceptTerms:true})).status,400);
+    assert.equal((await request('checkout',{...payer,price:'plus_month'})).status,400);
+    assert.equal((await request('checkout',{...payer,price:'pro_month',acceptTerms:true,discountCode:'DESCONTO10'})).status,400);
+    const response=await request('checkout',{...payer,price:'plus_month',acceptTerms:true,discountCode:'DESCONTO10'});
+    assert.equal(response.status,200);
+    const body=await response.json();
+    assert.equal(body.url,'https://sandbox.asaas.com/i/test');
+    assert.equal(subscriptionRequest.value,17.91);
+    assert.equal(subscriptionRequest.cycle,'MONTHLY');
+    assert.equal(subscriptionRequest.billingType,'UNDEFINED');
+    assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,1);
+  }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';}
+});
 test('exportação e exclusão autenticada não afetam outra conta',async()=>{who('bob');const exportData=await(await api.privacy.GET()).json();assert(!JSON.stringify(exportData).includes('MEUS_GASTOS_PRIVADOS'));assert.equal((await request('privacy',{confirm:'errado'},'DELETE')).status,400);assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS'},'DELETE')).status,200);assert.equal(objects.size,0);assert(db.prepare('SELECT payload FROM accounts WHERE user_id=?').get('alice'));assert.equal(db.prepare('SELECT id FROM profiles WHERE user_id=?').get('bob'),undefined);});
 test('encerramento exige confirmação e cancelamento prévio da assinatura',async()=>{who('closing');assert.equal((await request('profile',profile('closing','Encerramento'),'PUT')).status,200);db.prepare('INSERT INTO subscriptions(user_id,subscription_id,plan,status,updated_at,valid_until) VALUES (?,?,?,?,?,?)').run('closing','sub_closing','plus','active',1,Math.floor(Date.now()/1000)+86400);assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS',closeAccount:true},'DELETE')).status,409);assert(db.prepare('SELECT id FROM profiles WHERE user_id=?').get('closing'));db.prepare('UPDATE subscriptions SET status=? WHERE user_id=?').run('canceled','closing');assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS',closeAccount:true},'DELETE')).status,503);globalThis.__socialEnv.SUPABASE_SERVICE_ROLE_KEY='test-service-role';globalThis.__socialEnv.SUPABASE_URL='https://auth.test';const originalFetch=globalThis.fetch;globalThis.fetch=async()=>Response.json({});assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS',closeAccount:true},'DELETE')).status,200);assert(db.prepare('SELECT user_id FROM closed_accounts WHERE user_id=?').get('closing'));assert.equal(db.prepare('SELECT id FROM profiles WHERE user_id=?').get('closing'),undefined);assert.equal((await request('profile',profile('closing','Encerramento'),'PUT')).status,403);globalThis.fetch=originalFetch;});
 after(async()=>{db.close();await rm(dir,{recursive:true,force:true})});
