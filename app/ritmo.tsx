@@ -144,7 +144,21 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     const financeMonth=area==='Hoje'?today.slice(0,7):month,spending=budgetState(data,financeMonth);
     function openReview(){setReviewReason(spending.review?.reason||'');setPanel('Revisar excesso');}
     const finance=<div className={'financecontent budget-'+spending.status}><div className="moneylarge">{money(total)}</div><p className="muted">de {money(data.budget)} planejados</p><div className="progress"><i style={{width:Math.min(total/data.budget*100,100)+'%'}}/></div><div className="budgetbalance"><span>{spending.status==='within'?'Ainda disponível':'Acima do orçamento'}</span><strong>{money(spending.status==='within'?data.budget-total:spending.excess)}</strong></div>{spending.status!=='within'&&<div className="budgetalert" role="status"><span className="budgetindicator"/><div><strong>{spending.status==='over'?'Seu orçamento precisa de revisão':'Excesso revisado'}</strong><p>{spending.status==='over'?`Você passou ${money(spending.excess)} do que planejou. Registre o motivo ou ajuste seu orçamento.`:'O motivo foi registrado. O gasto continua acima do planejado.'}</p>{spending.status==='reviewed'&&<blockquote>{spending.review?.reason}</blockquote>}<button onClick={openReview}>{spending.status==='over'?'Revisar excesso':'Ver ou editar justificativa'}<ArrowRight size={14}/></button></div></div>}</div>;
-    function exportData() { const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = 'meu-ritmo-dados.json'; a.click(); URL.revokeObjectURL(url); setToast('Dados exportados.'); }
+    function exportData() {
+        const rows = data.items.filter(x => x.type === 'expense').sort((a,b)=>a.date.localeCompare(b.date));
+        const cell = (value:unknown) => {
+            const raw = String(value ?? '');
+            const safe = /^[\\s]*[=+@-]/.test(raw) && !/^-?\\d+(?:[.,]\\d+)?$/.test(raw) ? "'" + raw : raw;
+            return '"' + safe.replace(/"/g,'""') + '"';
+        };
+        const header = ['Data','Descrição','Categoria','Valor (R$)','Recorrência','Observações'];
+        const lines = [header,...rows.map(x=>[x.date,x.title,x.category,(Number(x.amount)||0).toFixed(2).replace('.',','),x.repeat,x.body])];
+        const csv = '\ufeff' + lines.map(row=>row.map(cell).join(';')).join('\r\n');
+        const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+        const a = document.createElement('a'); a.href=url; a.download='meu-ritmo-gastos.csv'; a.click();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+        setToast('Planilha de gastos exportada.');
+    }
     async function showNotice(body: string) { try {
         if ('serviceWorker' in navigator) {
             const registration = await navigator.serviceWorker.register('/sw.js');
