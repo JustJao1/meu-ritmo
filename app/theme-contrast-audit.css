@@ -147,3 +147,17 @@
 .appframe .financecontent.budget-within .budgetbalance > strong{
  color:var(--ink);
 }
+
+/* Criar: evita cartao branco com texto claro ao passar o mouse nos temas escuros.
+   A janela .overlay fica fora da arvore .appframe. */
+.overlay .dialog .createchoices button:is(:hover,:focus-visible){
+ background:var(--theme-raised,var(--paper));
+ color:var(--ink);
+ border-color:var(--accent);
+}
+.overlay .dialog .createchoices button:is(:hover,:focus-visible) .createchoicetext strong{
+ color:var(--ink);
+}
+.overlay .dialog .createchoices button:is(:hover,:focus-visible) .createchoicetext :is(small,span){
+ color:var(--theme-foreground-muted);
+}
