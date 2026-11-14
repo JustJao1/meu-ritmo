@@ -38,7 +38,12 @@ jobs:
           STRIPE_PRO_MONTH_PRICE: ${{ secrets.STRIPE_PRO_MONTH_PRICE }}
           STRIPE_PRO_YEAR_PRICE: ${{ secrets.STRIPE_PRO_YEAR_PRICE }}
           BILLING_TEST_ENABLED: ${{ secrets.BILLING_TEST_ENABLED }}
-          EARLY_ACCESS_ENABLED: 'true'
+          EARLY_ACCESS_ENABLED: ${{ vars.EARLY_ACCESS_ENABLED || 'true' }}
           BILLING_MODE: ${{ secrets.BILLING_MODE }}
           BILLING_LIVE_ENABLED: ${{ secrets.BILLING_LIVE_ENABLED }}
           BILLING_WEBHOOK_READY: ${{ secrets.BILLING_WEBHOOK_READY }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+          ASAAS_MODE: ${{ vars.ASAAS_MODE || 'sandbox' }}
+          ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}
+          ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY || 'false' }}
+          ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED || 'false' }}
