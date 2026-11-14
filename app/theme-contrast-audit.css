@@ -82,4 +82,4 @@
 }
 
 /* Navegação e indicadores antigos utilizam a cor de destaque escolhida, sem alterar a paleta. */
-.appframe{--coral:var(--accent);--blue:var(--accent)}
+.appframe{--coral:var(--accent);--blue:var(--theme-accent-readable)}
