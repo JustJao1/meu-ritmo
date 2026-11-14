@@ -10,9 +10,80 @@ async function key(e:AuthEnv){const k=bytes(e.SESSION_ENCRYPTION_KEY||'');if(k.l
 export async function seal(e:AuthEnv,value:unknown){const iv=crypto.getRandomValues(new Uint8Array(12)),data=await crypto.subtle.encrypt({name:'AES-GCM',iv},await key(e),enc.encode(JSON.stringify(value)));return b64(iv)+'.'+b64(new Uint8Array(data));}
 export async function unseal(e:AuthEnv,s:string){const [iv,data]=s.split('.');return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(iv)},await key(e),bytes(data))));}
 export function verifiedUser(v:any):SessionUser{if(!/^[0-9a-f-]{36}$/i.test(v?.id)||!v.email||!v.email_confirmed_at||v.is_anonymous)throw Error('unverified');return {userId:v.id,email:v.email,displayName:v.email,fullName:null};}
-export async function issueSession(e:AuthEnv,v:any,purpose:'login'|'recovery'='login'){const r=await provider(e,'/user',undefined,v.access_token);if(!r.ok)throw Error('unverified');const u=verifiedUser(await r.json());if(!v.refresh_token)throw Error('tokens');const token=b64(crypto.getRandomValues(new Uint8Array(36))),now=Math.floor(Date.now()/1000),age=purpose==='recovery'?600:2592000;await e.DB!.prepare('INSERT INTO auth_sessions VALUES (?,?,?,?,?,?)').bind(await hash(token),u.userId,await seal(e,{accessToken:v.access_token,refreshToken:v.refresh_token}),purpose,now,now+age).run();return `${cookieName}=${token}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Lax`;}
+export async function issueSession(e:AuthEnv,v:any,purpose:'login'|'recovery'='login'){const r=await provider(e,'/user',undefined,v.access_token);if(!r.ok)throw Error('unverified');const u=verifiedUser(await r.json());if(!v.refresh_token)throw Error('tokens');const token=b64(crypto.getRandomValues(new Uint8Array(36))),now=Math.floor(Date.now()/1000),age=purpose==='recovery'?600:2592000;await e.DB!.prepare('INSERT INTO auth_sessions(id_hash,user_id,tokens,purpose,created_at,expires_at) VALUES (?,?,?,?,?,?)').bind(await hash(token),u.userId,await seal(e,{accessToken:v.access_token,refreshToken:v.refresh_token}),purpose,now,now+age).run();return `${cookieName}=${token}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Lax`;}
 export const clearCookie=()=>`${cookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
-export async function resolveSession(e:AuthEnv,req:Request):Promise<Identity|null>{const token=req.headers.get('cookie')?.split(';').map(s=>s.trim()).find(s=>s.startsWith(cookieName+'='))?.slice(cookieName.length+1);if(!token||!/^[-\w]{48}$/.test(token))return null;const id=await hash(token),row=await e.DB!.prepare('SELECT * FROM auth_sessions WHERE id_hash=? AND expires_at>?').bind(id,Math.floor(Date.now()/1000)).first<any>();if(!row)return null;let tokens:any;try{tokens=await unseal(e,row.tokens)}catch{return null}let r=await provider(e,'/user',undefined,tokens.accessToken);if(r.status===401){const refresh=await provider(e,'/token?grant_type=refresh_token',{refresh_token:tokens.refreshToken});if(!refresh.ok)return null;const v:any=await refresh.json();tokens={accessToken:v.access_token,refreshToken:v.refresh_token};r=await provider(e,'/user',undefined,tokens.accessToken);if(!r.ok)return null;await e.DB!.prepare('UPDATE auth_sessions SET tokens=? WHERE id_hash=?').bind(await seal(e,tokens),id).run();}if(!r.ok)return null;try{const user=verifiedUser(await r.json());if(user.userId!==row.user_id)return null;return {...tokens,user,hash:id,purpose:row.purpose,createdAt:row.created_at}}catch{return null}}
+type StoredTokens={accessToken:string;refreshToken:string};
+type StoredSession={user_id:string;tokens:string;purpose:'login'|'recovery';created_at:number;expires_at:number;refresh_lock_owner:string|null;refresh_lock_until:number};
+async function sessionRow(e:AuthEnv,id:string){
+ return e.DB!.prepare('SELECT user_id,tokens,purpose,created_at,expires_at,refresh_lock_owner,refresh_lock_until FROM auth_sessions WHERE id_hash=? AND expires_at>?').bind(id,Math.floor(Date.now()/1000)).first<StoredSession>();
+}
+async function sessionTokens(e:AuthEnv,sealed:string):Promise<StoredTokens|null>{
+ try{const tokens=await unseal(e,sealed);return typeof tokens?.accessToken==='string'&&typeof tokens?.refreshToken==='string'?tokens:null}catch{return null}
+}
+function providerUnavailable(status:number){if(status===429||status>=500)throw Error('auth_provider_temporarily_unavailable');}
+
+/* A request for the expired access token can arrive from several tabs and API calls.
+   Supabase rotates refresh tokens, so only one Worker may exchange a session's token.
+   The short D1 lease coordinates independent Cloudflare isolates, not just one process. */
+async function refreshSessionTokens(e:AuthEnv,id:string,originalSealed:string):Promise<StoredTokens|null>{
+ const owner=b64(crypto.getRandomValues(new Uint8Array(18)));
+ const deadline=Date.now()+20000;
+ while(Date.now()<deadline){
+  const row=await sessionRow(e,id);
+  if(!row)return null;
+  if(row.tokens!==originalSealed)return sessionTokens(e,row.tokens);
+  const now=Date.now();
+  const claimed=await e.DB!.prepare('UPDATE auth_sessions SET refresh_lock_owner=?,refresh_lock_until=? WHERE id_hash=? AND expires_at>? AND (refresh_lock_owner IS NULL OR refresh_lock_until<=?)').bind(owner,now+30000,id,Math.floor(now/1000),now).run();
+  if(claimed.meta.changes){
+   try{
+    // A fresh token might have been written between the initial read and the lease.
+    const current=await sessionRow(e,id);
+    if(!current)return null;
+    if(current.tokens!==originalSealed)return sessionTokens(e,current.tokens);
+    const previous=await sessionTokens(e,current.tokens);
+    if(!previous)return null;
+    const refreshed=await provider(e,'/token?grant_type=refresh_token',{refresh_token:previous.refreshToken});
+    providerUnavailable(refreshed.status);
+    if(!refreshed.ok)return null;
+    const value:any=await refreshed.json();
+    if(typeof value.access_token!=='string'||typeof value.refresh_token!=='string')throw Error('auth_refresh_invalid_response');
+    const user=verifiedUser(value.user);
+    if(user.userId!==current.user_id)return null;
+    const next:StoredTokens={accessToken:value.access_token,refreshToken:value.refresh_token};
+    const saved=await e.DB!.prepare('UPDATE auth_sessions SET tokens=?,refresh_lock_owner=NULL,refresh_lock_until=0 WHERE id_hash=? AND refresh_lock_owner=? AND expires_at>?').bind(await seal(e,next),id,owner,Math.floor(Date.now()/1000)).run();
+    return saved.meta.changes?next:null;
+   }finally{
+    // Never release another Worker's lease, or recreate a logged-out session.
+    await e.DB!.prepare('UPDATE auth_sessions SET refresh_lock_owner=NULL,refresh_lock_until=0 WHERE id_hash=? AND refresh_lock_owner=?').bind(id,owner).run().catch(()=>{});
+   }
+  }
+  await new Promise<void>(resolve=>setTimeout(resolve,200));
+ }
+ // A busy/temporarily unavailable provider is not a user logout.
+ throw Error('auth_refresh_busy');
+}
+export async function resolveSession(e:AuthEnv,req:Request):Promise<Identity|null>{
+ const token=req.headers.get('cookie')?.split(';').map(s=>s.trim()).find(s=>s.startsWith(cookieName+'='))?.slice(cookieName.length+1);
+ if(!token||!/^[-\w]{48}$/.test(token))return null;
+ const id=await hash(token),row=await sessionRow(e,id);
+ if(!row)return null;
+ let tokens=await sessionTokens(e,row.tokens);
+ if(!tokens)return null;
+ let response=await provider(e,'/user',undefined,tokens.accessToken);
+ providerUnavailable(response.status);
+ if(response.status===401){
+  tokens=await refreshSessionTokens(e,id,row.tokens);
+  if(!tokens)return null;
+  response=await provider(e,'/user',undefined,tokens.accessToken);
+  providerUnavailable(response.status);
+ }
+ if(!response.ok)return null;
+ try{
+  const user=verifiedUser(await response.json());
+  if(user.userId!==row.user_id)return null;
+  return {...tokens,user,hash:id,purpose:row.purpose,createdAt:row.created_at};
+ }catch{return null}
+}
 export async function revoke(e:AuthEnv,s:Identity){await e.DB!.prepare('DELETE FROM auth_sessions WHERE id_hash=?').bind(s.hash).run();await provider(e,'/logout?scope=local',{},s.accessToken).catch(()=>{});}
 export async function authRate(e:AuthEnv,req:Request,action:string,email:string,max:number){const k=await hash(action+':'+(req.headers.get('cf-connecting-ip')||'local')+':'+email),w=Math.floor(Date.now()/3600000);const r=await e.DB!.prepare('INSERT INTO auth_rates(key,window,attempts) VALUES (?,?,1) ON CONFLICT(key) DO UPDATE SET window=excluded.window,attempts=CASE WHEN auth_rates.window=excluded.window THEN auth_rates.attempts+1 ELSE 1 END RETURNING attempts').bind(k,w).first<any>();return r&&r.attempts<=max;}
 export async function finishProfile(e:AuthEnv,u:SessionUser){const p=await e.DB!.prepare('SELECT * FROM auth_pending_profiles WHERE user_id=?').bind(u.userId).first<any>();if(!p)return;const now=Math.floor(Date.now()/1000);await e.DB!.prepare('INSERT INTO profiles(user_id,id,username,name,bio,username_changed_at,name_changed_at,accepted_at,version,created_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(u.userId,crypto.randomUUID(),p.username,p.name,'',now,now,p.accepted_at,'2026-11-12',now).run();await e.DB!.prepare('DELETE FROM auth_pending_profiles WHERE user_id=?').bind(u.userId).run();}
