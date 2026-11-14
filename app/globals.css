@@ -825,3 +825,13 @@ input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offse
 .adminentry small{color:var(--muted)!important}
 .adminshortcut{color:inherit}
 .mobile-admin-link{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex:0 0 36px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:var(--paper)}
+
+/* Profile photo editor follows the active theme, including dark themes. */
+.profileeditor .profilephotobox{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.profileeditor .profilephotobox strong{color:var(--ink)}
+.profileeditor .profilephotobox p{color:var(--muted)}
+.profileeditor .profilephotobox .socialavatar{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.profileeditor .profilephotobox .photopicker{background:var(--paper);color:var(--ink);border-color:var(--line);transition:background .15s ease,border-color .15s ease}
+.profileeditor .profilephotobox .photopicker:hover{background:var(--surface);border-color:var(--accent)}
+.profileeditor .profilephotobox .photopicker:has(input:disabled){opacity:.5;cursor:not-allowed}
+.profileeditor .communityprivacy{background:var(--surface);border:1px solid var(--line);color:var(--muted)}
