@@ -55,3 +55,28 @@
 .appframe .premiumstudio .reportcover :is(h4,p){color:var(--ink)}
 .appframe .premiumstudio .reportchart > div > div{background:var(--theme-raised,var(--paper))}
 .appframe .premiumstudio .reportchart i{background:var(--theme-accent-readable,var(--accent))}
+
+/* A seleção de datas deve usar a paleta real, inclusive em temas escuros.
+   Regras antigas em globals.css forçavam texto #20262a no calendário. */
+.appframe .calendarcolumns header.istoday,
+.appframe .calendarcolumns .istoday header,
+.appframe .monthgrid > button.istoday {
+  background:var(--theme-raised,var(--paper))!important;
+  color:var(--ink)!important;
+  border-color:var(--theme-accent-readable,var(--accent))!important;
+}
+.appframe .calendarcolumns header.istoday :is(span,strong),
+.appframe .calendarcolumns .istoday header :is(span,strong),
+.appframe .monthgrid > button.istoday > span,
+.appframe .calendarcolumns header.istoday .calendaradd {
+  color:var(--ink)!important;
+}
+.appframe .calendarcolumns header.istoday:hover,
+.appframe .monthgrid > button.istoday:hover {
+  background:var(--theme-raised,var(--paper))!important;
+  color:var(--ink)!important;
+}
+.appframe .calendarcolumns header.istoday:hover :is(span,strong),
+.appframe .monthgrid > button.istoday:hover > span {
+  color:var(--ink)!important;
+}
