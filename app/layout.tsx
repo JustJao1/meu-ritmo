@@ -12,6 +12,7 @@ import './forms-dialogs-audit.css';
 import './public-header-refinement.css';
 import './admin-theme-spacing.css';
 import './mobile-usability.css';
+import './language-selector.css';
 import Analytics from '../components/analytics';
 import CookieConsent from '../components/cookie-consent';
 export const metadata:Metadata={title:'Mr: Meu ritmo · Seu dia em boa companhia',description:'Seu dia, suas contas e suas ideias em um lugar só.',manifest:'/manifest.webmanifest',appleWebApp:{capable:true,title:'Mr: Meu Ritmo',statusBarStyle:'default'},icons:{apple:[{url:'/favicon-mr-v3.png',sizes:'64x64'}],icon:[{url:'/favicon-mr-v3.svg',type:'image/svg+xml'},{url:'/favicon-mr-v3.png',type:'image/png',sizes:'64x64'}],shortcut:'/favicon-mr-v3.svg'}};
