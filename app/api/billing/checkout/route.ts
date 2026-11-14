@@ -1,34 +1,68 @@
+import {env} from 'cloudflare:workers';
+import {getUser} from '../../../session';
 import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
-import { getUser } from '../../../session';
-import { billingConfig, stripe } from '../../../../lib/billing';
-import { env } from 'cloudflare:workers';
-export async function POST(req: Request) { if(EARLY_ACCESS_ACTIVE)return Response.json({error:'Durante o acesso antecipado, todos os recursos estão liberados gratuitamente. Nenhuma nova cobrança será iniciada.'},{status:503}); const user = await getUser(); if (!user)
-    return Response.json({ error: 'Entre na sua conta.' }, { status: 401 }); if (req.headers.get('origin') !== new URL(req.url).origin)
-    return Response.json({ error: 'Origem inválida' }, { status: 403 }); const config = billingConfig(); if (!config.enabled)
-    return Response.json({ error: 'Stripe em modo de teste não configurado. Nenhuma cobrança foi feita.' }, { status: 503 }); try {
-    const input: any = await req.json();if(!['plus_month','plus_year','pro_month','pro_year'].includes(input.price))return Response.json({error:'Plano inválido.'},{status:400});if(!input.acceptTerms)return Response.json({error:'Leia e aceite os termos da assinatura antes de continuar.'},{status:400});
-    const price = config.prices[input.price as keyof typeof config.prices];
-    if (!price)
-        return Response.json({ error: 'Preço de teste não configurado.' }, { status: 400 });
-    if(!await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first())return Response.json({error:'A identificação comercial ainda não está configurada.'},{status:503});
-    const existing = await env.DB!.prepare('SELECT status FROM subscriptions WHERE user_id=?').bind(user.userId).first<{
-        status: string;
-    }>();
-    if (existing?.status === 'active' || existing?.status === 'trialing')
-        return Response.json({ error: 'Você já tem uma assinatura ativa. Use o gerenciamento para alterá-la.' }, { status: 409 });
-    let customer = await env.DB!.prepare('SELECT customer_id FROM billing_customers WHERE user_id=?').bind(user.userId).first<{
-        customer_id: string;
-    }>();
-    if (!customer) {
-        const c = await stripe('customers', { email: user.email, 'metadata[user_id]': user.userId }, 'customer-' + user.userId);
-        await env.DB!.prepare('INSERT INTO billing_customers (user_id,customer_id) VALUES (?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId, c.id).run();
-        customer = { customer_id: c.id };
-    }
-    let discount:Record<string,string>={};if(input.discountCode){const code=String(input.discountCode).trim().toUpperCase();const d=await env.DB!.prepare('SELECT * FROM discount_codes WHERE code=? AND enabled=1 AND expires_at>?').bind(code,Math.floor(Date.now()/1000)).first<any>();if(!d?.stripe_id||d.plan!=='all'&&!String(input.price).startsWith(d.plan+'_'))return Response.json({error:'Cupom de desconto indisponível para esse plano.'},{status:400});const remote=await stripe('promotion_codes/'+encodeURIComponent(d.stripe_id));if(!remote.active||remote.expires_at&&remote.expires_at<Date.now()/1000||remote.max_redemptions&&remote.times_redeemed>=remote.max_redemptions)return Response.json({error:'Esse cupom expirou ou atingiu o limite.'},{status:400});discount={'discounts[0][promotion_code]':d.stripe_id};}
-    const origin = new URL(req.url).origin;
-    const session = await stripe('checkout/sessions', {...discount,'metadata[terms_version]':'2026-11-12','metadata[terms_accepted_at]':String(Math.floor(Date.now()/1000)), mode: 'subscription', customer: customer.customer_id, 'line_items[0][price]': price, 'line_items[0][quantity]': '1', success_url: origin + '/app?billing=awaiting_webhook', cancel_url: origin + '/app?billing=canceled', 'subscription_data[metadata][user_id]': user.userId, client_reference_id: user.userId, locale: 'pt-BR' }, 'checkout-' + user.userId + '-' + input.price + '-' + Math.floor(Date.now() / 600000));
-    return Response.json({ url: session.url, test:config.mode==='test',mode:config.mode });
+import {asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
+import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
+import {z} from 'zod';
+
+const inputSchema=z.object({
+  price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
+  name:z.string().trim().min(3).max(120),
+  cpfCnpj:z.string().trim().min(11).max(18),
+  discountCode:z.string().trim().max(32).optional(),
+  acceptTerms:z.literal(true)
+});
+function verifiedInvoice(link:unknown){
+  if(typeof link!=='string')return null;
+  try{const url=new URL(link);return url.protocol==='https:'&&/(^|\.)asaas\.com$/.test(url.hostname)?url.toString():null;}catch{return null;}
 }
-catch (e: any) {
-    return Response.json({ error: e.message }, { status: 502 });
-} }
+export async function POST(req:Request){
+  if(EARLY_ACCESS_ACTIVE)return Response.json({error:'Assinaturas indisponíveis durante o acesso antecipado.'},{status:503});
+  const user=await getUser();
+  if(!user)return Response.json({error:'Entre na sua conta.'},{status:401});
+  if(req.headers.get('origin')!==new URL(req.url).origin)return Response.json({error:'Origem inválida.'},{status:403});
+  if(!asaasConfig().enabled)return Response.json({error:'Pagamento ainda não configurado.'},{status:503});
+  const parsed=inputSchema.safeParse(await req.json().catch(()=>null));
+  if(!parsed.success)return Response.json({error:'Confira o plano, os dados do titular e aceite os termos.'},{status:400});
+  const data=parsed.data,cpfCnpj=data.cpfCnpj.replace(/\D/g,'');
+  if(![11,14].includes(cpfCnpj.length))return Response.json({error:'CPF ou CNPJ inválido.'},{status:400});
+  const now=Math.floor(Date.now()/1000);
+  const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first();
+  if(!legal)return Response.json({error:'Identificação comercial pendente.'},{status:503});
+  const paid=await env.DB!.prepare('SELECT status,valid_until FROM subscriptions WHERE user_id=?').bind(user.userId).first<any>();
+  if(paid&&['active','trialing'].includes(paid.status)&&(paid.valid_until||0)>now)return Response.json({error:'Você já possui uma assinatura ativa.'},{status:409});
+  const plan=data.price as AsaasPlanCode;
+  let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
+  try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
+  const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
+  try{await env.DB!.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,coupon_id,coupon_code,status,created_at) VALUES (?,?,?,?,?,?,?,?,?)")
+    .bind(id,user.userId,plan,base,first,coupon?.coupon.id||null,coupon?.coupon.code||null,'creating',now).run();}
+  catch{return Response.json({error:'Já existe uma contratação em andamento. Consulte sua assinatura.'},{status:409});}
+  try{
+    if(coupon)await reserveCoupon(id,user.userId,coupon.coupon);
+    let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
+    if(!customer){
+      const list=await asaasRequest<{data:{id:string}[]}>('/customers?externalReference='+encodeURIComponent(user.userId));
+      let customerId=list.data?.[0]?.id;
+      if(!customerId){const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{name:data.name,cpfCnpj,email:user.email,externalReference:user.userId}});customerId=remote.id;}
+      if(!customerId)throw Error('Cliente não localizado.');
+      await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
+      customer={customer_id:customerId};
+    }
+    const sub=await asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body:{
+      customer:customer.customer_id,billingType:'UNDEFINED',value:first/100,
+      nextDueDate:new Date().toISOString().slice(0,10),
+      cycle:plan.endsWith('_year')?'YEARLY':'MONTHLY',externalReference:id,
+      description:'MR: Meu Ritmo - '+plan,
+      callback:{successUrl:new URL('/app?billing=awaiting_webhook',req.url).toString(),autoRedirect:false}
+    }});
+    if(!sub.id)throw Error('O Asaas não confirmou a assinatura.');
+    await env.DB!.prepare("UPDATE asaas_orders SET provider_subscription_id=?,status='pending' WHERE id=?").bind(sub.id,id).run();
+    const list=await asaasRequest<{data:AsaasPayment[]}>('/subscriptions/'+encodeURIComponent(sub.id)+'/payments?limit=10');
+    const url=verifiedInvoice(list.data?.[0]?.invoiceUrl);
+    return Response.json({orderId:id,url,awaitingInvoice:!url,mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100});
+  }catch{
+    await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status='creating'").bind(id).run();
+    return Response.json({error:'A contratação precisa de conferência antes de uma nova tentativa. Nenhum plano foi liberado.',orderId:id},{status:503});
+  }
+}

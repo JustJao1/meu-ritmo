@@ -57,6 +57,13 @@
       "when": 1794511203557,
       "tag": "0007_flippant_tomorrow_man",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1794700000000,
+      "tag": "0008_asaas_billing",
+      "breakpoints": true
     }
   ]
 }

@@ -1,18 +1,20 @@
-import { getUser } from '../../../session';
-import { billingConfig, stripe } from '../../../../lib/billing';
-import { env } from 'cloudflare:workers';
-export async function POST(req: Request) { const user = await getUser(); if (!user)
-    return Response.json({ error: 'Entre na sua conta.' }, { status: 401 }); if (req.headers.get('origin') !== new URL(req.url).origin)
-    return Response.json({ error: 'Origem inválida' }, { status: 403 }); if (!billingConfig().enabled)
-    return Response.json({ error: 'Gerenciamento de assinatura ainda não configurado.' }, { status: 503 }); try {
-    const row = await env.DB!.prepare('SELECT customer_id FROM billing_customers WHERE user_id=?').bind(user.userId).first<{
-        customer_id: string;
-    }>();
-    if (!row)
-        return Response.json({ error: 'Nenhuma assinatura encontrada.' }, { status: 404 });
-    const session = await stripe('billing_portal/sessions', { customer: row.customer_id, return_url: new URL(req.url).origin + '/app', locale: 'pt-BR' });
-    return Response.json({ url: session.url, test: billingConfig().mode==='test' });
+import {getUser} from '../../../session';
+import {env} from 'cloudflare:workers';
+import {asaasConfig,asaasRequest,type AsaasPayment} from '../../../../lib/asaas';
+function safeInvoice(value:unknown){
+  if(typeof value!=='string')return null;
+  try{const url=new URL(value);return url.protocol==='https:'&&/(^|\.)asaas\.com$/.test(url.hostname)?url.href:null;}catch{return null;}
 }
-catch (e: any) {
-    return Response.json({ error: e.message }, { status: 502 });
-} }
+export async function POST(req:Request){
+  const u=await getUser();
+  if(!u)return Response.json({error:'Entre na conta.'},{status:401});
+  if(req.headers.get('origin')!==new URL(req.url).origin)return Response.json({error:'Origem inválida.'},{status:403});
+  if(!asaasConfig().enabled)return Response.json({error:'Pagamentos ainda não configurados.'},{status:503});
+  const order=await env.DB!.prepare("SELECT id,provider_subscription_id,status FROM asaas_orders WHERE user_id=? ORDER BY created_at DESC LIMIT 1").bind(u.userId).first<any>();
+  if(!order?.provider_subscription_id)return Response.json({error:'Não há assinatura Asaas para gerenciar.'},{status:404});
+  try{
+    const list=await asaasRequest<{data:AsaasPayment[]}>('/subscriptions/'+encodeURIComponent(order.provider_subscription_id)+'/payments?limit=20');
+    const recent=list.data?.find(p=>p.status==='PENDING'||p.status==='OVERDUE')||list.data?.[0];
+    return Response.json({orderId:order.id,status:order.status,url:safeInvoice(recent?.invoiceUrl)});
+  }catch{return Response.json({error:'Não foi possível consultar sua assinatura.'},{status:503});}
+}
