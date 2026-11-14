@@ -119,3 +119,13 @@ test('available balance label is readable in both Today and Expenses',()=>{
  assert.ok(css.includes('.appframe .financecontent .budgetbalance > span'),'Balance label must not depend on the Today-only .todayright selector');
  assert.ok(css.includes('.appframe .financecontent.budget-within .budgetbalance > strong'),'Available amount must follow the theme');
 });
+
+test('Create choices retain contrast on hover and keyboard focus',()=>{
+ const styles=file('app/theme-contrast-audit.css');
+ const app=file('app/ritmo.tsx');
+ assert.ok(app.includes('className="createchoices"'),'Create modal choices must remain available');
+ assert.ok(styles.includes('.overlay .dialog .createchoices button:is(:hover,:focus-visible)'),'Hover and keyboard focus must use a theme-safe background');
+ assert.match(styles,/background:var\(--theme-raised,var\(--paper\)\)/);
+ assert.ok(styles.includes(' .createchoicetext strong'),'Card titles must remain legible');
+ assert.ok(styles.includes(' .createchoicetext :is(small,span)'),'Card supporting text must remain legible');
+});
