@@ -38,23 +38,23 @@
 @media(prefers-contrast:more){.appframe :is(.sidebar,.topbar,.dialog,.settingspanel .listbutton,.communityintro){border-color:var(--ink)}}
 
 /* Relatórios: respeita as cores do tema ativo, inclusive no modo escuro. */
-.appframe .premiumstudio .studiointro .eyebrow,
-.appframe .premiumstudio .studiointro p,
-.appframe .premiumstudio .reportcover p,
-.appframe .premiumstudio .reportdisclosure,
-.appframe .premiumstudio .reportchart span,
-.appframe .premiumstudio .studiotabs > button:not(.active){
+:is(.appframe,.overlay) .premiumstudio .studiointro .eyebrow,
+:is(.appframe,.overlay) .premiumstudio .studiointro p,
+:is(.appframe,.overlay) .premiumstudio .reportcover p,
+:is(.appframe,.overlay) .premiumstudio .reportdisclosure,
+:is(.appframe,.overlay) .premiumstudio .reportchart span,
+:is(.appframe,.overlay) .premiumstudio .studiotabs > button:not(.active){
   color:var(--theme-foreground-muted,var(--ink));
 }
-.appframe .premiumstudio .reportcover{
+:is(.appframe,.overlay) .premiumstudio .reportcover{
   background:var(--theme-raised,var(--paper));
   color:var(--ink);
   border:1px solid var(--theme-divider,var(--line));
 }
-.appframe .premiumstudio .reportcover > svg{color:var(--ink)}
-.appframe .premiumstudio .reportcover :is(h4,p){color:var(--ink)}
-.appframe .premiumstudio .reportchart > div > div{background:var(--theme-raised,var(--paper))}
-.appframe .premiumstudio .reportchart i{background:var(--theme-accent-readable,var(--accent))}
+:is(.appframe,.overlay) .premiumstudio .reportcover > svg{color:var(--ink)}
+:is(.appframe,.overlay) .premiumstudio .reportcover :is(h4,p){color:var(--ink)}
+:is(.appframe,.overlay) .premiumstudio .reportchart > div > div{background:var(--theme-raised,var(--paper))}
+:is(.appframe,.overlay) .premiumstudio .reportchart i{background:var(--theme-accent-readable,var(--accent))}
 
 /* A seleção de datas deve usar a paleta real, inclusive em temas escuros.
    Regras antigas em globals.css forçavam texto #20262a no calendário. */
@@ -83,3 +83,30 @@
 
 /* Navegação e indicadores antigos utilizam a cor de destaque escolhida, sem alterar a paleta. */
 .appframe{--coral:var(--accent);--blue:var(--theme-accent-readable)}
+
+/* Meu estilo e aberto numa janela .overlay, irma da .appframe.
+   Os textos precisam seguir o tema mesmo fora da arvore do aplicativo. */
+.overlay .premiumstudio .studiointro :is(.eyebrow,p),
+.overlay .premiumstudio .studiotabs > button:not(.active),
+.overlay .premiumstudio .studiotabs > button:not(.active) svg{
+ color:var(--theme-foreground-muted);
+}
+.overlay .premiumstudio .studiotabs > button.active{color:var(--ink)}
+.overlay .premiumstudio .studiotabs > button.active svg{color:inherit}
+.overlay .premiumstudio .studiointro h3{color:var(--ink)}
+/* A previa pode mostrar outra paleta: herda sua propria cor de texto inline. */
+.overlay .premiumstudio .studiopreview > :is(p,.eyebrow){
+ color:inherit;
+ opacity:.82;
+}
+
+/* Cartoes da pagina Hoje: nao usar verdes fixos sobre fundos escuros. */
+.appframe .todayright .financebox > .eyebrow,
+.appframe .todayright .financebox .sectionheading > svg,
+.appframe .todayright .financebox .budgetbalance,
+.appframe .todayright .blanknote,
+.appframe .todayright .blanknote :is(svg,span){
+ color:var(--theme-foreground-muted);
+}
+.appframe .todayright .financebox .budgetbalance strong{color:var(--ink)}
+.appframe .todayright .blanknote{border-color:var(--theme-divider)}
