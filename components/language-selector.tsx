@@ -3,6 +3,27 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Meu Ritmo App":["Meu Ritmo App","Meu Ritmo App"],
+"Ajustar orçamento":["Adjust budget","Ajustar presupuesto"],
+"Registre o que saiu do seu bolso. Recorrências entram no total do mês como lançamentos previstos.":["Record your expenses. Recurring items count toward the monthly total as planned transactions.","Registra tus gastos. Los pagos recurrentes se incluyen en el total mensual como movimientos previstos."],
+"Como funciona":["How it works","Cómo funciona"],
+"DISTRIBUIÇÃO DO MÊS":["MONTHLY BREAKDOWN","DISTRIBUCIÓN DEL MES"],
+"Seu primeiro gasto vai aparecer aqui.":["Your first expense will appear here.","Tu primer gasto aparecerá aquí."],
+"Relatório":["Report","Informe"],
+"O que vem a seguir":["What's coming up","Lo que viene"],
+"Na sua lista":["On your list","En tu lista"],
+"Aparência":["Appearance","Apariencia"],
+"Perfil":["Profile","Perfil"],
+"Rotinas":["Routines","Rutinas"],
+"Uma comparação dos últimos seis meses e as categorias do mês selecionado. Gastos recorrentes entram como projeções da série.":["A comparison of the last six months and the selected month's categories. Recurring expenses are included as projections.","Una comparación de los últimos seis meses y las categorías del mes seleccionado. Los gastos recurrentes se incluyen como proyecciones."],
+"Encontre diferenças entre os meses sem transformar sua página Hoje em um painel de gráficos.":["Compare months without turning your Today page into a dashboard.","Compara los meses sin convertir tu página Hoy en un panel de gráficos."],
+"Carregando…":["Loading…","Cargando…"],
+"Conhecer o Pro":["Explore Pro","Conocer Pro"],
+"Nenhum gasto registrado nesse mês.":["No expenses recorded this month.","No hay gastos registrados este mes."],
+"Baixar relatório CSV":["Download CSV report","Descargar informe CSV"],
+"A exportação completa dos dados em JSON permanece gratuita. Este relatório é uma forma adicional de organizar os mesmos dados.":["Full data export in JSON remains free. This report offers another way to organize the same information.","La exportación completa de datos en JSON sigue siendo gratuita. Este informe ofrece otra forma de organizar los mismos datos."],
+"Idioma":["Language","Idioma"],
+
 "Guia e ajuda":["Guide and help","Guía y ayuda"],
 "Meu estilo":["My style","Mi estilo"],
 "Configurações":["Settings","Configuración"],
