@@ -76,3 +76,18 @@ test('forms, confirmation windows, mobile layouts and reduced-motion styles have
   assert.match(pages, /prefers-reduced-motion:reduce/);
   assert.match(css, /prefers-reduced-motion:reduce/);
 });
+
+
+test('theme contrast also reaches style dialog and today cards',()=>{
+ const css=file('app/theme-contrast-audit.css');
+ const app=file('app/ritmo.tsx');
+ assert.match(app,/\{panel && <div className="overlay"/);
+ assert.match(css,/:is\(\.appframe,\.overlay\) \.premiumstudio \.studiointro p/);
+ assert.match(css,/\.overlay \.premiumstudio \.studiopreview > :is\(p,\.eyebrow\)/);
+ for(const selector of [
+  '.appframe .todayright .financebox > .eyebrow',
+  '.appframe .todayright .financebox .budgetbalance',
+  '.appframe .todayright .blanknote'
+ ])assert.ok(css.includes(selector),'Missing contrast correction for '+selector);
+ assert.match(css,/color:var\(--theme-foreground-muted\)/);
+});
