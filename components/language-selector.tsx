@@ -3,6 +3,8 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"5 temas e exportação JSON":["5 themes and JSON export","5 temas y exportación JSON"],
+"9 temas adicionais, 6 cores e estilo editorial":["9 additional themes, 6 accent colors and editorial style","9 temas adicionales, 6 colores de acento y estilo editorial"],
 "Registre seus dados pessoais antes de participar.":["Complete your profile before joining.","Completa tu perfil antes de participar."],
 "Chave de vinculação do aplicativo":["App pairing key","Clave de vinculación de la aplicación"],
 "Sincronização visual do aplicativo":["App appearance sync","Sincronización visual de la aplicación"],
