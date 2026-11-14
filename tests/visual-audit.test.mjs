@@ -109,3 +109,13 @@ test('contrast in profile notes routine cards and theme preview stays theme-awar
     assert.ok(component.includes(hook),'Missing UI hook '+hook);
   assert.match(css,/\.overlay \.premiumstudio \.mocknote,[\s\S]*?color:#5d522c;/);
 });
+
+test('available balance label is readable in both Today and Expenses',()=>{
+ const css=file('app/theme-contrast-audit.css');
+ const page=file('app/ritmo.tsx');
+ assert.match(page,/className="budgetbalance"/);
+ assert.match(page,/className="financesummary"/);
+ assert.match(page,/className=\{'financebox status-'/);
+ assert.ok(css.includes('.appframe .financecontent .budgetbalance > span'),'Balance label must not depend on the Today-only .todayright selector');
+ assert.ok(css.includes('.appframe .financecontent.budget-within .budgetbalance > strong'),'Available amount must follow the theme');
+});
