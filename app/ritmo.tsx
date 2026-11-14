@@ -35,10 +35,10 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     const [showEarlyAccess,setShowEarlyAccess]=useState(true);
     useEffect(()=>{try{setShowEarlyAccess(localStorage.getItem('mr-early-access-dismissed')!=='1');}catch{}},[]);
     function dismissEarlyAccess(){setShowEarlyAccess(false);try{localStorage.setItem('mr-early-access-dismissed','1');}catch{}}
-    const [socialProfile,setSocialProfile]=useState<SocialProfile|null>(null),[discountCode,setDiscountCode]=useState(''),[billingName,setBillingName]=useState(''),[billingTaxId,setBillingTaxId]=useState(''),[purchaseTerms,setPurchaseTerms]=useState(false),[purchaseStatus,setPurchaseStatus]=useState<{configured:boolean;mode:string}|null>(null);
+    const [socialProfile,setSocialProfile]=useState<SocialProfile|null>(null),[discountCode,setDiscountCode]=useState(''),[billingName,setBillingName]=useState(''),[billingTaxId,setBillingTaxId]=useState(''),[purchaseTerms,setPurchaseTerms]=useState(false),[purchaseStatus,setPurchaseStatus]=useState<{configured:boolean;mode:string;earlyAccess?:boolean}|null>(null);
     useEffect(()=>{if(!landing&&initialArea==='Hoje'&&preferenceAllowed()){const saved=document.cookie.split('; ').find(x=>x.startsWith('mr_area='))?.split('=')[1];if(saved){const a=decodeURIComponent(saved);if(['Hoje','Agenda','Gastos','Notas','Rotina','Comunidade'].includes(a))setArea(a);}}},[landing,initialArea]);
     useEffect(()=>{if(!landing&&!demo&&loaded&&preferenceAllowed())document.cookie='mr_area='+encodeURIComponent(area)+'; Path=/; Max-Age=2592000; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');},[area,loaded,demo,landing]);
-    useEffect(()=>{if(panel==='Assinatura')fetch('/api/billing/status').then(r=>r.json()).then((v:any)=>setPurchaseStatus(v)).catch(()=>setPurchaseStatus({configured:false,mode:'test'}));},[panel]);
+    useEffect(()=>{if(panel==='Assinatura'||panel==='Planos')fetch('/api/billing/status').then(r=>r.json()).then((v:any)=>setPurchaseStatus(v)).catch(()=>setPurchaseStatus({configured:false,mode:'test'}));},[panel]);
     function copySharedTemplate(t:{title:string;time:string}[],author:string){if(demo){setToast('Entre na conta real para copiar um modelo da comunidade.');return;}const d=latest.current;change({...d,items:[...d.items,...t.map(x=>({...blank('task'),title:x.title,time:x.time,body:'Modelo compartilhado por @'+author,date:today}))]});setToast('Modelo copiado para hoje. Revise horários e dias na Rotina.');}
     const [accountRole,setAccountRole]=useState<'owner'|'admin'|'user'>('user'),[accountAccess,setAccountAccess]=useState<{source:string;until:number|null}|null>(null),[promoCode,setPromoCode]=useState(''),[promoBusy,setPromoBusy]=useState(false),[profileLoading,setProfileLoading]=useState(false);
     useEffect(()=>{if(demo)return;let alive=true;fetch('/api/account',{cache:'no-store'}).then(r=>r.ok?r.json():null).then((v:unknown)=>{if(!alive||!v||typeof v!=='object'||!('role' in v))return;const role=v.role;if(role==='owner'||role==='admin')setAccountRole(role)}).catch(()=>{});return()=>{alive=false}},[demo]);
@@ -247,5 +247,5 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     }
     else
         d.setDate(d.getDate() + dir * (view === 'Semana' ? 7 : 1)); setSelected(dateKey(d)); }
-    function plans(){return <PlanComparison annual={annual} onAnnual={setAnnual} current={plan} demo={demo} onTry={tryPlan} onSelect={p=>{if(p==='free'){if(publicPage)location.href='/app';else setPanel('');}else{setRequestedPlan(p);setPanel('Benefício');}}}/>;}
+    function plans(){return <PlanComparison earlyAccess={purchaseStatus?.earlyAccess??true} annual={annual} onAnnual={setAnnual} current={plan} demo={demo} onTry={tryPlan} onSelect={p=>{if(p==='free'){if(publicPage)location.href='/app';else setPanel('');}else{setRequestedPlan(p);setPanel('Benefício');}}}/>;}
 }
