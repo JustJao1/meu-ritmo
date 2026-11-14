@@ -3,6 +3,23 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Outros":["Other","Otros"],
+"Educação":["Education","Educación"],
+"Saúde":["Health","Salud"],
+"Lazer":["Leisure","Ocio"],
+"Transporte":["Transport","Transporte"],
+"Casa":["Home","Hogar"],
+"Alimentação":["Food","Alimentación"],
+"Recorrente":["Recurring","Recurrente"],
+"tarefas resolvidas.":["tasks completed.","tareas completadas."],
+"do que planejou. Registre o motivo ou ajuste seu orçamento.":["your planned amount. Record the reason or adjust your budget.","lo planificado. Indica el motivo o ajusta tu presupuesto."],
+"Você passou":["You exceeded","Superaste"],
+"Ver ou editar justificativa":["View or edit reason","Ver o editar justificación"],
+"Revisar excesso":["Review overage","Revisar exceso"],
+"O motivo foi registrado. O gasto continua acima do planejado.":["Reason recorded. Spending is still over budget.","Motivo registrado. El gasto sigue por encima de lo previsto."],
+"Excesso revisado":["Overage reviewed","Exceso revisado"],
+"Seu orçamento precisa de revisão":["Your budget needs review","Tu presupuesto necesita revisión"],
+"Acima do orçamento":["Over budget","Por encima del presupuesto"],
 "Notas fixadas são recados no topo; distintivos são decorações do perfil.":["Pinned notes stay at the top; badges are profile decorations.","Las notas fijadas quedan arriba; los distintivos decoran el perfil."],
 "Deseja excluir este item?":["Delete this item?","¿Eliminar este elemento?"],
 "Acessar MR: Meu Ritmo App":["Open MR: Meu Ritmo App","Abrir MR: Meu Ritmo App"],
