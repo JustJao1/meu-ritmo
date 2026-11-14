@@ -91,3 +91,21 @@ test('theme contrast also reaches style dialog and today cards',()=>{
  ])assert.ok(css.includes(selector),'Missing contrast correction for '+selector);
  assert.match(css,/color:var\(--theme-foreground-muted\)/);
 });
+
+test('contrast in profile notes routine cards and theme preview stays theme-aware',()=>{
+  const css=file('app/theme-contrast-audit.css');
+  const component=file('components/premium-studio.tsx');
+  for(const selector of [
+    '.overlay .premiumstudio .benefitnote p',
+    '.overlay .premiumstudio .pinallowance > p',
+    '.overlay .premiumstudio .templatelibrary article > p',
+    '.overlay .premiumstudio .templatedays legend',
+    '.overlay .premiumstudio .themegroup .themelist small',
+    '.overlay .premiumstudio .themegroup .themelist strong',
+    '.overlay .premiumstudio .mockpaper :is(h3,strong,small)',
+    '.overlay .premiumstudio .mocknote :is(h4,p,span,svg)'
+  ])assert.ok(css.includes(selector),'Missing specific contrast correction for '+selector);
+  for(const hook of ['benefitnote','pinallowance','templatelibrary','templatedays','themelist','mockpaper','mocknote'])
+    assert.ok(component.includes(hook),'Missing UI hook '+hook);
+  assert.match(css,/\.overlay \.premiumstudio \.mocknote,[\s\S]*?color:#5d522c;/);
+});
