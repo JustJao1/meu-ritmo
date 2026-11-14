@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 2,
+  "latestVersionCode": 3,
   "minSupportedVersionCode": 2,
-  "versionName": "0.1.1-dev",
-  "apkUrl": "https://github.com/JustJao1/meu-ritmo-lite/releases/tag/v0.1.1-dev",
-  "message": "Uma nova versão do MR: Meu Ritmo App está disponível. Atualize para continuar."
+  "versionName": "1.0.0",
+  "apkUrl": "https://github.com/JustJao1/meu-ritmo-app/releases/download/v1.0.0/Meu-Ritmo-1.0.0.apk",
+  "message": "A versão 1.0.0 do MR: Meu Ritmo App está disponível para Android."
 }
