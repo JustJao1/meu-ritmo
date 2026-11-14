@@ -3,7 +3,8 @@ import AdminExtras from './admin-extras';
 import LanguageSelector,{useLocale} from './language-selector';
 import {useEffect,useState} from 'react';
 import {ShieldCheck,ArrowLeft,Plus,Search,ArrowUpRight,X,Check,Users,Ticket,History,Gift,Copy,ChevronLeft,ChevronRight,RefreshCw,UserRound,Lock} from 'lucide-react';
-import {planConfig,type Plan} from '../lib/plans';
+import {defaultAppearance,effectiveAppearance,planConfig,themes,type Plan} from '../lib/plans';
+import type {Data} from '../lib/ritmo-domain';
 type Member={user_id:string;email:string;display_name:string;role:string;last_seen:number;access:{plan:Plan;source:string;until:number|null}};
 type Promo={id:string;code:string;label:string;plan:Plan;duration_days:number;expires_at:number;max_uses:number;used_count:number;enabled:number};
 type Grant={id:string;user_id:string;email:string;plan:Plan;ends_at:number;source:string;reason:string;revoked_at:number|null};
@@ -17,7 +18,32 @@ export default function AdminPanel({role,email}:{role:'owner'|'admin';email:stri
 const {t:tr,locale}=useLocale();
 const [data,setData]=useState<PanelData|null>(null),[tab,setTab]=useState('Contas'),[query,setQuery]=useState(''),[applied,setApplied]=useState(''),[page,setPage]=useState(0),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[dialog,setDialog]=useState<{kind:'grant'|'role'|'promo'|'revoke';member?:Member;grant?:Grant;enabled?:boolean}|null>(null),[reason,setReason]=useState(''),[plan,setPlan]=useState('plus'),[days,setDays]=useState(30),[label,setLabel]=useState(''),[code,setCode]=useState(''),[expires,setExpires]=useState(nextMonth),[maxUses,setMaxUses]=useState(100);
 async function load(q=applied,p=page){setLoading(true);setError('');try{const r=await fetch('/api/admin?q='+encodeURIComponent(q)+'&page='+p,{cache:'no-store'});if(!r.headers.get('content-type')?.includes('application/json'))throw Error('Sua sessão não está disponível. Entre novamente pelo aplicativo.');const v:any=await r.json();if(!r.ok){if(r.status===403||r.status===401)setData(null);throw Error(v.error)}setData(v);}catch(e:any){setError(e.message||'Não foi possível abrir a administração.')}finally{setLoading(false)}}
-useEffect(()=>{try{const raw=sessionStorage.getItem('meur ritmo-logout-theme');if(!raw)return;const saved=JSON.parse(raw) as Record<string,unknown>;const root=document.documentElement;for(const [key,value] of Object.entries({paper:saved.paper,ink:saved.ink,accent:saved.accent,'theme-side':saved.side,'theme-banner':saved.banner})){if(typeof value==='string'&&/^#[0-9a-fA-F]{3,8}$/.test(value))root.style.setProperty('--'+key,value);}if(typeof saved.theme==='string')root.dataset.theme=saved.theme;}catch{}},[]);
+useEffect(()=>{
+ let active=true;
+ const root=document.documentElement;
+ const apply=(palette:{paper:string;ink:string;accent:string;side:string;banner:string;theme:string})=>{
+  for(const [key,value] of Object.entries({paper:palette.paper,ink:palette.ink,accent:palette.accent,'theme-side':palette.side,'theme-banner':palette.banner})){
+   if(/^#[0-9a-fA-F]{6}$/.test(value))root.style.setProperty('--'+key,value);
+  }
+  if(themes.some(theme=>theme.id===palette.theme))root.dataset.theme=palette.theme;
+ };
+ // Reaplica imediatamente o último tema enquanto consulta a preferência desta conta.
+ try{
+  const raw=sessionStorage.getItem('meur ritmo-logout-theme');
+  if(raw){const saved=JSON.parse(raw) as Record<string,string>;apply(saved);}
+ }catch{}
+ fetch('/api/state',{cache:'no-store'}).then(async response=>{
+  if(!response.ok)return null;
+  return response.json() as Promise<{data:Data|null;plan:Plan}>;
+ }).then(snapshot=>{
+  if(!active||!snapshot)return;
+  const plan:Plan=snapshot.plan==='pro'?'pro':snapshot.plan==='plus'?'plus':'free';
+  const appearance=effectiveAppearance(snapshot.data||({appearance:defaultAppearance} as Data),plan);
+  const chosen=themes.find(theme=>theme.id===appearance.theme)||themes[0];
+  apply({paper:chosen.paper,ink:chosen.ink,accent:appearance.accent,side:chosen.side,banner:chosen.banner,theme:chosen.id});
+ }).catch(()=>{});
+ return()=>{active=false};
+},[]);
 useEffect(()=>{void load();},[]);
 useEffect(()=>{if(!dialog)return;const fn=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!busy)setDialog(null);if(e.key==='Tab'){const nodes=Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"] input,[role="dialog"] button,[role="dialog"] select,[role="dialog"] textarea')).filter(n=>!n.hasAttribute('disabled'));const a=nodes[0],b=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();b?.focus()}else if(!e.shiftKey&&document.activeElement===b){e.preventDefault();a?.focus()}}};document.body.style.overflow='hidden';window.addEventListener('keydown',fn);return()=>{document.body.style.overflow='';window.removeEventListener('keydown',fn)}},[dialog,busy]);
 async function command(body:Record<string,unknown>){setBusy(true);setError('');try{const r=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.headers.get('content-type')?.includes('application/json'))throw Error('Sua sessão não está disponível. Entre novamente pelo aplicativo.');const v:any=await r.json();if(!r.ok)throw Error(v.error);setNotice(v.code?'Código '+v.code+' criado.':v.message);setDialog(null);await load();return true;}catch(e:any){setError(e.message||'Não foi possível salvar.');return false}finally{setBusy(false)}}
