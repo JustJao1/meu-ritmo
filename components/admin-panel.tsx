@@ -30,7 +30,7 @@ useEffect(()=>{
  // Reaplica imediatamente o último tema enquanto consulta a preferência desta conta.
  try{
   const raw=sessionStorage.getItem('meur ritmo-logout-theme');
-  if(raw){const saved=JSON.parse(raw) as Record<string,string>;apply(saved);}
+  if(raw){const saved=JSON.parse(raw) as Record<string,string>;if(['paper','ink','accent','side','banner','theme'].every(key=>typeof saved[key]==='string'))apply({paper:saved.paper,ink:saved.ink,accent:saved.accent,side:saved.side,banner:saved.banner,theme:saved.theme});}
  }catch{}
  fetch('/api/state',{cache:'no-store'}).then(async response=>{
   if(!response.ok)return null;
