@@ -27,7 +27,8 @@ export async function POST(req:Request){
     if(!order)return Response.json({error:'Assinatura ainda não registrada.'},{status:503});
     const customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(order.user_id).first<any>();
     if(!customer||customer.customer_id!==payment.customer)return Response.json({error:'Vínculo do pagamento inválido.'},{status:409});
-    const amount=Math.round(payment.value*100),expected=order.first_paid_at?order.base_price_cents:order.first_price_cents;
+    const previous=await env.DB!.prepare('SELECT amount_cents FROM asaas_payments WHERE payment_id=?').bind(payment.id).first<{amount_cents:number}>();
+    const amount=Math.round(payment.value*100),expected=previous?.amount_cents??(order.first_paid_at?order.base_price_cents:order.first_price_cents);
     if(amount!==expected)return Response.json({error:'Valor do pagamento divergente.'},{status:409});
     const time=Math.floor(Date.now()/1000),confirmed=paid.has(payment.status);
     const statements=[
@@ -43,9 +44,10 @@ export async function POST(req:Request){
       const until=periodEnd(payment.dueDate,order.plan_code.endsWith('_year')?'year':'month');
       statements.push(env.DB!.prepare("INSERT INTO subscriptions(user_id,subscription_id,plan,status,updated_at,valid_until) VALUES (?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET subscription_id=excluded.subscription_id,plan=excluded.plan,status=excluded.status,updated_at=excluded.updated_at,valid_until=MAX(COALESCE(subscriptions.valid_until,0),excluded.valid_until)")
         .bind(order.user_id,payment.subscription,order.plan_code.split('_')[0],'active',time,until));
-      statements.push(env.DB!.prepare("UPDATE asaas_orders SET status='active',first_paid_at=COALESCE(first_paid_at,?) WHERE id=?").bind(time,order.id));
+      statements.push(env.DB!.prepare("UPDATE asaas_orders SET status=CASE WHEN status='cancelled' THEN 'cancelled' ELSE 'active' END,first_paid_at=COALESCE(first_paid_at,?) WHERE id=?").bind(time,order.id));
     }else if(reversed.has(payment.status)){
-      statements.push(env.DB!.prepare("UPDATE subscriptions SET status='canceled',updated_at=? WHERE user_id=? AND subscription_id=?").bind(time,order.user_id,payment.subscription));
+      const lastPaid=await env.DB!.prepare("SELECT max(due_date) AS latest FROM asaas_payments WHERE order_id=? AND status IN ('CONFIRMED','RECEIVED') AND payment_id<>?").bind(order.id,payment.id).first<{latest:string|null}>();
+      if(!lastPaid?.latest||lastPaid.latest<=payment.dueDate) statements.push(env.DB!.prepare("UPDATE subscriptions SET status='canceled',updated_at=? WHERE user_id=? AND subscription_id=?").bind(time,order.user_id,payment.subscription));
     }
     await env.DB!.batch(statements);
     return Response.json({received:true});
