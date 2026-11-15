@@ -55,15 +55,16 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
   db.prepare("UPDATE discount_codes SET plan='plus' WHERE code='DESCONTO10'").run();
   const original=globalThis.fetch;
   let subscriptionRequest;
+  let customerCount=0, subscriptionCount=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
     if(path.includes('/customers?'))return Response.json({data:[]});
-    if(path.endsWith('/customers'))return Response.json({id:'cus_test'});
+    if(path.endsWith('/customers'))return Response.json({id:customerCount++===0?'cus_test':'cus_test_2'});
     if(path.endsWith('/subscriptions')&&init?.method==='POST'){
       subscriptionRequest=JSON.parse(init.body);
-      return Response.json({id:'sub_test'});
+      return Response.json({id:subscriptionCount++===0?'sub_test':'sub_test_2'});
     }
-    if(path.includes('/subscriptions/sub_test/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
+    if(path.includes('/subscriptions/sub_test/payments')||path.includes('/subscriptions/sub_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
     throw Error('Network denied in test: '+path);
   };
   const payer={name:'Bob Teste',cpfCnpj:'52998224725'};
@@ -73,14 +74,24 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
     assert.equal((await request('checkout',{...payer,price:'plus_month'})).status,400);
     assert.equal((await request('checkout',{...payer,cpfCnpj:'00000000000',price:'plus_month',acceptTerms:true})).status,400);
     assert.equal((await request('checkout',{...payer,price:'pro_month',acceptTerms:true,discountCode:'DESCONTO10'})).status,400);
-    const response=await request('checkout',{...payer,price:'plus_month',acceptTerms:true,discountCode:'DESCONTO10'});
+    for(const paymentMethod of ['BOLETO','UNDEFINED','bolet','']) {
+      const invalid=await request('checkout',{...payer,price:'plus_month',acceptTerms:true,paymentMethod});
+      assert.equal(invalid.status,400,'Banned checkout method '+paymentMethod);
+    }
+    assert.equal((await request('checkout',{...payer,price:'plus_month',acceptTerms:true})).status,400,'Payment method must be explicitly selected');
+    const response=await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,discountCode:'DESCONTO10'});
     assert.equal(response.status,200);
     const body=await response.json();
     assert.equal(body.url,'https://sandbox.asaas.com/i/test');
     assert.equal(subscriptionRequest.value,17.91);
     assert.equal(subscriptionRequest.cycle,'MONTHLY');
-    assert.equal(subscriptionRequest.billingType,'UNDEFINED');
+    assert.equal(subscriptionRequest.billingType,'PIX');
     assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,1);
+    who('alice');
+    const card=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true});
+    assert.equal(card.status,200,'Credit card subscription should be supported');
+    assert.equal(subscriptionRequest.billingType,'CREDIT_CARD');
+    assert.equal(subscriptionRequest.cycle,'MONTHLY');
   }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';}
 });
 test('Asaas webhook autenticado libera Plus uma vez e revoga cobranÃ§a estornada',async()=>{
