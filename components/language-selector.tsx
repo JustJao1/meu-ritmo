@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Nesta etapa, cupons de desconto estão disponíveis apenas para Pix. Para pagar no cartão, remova o cupom.":["For now, discount coupons are available only with Pix. To pay by card, remove the coupon.","Por ahora, los cupones de descuento solo están disponibles con Pix. Para pagar con tarjeta, elimina el cupón."],
 "Resumo das cobranças":["Billing overview","Resumen de cobros"],
 "Atualizando…":["Refreshing…","Actualizando…"],
 "Nenhuma cobrança registrada ainda.":["No charges recorded yet.","Aún no hay cobros registrados."],
