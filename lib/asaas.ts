@@ -45,7 +45,7 @@ export function asaasConfig() {
     ?!key.startsWith('$aact_hmlg_'):!key.startsWith('$aact_prod_'));
   const apiReady=!!key && keyMatchesMode;
   const token=e.ASAAS_WEBHOOK_TOKEN;
-  const tokenReady=!!token && token.length>=32 && token.length<=255 && !/\\s/.test(token);
+  const tokenReady=!!token && token.length>=32 && token.length<=255 && !/\s/.test(token);
   const webhookReady=apiReady&&tokenReady&&e.ASAAS_WEBHOOK_READY==='true';
   // Closing new sales must never stop processing existing payments or refunds.
   const enabled=webhookReady&&e.ASAAS_BILLING_ENABLED==='true';
