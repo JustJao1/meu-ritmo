@@ -18,12 +18,32 @@ export async function GET(req:Request){
       legalConfigured:!!legal,mode:c.mode
     };
     if(new URL(req.url).searchParams.get('probe')==='1'){
-      if(c.apiReady){
+      // The probe only lists one customer: it cannot create a charge.
+      // Never expose the API key, Asaas response body or payer information.
+      if(!c.key){
+        diagnostic.apiReachable=false;
+        diagnostic.apiIssue='missing_key';
+      }else if(!c.keyMatchesMode){
+        diagnostic.apiReachable=false;
+        diagnostic.apiIssue='environment_mismatch';
+      }else{
         try{
           const response=await asaasRequest<{data:unknown[]}>('/customers?limit=1');
           diagnostic.apiReachable=Array.isArray(response.data);
-        }catch{diagnostic.apiReachable=false;}
-      }else diagnostic.apiReachable=false;
+          if(!diagnostic.apiReachable)diagnostic.apiIssue='unexpected_response';
+        }catch(error){
+          diagnostic.apiReachable=false;
+          const message=error instanceof Error?error.message:'';
+          const status=/\((\d{3})\)/.exec(message)?.[1];
+          if(status){
+            const code=Number(status);
+            diagnostic.apiHttpStatus=code;
+            diagnostic.apiIssue=code===401?'unauthorized':code===403?'forbidden':code===429?'rate_limited':'provider_error';
+          }else{
+            diagnostic.apiIssue=/tempo limite/i.test(message)?'timeout':'network_error';
+          }
+        }
+      }
     }
     result.diagnostic=diagnostic;
   }

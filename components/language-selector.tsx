@@ -3,6 +3,20 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"A conexão com o Asaas não foi validada.":["The Asaas connection could not be verified.","No se pudo verificar la conexión con Asaas."],
+"Ambiente configurado":["Configured environment","Entorno configurado"],
+"Produção":["Production","Producción"],
+"Sandbox":["Sandbox","Sandbox"],
+"A chave de API do Asaas não está instalada nos Secrets de produção do GitHub.":["The Asaas API key is missing from your GitHub production secrets.","La clave de API de Asaas no está configurada en los secretos de producción de GitHub."],
+"A chave pertence a um ambiente diferente do configurado. Confira ASAAS_MODE: use production com chave de Produção ou sandbox com chave de testes.":["The key belongs to a different environment. Check ASAAS_MODE: use production with a production key or sandbox with a test key.","La clave pertenece a otro entorno. Comprueba ASAAS_MODE: usa production con una clave de producción o sandbox con una clave de prueba."],
+"O Asaas respondeu HTTP 401. Confira se a chave está ativa, completa e pertence ao ambiente configurado.":["Asaas returned HTTP 401. Check that the key is active, complete and belongs to the configured environment.","Asaas devolvió HTTP 401. Comprueba que la clave esté activa, completa y pertenezca al entorno configurado."],
+"O Asaas respondeu HTTP 403. Verifique as permissões da chave e eventuais restrições da conta.":["Asaas returned HTTP 403. Check the key permissions and any account restrictions.","Asaas devolvió HTTP 403. Comprueba los permisos de la clave y las restricciones de la cuenta."],
+"O Asaas limitou as requisições. Tente novamente mais tarde.":["Asaas has rate-limited the requests. Please try again later.","Asaas limitó las solicitudes. Inténtalo de nuevo más tarde."],
+"A solicitação ao Asaas ultrapassou o tempo limite. Tente novamente.":["The Asaas request timed out. Please try again.","La solicitud a Asaas superó el tiempo límite. Vuelve a intentarlo."],
+"Não foi possível estabelecer conexão com o Asaas. Verifique a rede e tente novamente.":["Could not establish a connection to Asaas. Check the network and try again.","No se pudo establecer conexión con Asaas. Comprueba la red y vuelve a intentarlo."],
+"O Asaas retornou um erro. Confira o código HTTP e as configurações da conta.":["Asaas returned an error. Check the HTTP status and account settings.","Asaas devolvió un error. Comprueba el código HTTP y la configuración de la cuenta."],
+"A conexão respondeu, mas o formato retornado não era o esperado.":["The request returned a response, but it was not in the expected format.","La solicitud respondió, pero no tenía el formato esperado."],
+"Verifique a chave e as configurações do Asaas.":["Check the Asaas key and configuration.","Comprueba la clave y la configuración de Asaas."],
 "Forma de pagamento":["Payment method","Forma de pago"],
 "Cartão de crédito":["Credit card","Tarjeta de crédito"],
 "Pagamento por Pix, renovado a cada período mediante nova cobrança.":["Pay by Pix. Each renewal requires a new payment.","Paga con Pix. Cada renovación requiere un nuevo pago."],
