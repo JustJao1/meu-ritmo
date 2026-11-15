@@ -11,5 +11,13 @@ export default function DailyMotivation(){
     const interval=setInterval(()=>setToday(localDate()),60_000);
     return ()=>clearInterval(interval);
   },[]);
-  return <p className="daily-motivation" aria-live="off">{dailyMotivation(today,locale)}</p>;
+  const date=new Date(today+'T12:00:00Z');
+  const fullDate=new Intl.DateTimeFormat(locale,{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);
+  const shortDate=new Intl.DateTimeFormat(locale,{day:'numeric',month:'long',timeZone:'UTC'}).format(date);
+  const prefix=(locale==='en'?'For ':locale==='es'?'Para el ':'Para ')+fullDate+', ';
+  const message=dailyMotivation(today,locale);
+  const quote=message.startsWith(prefix)?message.slice(prefix.length):message;
+  return <div className="daily-motivation" aria-live="off">
+    <p>{quote}</p><small>{shortDate}</small>
+  </div>;
 }
