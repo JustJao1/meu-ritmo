@@ -218,7 +218,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
           throw Error('O provedor não retornou um endereço de pagamento.');
         }
         const url=new URL(v.url);
-        if(url.protocol!=='https:'||!/(^|\\.)asaas\\.com$/.test(url.hostname))throw Error('O provedor retornou um endereço inválido.');
+        if(url.protocol!=='https:'||!/(^|\.)asaas\.com$/.test(url.hostname))throw Error('O provedor retornou um endereço inválido.');
         location.href=url.href;
     }
     catch (e: any) {
