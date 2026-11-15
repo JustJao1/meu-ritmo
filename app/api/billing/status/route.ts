@@ -3,10 +3,12 @@ import {asaasConfig,asaasRequest} from '../../../../lib/asaas';
 import {getUser} from '../../../session';
 import {appRole} from '../../../../lib/admin-access';
 import {env} from 'cloudflare:workers';
+import {parseLegalSettings} from '../../../../lib/legal-settings';
 export async function GET(req:Request){
   const c=asaasConfig();
   const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first();
-  const result:Record<string,unknown>={configured:!EARLY_ACCESS_ACTIVE&&c.enabled&&!!legal,earlyAccess:EARLY_ACCESS_ACTIVE,mode:c.mode,legalConfigured:!!legal,provider:'asaas',manageAvailable:c.apiReady};
+  const legalConfigured=!!parseLegalSettings(legal?.value);
+  const result:Record<string,unknown>={configured:!EARLY_ACCESS_ACTIVE&&c.enabled&&legalConfigured,earlyAccess:EARLY_ACCESS_ACTIVE,mode:c.mode,legalConfigured,provider:'asaas',manageAvailable:c.apiReady};
   if(new URL(req.url).searchParams.get('diagnostic')==='1'){
     const user=await getUser();
     if(!user||await appRole(user)!=='owner')return Response.json({error:'Somente o proprietário.'},{status:403});
@@ -15,7 +17,7 @@ export async function GET(req:Request){
       apiKeyPresent:!!e.ASAAS_API_KEY,apiKeyMatchesMode:c.keyMatchesMode,
       webhookTokenPresent:!!e.ASAAS_WEBHOOK_TOKEN,webhookReady:c.webhookReady,
       enabled:e.ASAAS_BILLING_ENABLED==='true',earlyAccess:EARLY_ACCESS_ACTIVE,
-      legalConfigured:!!legal,mode:c.mode
+      legalConfigured,mode:c.mode
     };
     if(new URL(req.url).searchParams.get('probe')==='1'){
       // The probe only lists one customer: it cannot create a charge.
