@@ -66,6 +66,18 @@ export default function AuthForm({mode}:{mode:AuthMode}){
       }catch(e){setError(e instanceof Error?e.message:t('Não foi possível validar o link.'));}
     })();
   },[mode]);
+  async function resendSignupCode(){
+    if(!pendingEmail.trim()){setError(t('Informe seu e-mail para reenviar o código.'));return;}
+    setBusy(true);setError('');setMessage('');
+    try{
+      const r=await fetch('/api/auth/resend-signup',{method:'POST',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify({email:pendingEmail})});
+      const v=await r.json() as {error?:string;message?:string};
+      if(!r.ok)throw Error(v.error||t('Não foi possível reenviar o código.'));
+      setMessage(t(v.message||'Se o cadastro ainda estiver pendente, enviaremos um novo código. Confira também o spam.'));
+    }catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível reenviar o código.'));}
+    finally{setBusy(false);}
+  }
   async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();
     const form=new FormData(e.currentTarget),b=Object.fromEntries(form);
@@ -110,7 +122,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
       {descriptions[mode]&&<p className="muted">{t(descriptions[mode]!)}</p>}
       <form onSubmit={submit}>
         {mode!=='logout'&&mode!=='password'&&<label>{t('E-mail')}
-          <input type="email" name="email" autoComplete="email" maxLength={254} defaultValue={mode==='verify'?pendingEmail:undefined} required/>
+          <input type="email" name="email" autoComplete="email" maxLength={254} value={mode==='verify'?pendingEmail:undefined} onChange={mode==='verify'?e=>setPendingEmail(e.target.value):undefined} required/>
         </label>}
         {needPassword&&<label>{t(mode==='password'?'Nova senha':'Senha')}
           <input type={showPassword?'text':'password'} name="password"
@@ -144,7 +156,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
           <p className="muted">{t('Você pode adicionar sua foto no perfil após confirmar o e-mail.')}</p>
         </>}
         {mode==='verify'&&<>
-          <p className="muted">{t('Se já confirmou pelo link, pode entrar com seu e-mail e senha.')}</p>
+          <p className="muted">{t('Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.')}</p>
           <label>{t('Qual código você recebeu?')}
             <select name="type" value={verificationType} onChange={e=>setVerificationType(e.target.value as 'signup'|'recovery')}>
               <option value="signup">{t('Código de confirmação de cadastro')}</option>
@@ -161,6 +173,9 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {message&&<p role="status">{message}</p>}
         {(mode!=='password'||recoveryReady)&&<button className="primary" type="submit" disabled={busy}>
           {busy?t('Aguarde…'):t({login:'Entrar',signup:'Criar minha conta',recover:'Enviar link de recuperação',verify:'Confirmar código',password:'Salvar nova senha',logout:'Sair da conta'}[mode])}
+        </button>}
+        {mode==='verify'&&verificationType==='signup'&&<button className="authresend" type="button" onClick={resendSignupCode} disabled={busy}>
+          {t('Reenviar código de confirmação')}
         </button>}
       </form>
       <nav className="authlinks">
