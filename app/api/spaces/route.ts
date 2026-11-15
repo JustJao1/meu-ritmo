@@ -10,6 +10,8 @@ const actions=z.discriminatedUnion('action',[
  z.object({action:z.literal('create'),name:z.string().trim().min(3).max(64)}),
  z.object({action:z.literal('join'),code:z.string().trim().toUpperCase().regex(/^[A-HJ-NP-Z2-9]{12}$/)}),
  z.object({action:z.literal('rotate'),id:z.string().uuid()}),
+ z.object({action:z.literal('rename'),id:z.string().uuid(),name:z.string().trim().min(3).max(64)}),
+ z.object({action:z.literal('delete'),id:z.string().uuid(),confirmName:z.string().min(3).max(64)}),
  z.object({action:z.literal('remove'),id:z.string().uuid(),userId:z.string().uuid()}),
  z.object({action:z.literal('leave'),id:z.string().uuid()}),
  z.object({action:z.literal('update'),id:z.string().uuid(),revision:z.number().int().min(0),items:z.unknown()})
@@ -54,7 +56,7 @@ export async function GET(req:Request){
    return reply({space:{...view(s,user.userId),items:JSON.parse(s.payload),members:users.results},canCreate});
   }
   const rows=await env.DB!.prepare('SELECT s.id,s.owner_id,s.name,s.join_code,s.revision FROM shared_spaces s JOIN shared_space_members m ON s.id=m.space_id WHERE m.user_id=? ORDER BY s.created_at DESC LIMIT 60').bind(user.userId).all<any>();
-  return reply({spaces:rows.results.map(s=>view(s,user.userId)),canCreate});
+  return reply({spaces:rows.results.map(s=>view(s,user.userId)),canCreate,createdCount:rows.results.filter(s=>s.owner_id===user.userId).length,maxCreated:2});
  }catch{return reply({error:'Não foi possível consultar os espaços.'},503);}
 }
 export async function POST(req:Request){
@@ -67,18 +69,19 @@ export async function POST(req:Request){
   if(a.action==='create'){
    if(!await allowedCreate(user))return reply({error:'Somente assinantes Pro podem criar espaços. Participar é gratuito.'},403);
    await registerMember(user);
-   const count=await env.DB!.prepare('SELECT count(*) n FROM shared_spaces WHERE owner_id=?').bind(user.userId).first<{n:number}>();
-   if((count?.n||0)>=10)return reply({error:'Limite de 10 espaços criados atingido.'},409);
    const id=crypto.randomUUID();
    for(let attempt=0;attempt<5;attempt++){
+    const code=generateCode();
     try{
-     const code=generateCode();
-     await env.DB!.batch([
-      env.DB!.prepare('INSERT INTO shared_spaces(id,owner_id,name,join_code,payload,revision,created_at) VALUES (?,?,?,?,?,0,?)').bind(id,user.userId,a.name,code,'[]',now),
-      env.DB!.prepare('INSERT INTO shared_space_members(space_id,user_id,joined_at) VALUES (?,?,?)').bind(id,user.userId,now)
+     const result=await env.DB!.batch([
+      env.DB!.prepare('INSERT INTO shared_spaces(id,owner_id,name,join_code,payload,revision,created_at) SELECT ?,?,?,?,?,0,? WHERE (SELECT count(*) FROM shared_spaces WHERE owner_id=?)<2').bind(id,user.userId,a.name,code,'[]',now,user.userId),
+      env.DB!.prepare('INSERT INTO shared_space_members(space_id,user_id,joined_at) SELECT id,?,? FROM shared_spaces WHERE id=?').bind(user.userId,now,id)
      ]);
-     return reply({message:'Espaço criado.',space:{id,name:a.name,joinCode:code,owner:true,revision:0}},201);
-    }catch(error){if(!/unique constraint/i.test(String(error)))throw error;}
+     if(!result[0].meta.changes)return reply({error:'Você já criou 2 espaços. Exclua um dos seus espaços para criar outro.'},409);
+     return reply({message:'Espaço criado.',space:{id,name:a.name,joinCode:code,owner:true,ownerId:user.userId,revision:0}},201);
+    }catch(error){
+     if(!/unique constraint/i.test(String(error)))throw error;
+    }
    }
    return reply({error:'Não foi possível gerar um código exclusivo. Tente novamente.'},503);
   }
@@ -112,6 +115,21 @@ export async function POST(req:Request){
    const result=await env.DB!.prepare('DELETE FROM shared_space_members WHERE space_id=? AND user_id=?').bind(s.id,a.userId).run();
    if(!result.meta.changes)return reply({error:'Este usuário não participa do espaço.'},404);
    return reply({message:'Participante removido. Seu acesso foi revogado.'});
+  }
+  if(a.action==='rename'){
+   const result=await env.DB!.prepare('UPDATE shared_spaces SET name=? WHERE id=? AND owner_id=?').bind(a.name,s.id,user.userId).run();
+   if(!result.meta.changes)return reply({error:'Espaço não encontrado.'},404);
+   return reply({message:'Nome do espaço atualizado.',name:a.name});
+  }
+  if(a.action==='delete'){
+   if(a.confirmName!==s.name)return reply({error:'Confirme digitando exatamente o nome do espaço.'},400);
+   // The batch is atomic; no member or shared item survives after the space is deleted.
+   const result=await env.DB!.batch([
+    env.DB!.prepare('DELETE FROM shared_space_members WHERE space_id=? AND EXISTS(SELECT 1 FROM shared_spaces WHERE id=? AND owner_id=? AND name=?)').bind(s.id,s.id,user.userId,a.confirmName),
+    env.DB!.prepare('DELETE FROM shared_spaces WHERE id=? AND owner_id=? AND name=?').bind(s.id,user.userId,a.confirmName)
+   ]);
+   if(!result[1].meta.changes)return reply({error:'Não foi possível excluir. Atualize o espaço e tente novamente.'},409);
+   return reply({message:'Espaço excluído definitivamente. Você já pode criar outro.'});
   }
   if(a.action==='rotate'){
    for(let attempt=0;attempt<5;attempt++){
