@@ -46,6 +46,11 @@ test('pending signup requires a valid code rather than password login or provide
  assert.match(route,/if\(type==='signup'\)await finishProfile/);
  assert.match(form,/\(mode==='signup'\|\|mode==='login'\)&&pendingSignup/);
 });
+test('username collision still leaves account pending until OTP and sends user through onboarding',()=>{
+ assert.ok(route.includes("const generatedUsername='pending_'+id.replaceAll('-','').slice(0,16)"));
+ assert.ok(route.includes("bind(id,generatedUsername,p.name,now,now).run()"));
+ assert.ok(server.includes("if(p.username==='pending_'+u.userId.replaceAll('-','').slice(0,16))"));
+});
 test('new user-facing strings have translations for English and Spanish',()=>{
  for(const key of [
   'Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.',

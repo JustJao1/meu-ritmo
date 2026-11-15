@@ -46,8 +46,11 @@ if(action==='signup'){stage='signup-validation';const pw=password.parse(b.passwo
   await e.DB!.prepare('INSERT INTO auth_pending_profiles(user_id,username,name,accepted_at,created_at) VALUES (?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET username=excluded.username,name=excluded.name,accepted_at=excluded.accepted_at').bind(id,p.username,p.name,now,now).run();
 }catch(error){
   if(!/unique constraint/i.test(String(error)))throw error;
-  // Supabase account creation may already have succeeded. Let the user confirm
-  // their email and choose a new username in /cadastro instead of losing access.
+  // Keep a pending reservation even when another user claimed the requested name.
+  // Without it, a provider that auto-confirms email could grant login before any OTP.
+  const generatedUsername='pending_'+id.replaceAll('-','').slice(0,16);
+  await e.DB!.prepare('INSERT INTO auth_pending_profiles(user_id,username,name,accepted_at,created_at) VALUES (?,?,?,?,?)').bind(id,generatedUsername,p.name,now,now).run();
+  if(v.session?.access_token||v.access_token)return reply({error:'A confirmação por código não está ativada no provedor de autenticação. O acesso permanecerá bloqueado até essa configuração ser corrigida.',pendingVerification:true},503);
   return reply({ok:true,message:'Conta criada. Confirme seu e-mail e escolha outro nome de usuário ao entrar.'});
 }}if(v.session?.access_token||v.access_token){console.error('auth_signup_provider_auto_confirmed');return reply({error:'A confirmação por código não está ativada no provedor de autenticação. O acesso permanecerá bloqueado até essa configuração ser corrigida.',pendingVerification:true},503)}return reply({ok:true,message:'Confira o código enviado ao seu e-mail.'})}
 if(action==='recover'){stage='recovery-provider';const r=await provider(e,'/recover?redirect_to='+encodeURIComponent(recoveryRedirect(req.url)),{email:mail});if(!r.ok){console.error('auth_recovery_provider_rejected',{status:r.status});if(r.status===429)return reply({error:'O envio de e-mails está temporariamente limitado. Aguarde antes de tentar novamente.'},429);if(r.status>=500)return reply({error:'O serviço de e-mail está indisponível no momento. Tente novamente mais tarde.'},503);return reply({error:'Não foi possível solicitar a recuperação agora. Tente novamente mais tarde.'},400)}return reply({ok:true,message:'Se houver uma conta para este e-mail, você receberá uma mensagem com as instruções de recuperação. Confira também a pasta de spam.'})}
