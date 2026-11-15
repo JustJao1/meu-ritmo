@@ -3,6 +3,8 @@ import {useEffect,useState,type FormEvent} from 'react';
 import {ArrowLeft,Check,Copy,Plus,RefreshCw,Trash2,Users,X,CalendarDays,NotebookPen,ListChecks,Clock,MessageSquare} from 'lucide-react';
 import {useLocale} from './language-selector';
 import type {Item,Kind} from '../lib/ritmo-domain';
+import {isDone} from '../lib/ritmo-domain';
+import SharedSpaceBatchEditor from './shared-space-batch-editor';
 
 type Member={user_id:string;name:string;username:string};
 type Space={id:string;name:string;owner:boolean;ownerId:string;revision:number;joinCode?:string;items?:Item[];members?:Member[]};
@@ -26,6 +28,8 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  const [spaces,setSpaces]=useState<Space[]>([]);
  const [selected,setSelected]=useState<Space|null>(null);
  const [canCreate,setCanCreate]=useState(false);
+ const [createdCount,setCreatedCount]=useState(0);
+ const [maxCreated,setMaxCreated]=useState(2);
  const [name,setName]=useState('');
  const [code,setCode]=useState('');
  const [busy,setBusy]=useState(false);
@@ -33,41 +37,45 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  const [error,setError]=useState('');
  const [notice,setNotice]=useState('');
  const [editing,setEditing]=useState<Item|null>(null);
+ const [batchOpen,setBatchOpen]=useState(false);
+ const [showSettings,setShowSettings]=useState(false);
+ const [renameValue,setRenameValue]=useState('');
  const [showMembers,setShowMembers]=useState(false);
  const [filter,setFilter]=useState('all');
 
  async function list(){
-  const result=await request<{spaces:Space[];canCreate:boolean}>();
-  setSpaces(result.spaces);setCanCreate(result.canCreate);
+  const result=await request<{spaces:Space[];canCreate:boolean;createdCount:number;maxCreated:number}>();
+  setSpaces(result.spaces);setCanCreate(result.canCreate);setCreatedCount(result.createdCount);setMaxCreated(result.maxCreated);
  }
  async function open(id:string){
   const response=await request<{space:Space}>(undefined,id);
-  setSelected(response.space);setShowMembers(false);setEditing(null);
+  setSelected(response.space);setShowMembers(false);setShowSettings(false);setEditing(null);setBatchOpen(false);setRenameValue(response.space.name);
  }
  useEffect(()=>{
   let live=true;
-  request<{spaces:Space[];canCreate:boolean}>().then(r=>{
+  request<{spaces:Space[];canCreate:boolean;createdCount:number;maxCreated:number}>().then(r=>{
    if(!live)return;
-   setSpaces(r.spaces);setCanCreate(r.canCreate);
+   setSpaces(r.spaces);setCanCreate(r.canCreate);setCreatedCount(r.createdCount);setMaxCreated(r.maxCreated);
   }).catch(e=>{if(live)setError(e.message)}).finally(()=>{if(live)setLoading(false)});
   return()=>{live=false};
  },[]);
  useEffect(()=>{
-  if(!selected||editing||busy)return;
+  if(!selected||editing||batchOpen||busy)return;
   const interval=setInterval(()=>{
    request<{space:Space}>(undefined,selected.id).then(r=>{
     setSelected(prev=>prev?.id===r.space.id?r.space:prev);
    }).catch(e=>{if(e instanceof Error&&e.message.includes('acesso removido')){setSelected(null);setEditing(null);setError('Seu acesso a este espaço foi removido.');}});
   },20000);
   return()=>clearInterval(interval);
- },[selected?.id,editing,busy]);
+ },[selected?.id,editing,batchOpen,busy]);
  async function act(action:Record<string,unknown>,after?:(result:any)=>void){
   setBusy(true);setError('');setNotice('');
   try{
    const result=await request<any>(action);
    setNotice(result.message||'Operação concluída.');
    after?.(result);
-  }catch(e){setError(e instanceof Error?e.message:'Não foi possível concluir.');}
+   return true;
+  }catch(e){setError(e instanceof Error?e.message:'Não foi possível concluir.');return false;}
   finally{setBusy(false);}
  }
  async function create(e:FormEvent){e.preventDefault();await act({action:'create',name:name.trim()},r=>{
@@ -87,7 +95,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  }
  async function update(next:Item[]){
   if(!selected)return;
-  await act({action:'update',id:selected.id,revision:selected.revision,items:next},r=>{
+  return await act({action:'update',id:selected.id,revision:selected.revision,items:next},r=>{
    setSelected({...selected,items:next,revision:r.revision});
    setEditing(null);
   });
@@ -98,13 +106,39 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  }
  async function toggleDone(item:Item){
   if(!selected)return;
-  await update((selected.items||[]).map(i=>i.id===item.id?{...i,done:!i.done}:i));
+  await update((selected.items||[]).map(i=>{
+   if(i.id!==item.id)return i;
+   if(i.repeat!=='none'||i.days.length){const date=newDate(),dates=i.completedDates||[];return {...i,completedDates:dates.includes(date)?dates.filter(x=>x!==date):[...dates,date]};}
+   return {...i,done:!i.done};
+  }));
+ }
+ async function renameSpace(e:FormEvent<HTMLFormElement>){
+  e.preventDefault();if(!selected||!selected.owner)return;
+  const value=renameValue.trim();
+  if(value.length<3||value.length>64){setError('Use um nome de 3 a 64 caracteres.');return;}
+  await act({action:'rename',id:selected.id,name:value},()=>{setSelected({...selected,name:value});void list();});
+ }
+ async function deleteSpace(){
+  if(!selected||!selected.owner)return;
+  const value=window.prompt('Para excluir definitivamente o espaço e todos os itens compartilhados, digite exatamente: '+selected.name);
+  if(value===null)return;
+  if(value!==selected.name){setError('Nome diferente. O espaço não foi excluído.');return;}
+  await act({action:'delete',id:selected.id,confirmName:value},()=>{
+   setSelected(null);setBatchOpen(false);setEditing(null);void list();
+  });
+ }
+ async function saveBatch(items:Item[]):Promise<boolean>{
+  if(!selected)return false;
+  const ok=await update([...(selected.items||[]),...items]);
+  if(ok){setBatchOpen(false);setNotice(items.length+' itens adicionados ao espaço.');}
+  return !!ok;
  }
  async function refresh(){setBusy(true);try{
   if(selected)await open(selected.id);else await list();
   setError('');setNotice('Informações atualizadas.');
  }catch(e){setError(e instanceof Error?e.message:'Erro ao atualizar.')}finally{setBusy(false);}}
- const visible=(selected?.items||[]).filter(i=>filter==='all'||i.type===filter);
+ const visible=(selected?.items||[]).filter(i=>filter==='all'||i.type===filter).sort((a,b)=>Number(b.pinned)-Number(a.pinned));
+ const counts=Object.fromEntries(['all',...kinds].map(k=>[k,k==='all'?(selected?.items||[]).length:(selected?.items||[]).filter(i=>i.type===k).length]));
  return <div className="sharedspaces">
   {error&&<p className="autherror" role="alert">{error}</p>}
   {notice&&<p className="muted" role="status">{notice}</p>}
