@@ -3,6 +3,13 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.":["Enter the six-digit code sent to your email. If you did not receive it, request another below.","Introduce el código de seis dígitos enviado a tu correo. Si no lo recibiste, solicita otro abajo."],
+"Reenviar código de confirmação":["Resend verification code","Reenviar código de confirmación"],
+"Informe seu e-mail para reenviar o código.":["Enter your email to resend the code.","Introduce tu correo para reenviar el código."],
+"Não foi possível reenviar o código.":["Could not resend the code.","No se pudo reenviar el código."],
+"Se o cadastro ainda estiver pendente, enviaremos um novo código. Confira também o spam.":["If sign-up is still pending, we'll send another code. Check your spam folder too.","Si el registro sigue pendiente, enviaremos otro código. Revisa también el correo no deseado."],
+"Aguarde um pouco antes de solicitar outro código.":["Wait a moment before requesting another code.","Espera un momento antes de solicitar otro código."],
+"Não foi possível reenviar o código agora.":["Could not resend the code right now.","No se pudo reenviar el código en este momento."],
 "A conexão com o Asaas não foi validada.":["The Asaas connection could not be verified.","No se pudo verificar la conexión con Asaas."],
 "Ambiente configurado":["Configured environment","Entorno configurado"],
 "Produção":["Production","Producción"],

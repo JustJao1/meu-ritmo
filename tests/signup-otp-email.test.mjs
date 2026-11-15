@@ -1,0 +1,39 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+
+const route=readFileSync('lib/auth-routes.ts','utf8');
+const form=readFileSync('components/auth-form.tsx','utf8');
+const template=readFileSync('supabase/templates/confirm-signup-otp.html','utf8');
+const translations=readFileSync('components/language-selector.tsx','utf8');
+
+test('signup confirmation email exposes Supabase OTP, not a verification link',()=>{
+ assert.match(template,/\{\{\s*\.Token\s*\}\}/);
+ assert.doesNotMatch(template,/\.ConfirmationURL|\.TokenHash/);
+ assert.match(template,/Confirme seu e-mail/);
+});
+
+test('signup verification uses the provider signup OTP type, not email magic link',()=>{
+ assert.match(route,/z\.enum\(\['signup','recovery'\]\)/);
+ assert.match(route,/provider\(e,'\/verify',\{email:mail,token,type\}\)/);
+});
+
+test('resend uses signup-only action, rate limit and no user enumeration',()=>{
+ assert.match(route,/action==='resend-signup'\?3:10/);
+ assert.match(route,/provider\(e,'\/resend',\{type:'signup',email:mail\}\)/);
+ assert.match(route,/Se o cadastro ainda estiver pendente/);
+ assert.match(form,/fetch\('\/api\/auth\/resend-signup'/);
+ assert.match(form,/Reenviar código de confirmação/);
+ assert.match(form,/onChange=\{mode==='verify'\?e=>setPendingEmail/);
+});
+
+test('new user-facing strings have translations for English and Spanish',()=>{
+ for(const key of [
+  'Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.',
+  'Reenviar código de confirmação',
+  'Informe seu e-mail para reenviar o código.',
+  'Não foi possível reenviar o código.'
+ ]){
+   assert.ok(translations.includes(JSON.stringify(key)),key);
+ }
+});
