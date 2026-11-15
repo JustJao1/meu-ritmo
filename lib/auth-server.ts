@@ -9,8 +9,9 @@ export async function provider(e:AuthEnv,path:string,body?:unknown,token?:string
 async function key(e:AuthEnv){const k=bytes(e.SESSION_ENCRYPTION_KEY||'');if(k.length!==32)throw Error('auth_config');return crypto.subtle.importKey('raw',k,'AES-GCM',false,['encrypt','decrypt']);}
 export async function seal(e:AuthEnv,value:unknown){const iv=crypto.getRandomValues(new Uint8Array(12)),data=await crypto.subtle.encrypt({name:'AES-GCM',iv},await key(e),enc.encode(JSON.stringify(value)));return b64(iv)+'.'+b64(new Uint8Array(data));}
 export async function unseal(e:AuthEnv,s:string){const [iv,data]=s.split('.');return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(iv)},await key(e),bytes(data))));}
+export async function hasPendingVerification(e:AuthEnv,userId:string):Promise<boolean>{const r=await e.DB!.prepare('SELECT 1 AS pending FROM auth_pending_profiles WHERE user_id=?').bind(userId).first<{pending:number}>();return !!r;}
 export function verifiedUser(v:any):SessionUser{if(!/^[0-9a-f-]{36}$/i.test(v?.id)||!v.email||!v.email_confirmed_at||v.is_anonymous)throw Error('unverified');return {userId:v.id,email:v.email,displayName:v.email,fullName:null};}
-export async function issueSession(e:AuthEnv,v:any,purpose:'login'|'recovery'='login'){const r=await provider(e,'/user',undefined,v.access_token);if(!r.ok)throw Error('unverified');const u=verifiedUser(await r.json());if(!v.refresh_token)throw Error('tokens');const token=b64(crypto.getRandomValues(new Uint8Array(36))),now=Math.floor(Date.now()/1000),age=purpose==='recovery'?600:2592000;await e.DB!.prepare('INSERT INTO auth_sessions(id_hash,user_id,tokens,purpose,created_at,expires_at) VALUES (?,?,?,?,?,?)').bind(await hash(token),u.userId,await seal(e,{accessToken:v.access_token,refreshToken:v.refresh_token}),purpose,now,now+age).run();return `${cookieName}=${token}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Lax`;}
+export async function issueSession(e:AuthEnv,v:any,purpose:'login'|'recovery'='login'){const r=await provider(e,'/user',undefined,v.access_token);if(!r.ok)throw Error('unverified');const u=verifiedUser(await r.json());if(purpose==='login'&&await hasPendingVerification(e,u.userId))throw Error('pending_email_verification');if(!v.refresh_token)throw Error('tokens');const token=b64(crypto.getRandomValues(new Uint8Array(36))),now=Math.floor(Date.now()/1000),age=purpose==='recovery'?600:2592000;await e.DB!.prepare('INSERT INTO auth_sessions(id_hash,user_id,tokens,purpose,created_at,expires_at) VALUES (?,?,?,?,?,?)').bind(await hash(token),u.userId,await seal(e,{accessToken:v.access_token,refreshToken:v.refresh_token}),purpose,now,now+age).run();return `${cookieName}=${token}; Path=/; Max-Age=${age}; HttpOnly; Secure; SameSite=Lax`;}
 export const clearCookie=()=>`${cookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
 type StoredTokens={accessToken:string;refreshToken:string};
 type StoredSession={user_id:string;tokens:string;purpose:'login'|'recovery';created_at:number;expires_at:number;refresh_lock_owner:string|null;refresh_lock_until:number};
@@ -81,6 +82,7 @@ export async function resolveSession(e:AuthEnv,req:Request):Promise<Identity|nul
  try{
   const user=verifiedUser(await response.json());
   if(user.userId!==row.user_id)return null;
+  if(row.purpose==='login'&&await hasPendingVerification(e,user.userId))return null;
   return {...tokens,user,hash:id,purpose:row.purpose,createdAt:row.created_at};
  }catch{return null}
 }

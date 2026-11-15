@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
 const route=readFileSync('lib/auth-routes.ts','utf8');
+const server=readFileSync('lib/auth-server.ts','utf8');
 const form=readFileSync('components/auth-form.tsx','utf8');
 const template=readFileSync('supabase/templates/confirm-signup-otp.html','utf8');
 const translations=readFileSync('components/language-selector.tsx','utf8');
@@ -36,6 +37,15 @@ test('pending usernames redirect their original owner to verification rather tha
  assert.match(form,/v\.pendingVerification===true/);
 });
 
+test('pending signup requires a valid code rather than password login or provider link',()=>{
+ assert.match(route,/if\(await hasPendingVerification\(e,sessionUser\.userId\)\)/);
+ assert.doesNotMatch(route,/action==='login'[^\n]*await finishProfile/);
+ assert.match(route,/if\(v\.session\?\.access_token\|\|v\.access_token\)/);
+ assert.match(server,/if\(purpose==='login'&&await hasPendingVerification/);
+ assert.match(server,/if\(row\.purpose==='login'&&await hasPendingVerification/);
+ assert.match(route,/if\(type==='signup'\)await finishProfile/);
+ assert.match(form,/\(mode==='signup'\|\|mode==='login'\)&&pendingSignup/);
+});
 test('new user-facing strings have translations for English and Spanish',()=>{
  for(const key of [
   'Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.',

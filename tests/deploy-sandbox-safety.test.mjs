@@ -28,10 +28,10 @@ function run(overrides={}){
   env:{...process.env,...base,...overrides}
  });
 }
-test('sandbox workflow is manual and bound only to the sandbox environment',()=>{
+test('sandbox workflow publishes main to the isolated sandbox environment',()=>{
  assert.match(workflow,/workflow_dispatch:/);
  assert.match(workflow,/environment: sandbox/);
- assert.doesNotMatch(workflow,/branches:\s*\[main\]/);
+ assert.match(workflow,/push:\s*\n\s*branches:\s*\[main\]/);
  assert.match(workflow,/SANDBOX_D1_DATABASE_ID/);
  assert.match(workflow,/SANDBOX_SUPABASE_URL/);
  assert.match(workflow,/ASAAS_WEBHOOK_TOKEN:\s*\$\{\{ secrets\.SANDBOX_ASAAS_WEBHOOK_TOKEN \}\}/);

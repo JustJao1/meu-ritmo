@@ -1,6 +1,8 @@
 name: Publicar Meu Ritmo Sandbox (isolado)
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 permissions:
   contents: read
 jobs:
