@@ -212,8 +212,14 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
         const v: any = await r.json();
         if (!r.ok)
             throw Error(v.error);
-        if(!v.url||!/^https:\/\/([a-z0-9-]+\.)?asaas\.com\//.test(v.url))throw Error('O provedor não retornou um endereço válido.');
-        location.href = v.url;
+        if(!v.url){
+          if(action==='checkout'&&v.awaitingInvoice){setToast('A assinatura foi registrada. A fatura ainda está sendo gerada. Use Consultar fatura em instantes.');return;}
+          if(action==='portal'){setToast('Nenhuma fatura disponível para abrir agora. Consulte novamente mais tarde.');return;}
+          throw Error('O provedor não retornou um endereço de pagamento.');
+        }
+        const url=new URL(v.url);
+        if(url.protocol!=='https:'||!/(^|\\.)asaas\\.com$/.test(url.hostname))throw Error('O provedor retornou um endereço inválido.');
+        location.href=url.href;
     }
     catch (e: any) {
         setToast(e.message);
