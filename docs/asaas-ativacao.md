@@ -1,6 +1,6 @@
 # Integração Asaas: ativação controlada do Meu Ritmo
 
-O código do checkout já oferece **Pix, boleto e cartão** pela fatura segura do Asaas, mediante forma de cobrança `UNDEFINED`. Plus e Pro têm assinaturas mensais e anuais. O cupom desconta somente a primeira cobrança e a recorrência retorna ao valor normal. Não é Pix Automático: cada renovação Pix ou boleto precisa ser paga, enquanto o cartão pode ser cobrado automaticamente.
+O checkout oferece **somente Pix ou cartão de crédito**. O cliente escolhe o método antes de prosseguir e o servidor envia exclusivamente `PIX` ou `CREDIT_CARD` ao Asaas; `BOLETO` e `UNDEFINED` são rejeitados. Plus e Pro possuem assinaturas mensais e anuais. O cupom desconta somente a primeira cobrança e a recorrência retorna ao valor normal. Isso não é Pix Automático: cada renovação Pix precisa ser paga; no cartão, a cobrança pode ser automática.
 
 ## 1. Configurar ambientes separados
 
@@ -37,15 +37,17 @@ O servidor verifica o header `asaas-access-token` e consulta o pagamento diretam
 Teste com dados e chave exclusivamente do Sandbox:
 
 1. Criar um cliente de teste e contratar Plus mensal sem cupom.
-2. Gerar cobrança com `UNDEFINED` e abrir a fatura do Asaas. Verificar meios oferecidos pela conta.
+2. Escolher Pix e criar uma assinatura com `billingType=PIX`; abrir a fatura do Asaas. Repetir com cartão de crédito usando `billingType=CREDIT_CARD`.
 3. Confirmar Pix ou cartão no Sandbox e verificar entrega do webhook, atualização de `subscriptions` e liberação do benefício.
-4. Testar boleto pendente: nenhuma assinatura pode ser liberada antes de pagamento confirmado.
+4. Tentar enviar `BOLETO`, `UNDEFINED` ou omitir o meio de pagamento diretamente na API do Meu Ritmo: todas as tentativas devem ser rejeitadas antes de chamar o Asaas. Cobranças Pix pendentes não podem liberar uma assinatura.
 5. Contratar usando cupom válido; confirmar desconto apenas na primeira cobrança e preço padrão na renovação seguinte.
 6. Validar cupons vencidos, limite de usos, código inválido e tentativas simultâneas.
 7. Cancelar a renovação; confirmar ausência de novas cobranças e preservação do período já pago.
 8. Simular reenvio de eventos, estorno e chargeback; confirmar que não há duplicação e o benefício é revisto conforme o pagamento.
 9. Testar um código inválido e um token de webhook incorreto: ambos devem ser rejeitados.
 10. Conferir resultados em dois usuários para garantir que faturas e planos não se misturam.
+
+A integração atual não cria novas cobranças por boleto. Uma cobrança antiga já criada diretamente no Asaas, se existir, deve ser tratada conforme seu histórico, sem bloquear conciliação ou reembolso.
 
 ## 4. Habilitar produção
 
