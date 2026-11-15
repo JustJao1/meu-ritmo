@@ -38,6 +38,10 @@ export async function POST(req:Request){
   const plan=data.price as AsaasPlanCode;
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
+  // Asaas requires card tokenization to change a card subscription's recurring value.
+  // Until that configuration is validated, do not promise a first-cycle card discount
+  // that could silently renew at the promotional price or fail to grant paid access.
+  if(coupon&&data.paymentMethod==='CREDIT_CARD')return Response.json({error:'Nesta etapa, cupons de desconto estão disponíveis apenas para Pix. Para pagar no cartão, remova o cupom.'},{status:400});
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
   try{
     await env.DB!.batch([

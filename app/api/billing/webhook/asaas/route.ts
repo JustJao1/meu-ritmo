@@ -3,6 +3,7 @@ import {asaasConfig,asaasRequest,hasValidAsaasWebhookToken,type AsaasPayment} fr
 
 const paid=new Set(['CONFIRMED','RECEIVED']);
 const reversed=new Set(['REFUNDED','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','DELETED']);
+const reviewStatuses=new Set(['PARTIALLY_REFUNDED','REFUND_IN_PROGRESS']);
 function periodEnd(due:string,cycle:string){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(due))throw Error('Data inválida.');
   const d=new Date(due+'T12:00:00Z');
@@ -40,17 +41,27 @@ export async function POST(req:Request){
       env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING').bind(event.id,event.event,time)
     ];
     if(confirmed){
-      if(order.coupon_id&&!order.first_paid_at){
-        // Revert subsequent renewals to the standard price after the discounted first payment.
+      if(order.coupon_id&&!order.first_paid_at&&order.status!=='cancelled'){
+        // A cancelled recurring subscription no longer exists at Asaas. Its paid invoice
+        // must still grant the paid period, without attempting to edit that subscription.
+        // Future Pix payments return to the full quoted price after the first paid invoice.
         await asaasRequest('/subscriptions/'+encodeURIComponent(payment.subscription),{method:'PUT',body:{value:order.base_price_cents/100}});
       }
       const until=periodEnd(payment.dueDate,order.plan_code.endsWith('_year')?'year':'month');
-      statements.push(env.DB!.prepare("INSERT INTO subscriptions(user_id,subscription_id,plan,status,updated_at,valid_until) VALUES (?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET subscription_id=excluded.subscription_id,plan=excluded.plan,status=excluded.status,updated_at=excluded.updated_at,valid_until=MAX(COALESCE(subscriptions.valid_until,0),excluded.valid_until)")
+      statements.push(env.DB!.prepare("INSERT INTO subscriptions(user_id,subscription_id,plan,status,updated_at,valid_until) VALUES (?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET subscription_id=excluded.subscription_id,plan=excluded.plan,status=excluded.status,updated_at=excluded.updated_at,valid_until=MAX(COALESCE(subscriptions.valid_until,0),excluded.valid_until) WHERE subscriptions.subscription_id=excluded.subscription_id OR COALESCE(subscriptions.valid_until,0)<excluded.valid_until")
         .bind(order.user_id,payment.subscription,order.plan_code.split('_')[0],'active',time,until));
       statements.push(env.DB!.prepare("UPDATE asaas_orders SET status=CASE WHEN status='cancelled' THEN 'cancelled' ELSE 'active' END,first_paid_at=COALESCE(first_paid_at,?) WHERE id=?").bind(time,order.id));
     }else if(reversed.has(payment.status)){
+      // Keep access from other confirmed invoices after a refund or chargeback.
+      // A refunded renewal must not silently erase an earlier period already paid.
       const lastPaid=await env.DB!.prepare("SELECT max(due_date) AS latest FROM asaas_payments WHERE order_id=? AND status IN ('CONFIRMED','RECEIVED') AND payment_id<>?").bind(order.id,payment.id).first<{latest:string|null}>();
-      if(!lastPaid?.latest||lastPaid.latest<=payment.dueDate) statements.push(env.DB!.prepare("UPDATE subscriptions SET status='canceled',updated_at=? WHERE user_id=? AND subscription_id=?").bind(time,order.user_id,payment.subscription));
+      const remainingUntil=lastPaid?.latest?periodEnd(lastPaid.latest,order.plan_code.endsWith('_year')?'year':'month'):0;
+      statements.push(env.DB!.prepare("UPDATE subscriptions SET status=?,valid_until=?,updated_at=? WHERE user_id=? AND subscription_id=?")
+        .bind(remainingUntil>time?'active':'canceled',remainingUntil,time,order.user_id,payment.subscription));
+    }else if(reviewStatuses.has(payment.status)){
+      // Partial or in-progress refunds require individual review, not an automatic
+      // full revocation of an otherwise paid period.
+      statements.push(env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status!='cancelled'").bind(order.id));
     }
     await env.DB!.batch(statements);
     return Response.json({received:true});
