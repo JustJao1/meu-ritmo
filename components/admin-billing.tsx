@@ -27,11 +27,11 @@ export default function AdminBilling({onSupport}:{onSupport:()=>void}){
   const orders=(data?.orders||[]).filter(o=>filter==='all'||(filter==='review'?['creating','review'].includes(o.status):o.status===filter));
   const s=data?.summary;
   const metrics=[
-    {key:'total',label:'pedidos registrados',value:s?.total_orders},
-    {key:'active',label:'ativos',value:s?.active_orders},
-    {key:'pending',label:'aguardando pagamento',value:s?.pending_orders},
-    {key:'review',label:'em conferência',value:s?.review_orders},
-    {key:'cancelled',label:'cancelados',value:s?.cancelled_orders}
+    {key:'total',label:'Pedidos registrados',value:s?.total_orders},
+    {key:'active',label:'Ativos',value:s?.active_orders},
+    {key:'pending',label:'Aguardando pagamento',value:s?.pending_orders},
+    {key:'review',label:'Em conferência',value:s?.review_orders},
+    {key:'cancelled',label:'Cancelados',value:s?.cancelled_orders}
   ];
   return <section className="adminbilling">
     <div className="adminsectionintro billing-intro">
