@@ -4,6 +4,7 @@ import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
 import {asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
 import {z} from 'zod';
+import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
 
 const inputSchema=z.object({
   price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
@@ -25,7 +26,7 @@ export async function POST(req:Request){
   const parsed=inputSchema.safeParse(await req.json().catch(()=>null));
   if(!parsed.success)return Response.json({error:'Confira o plano, os dados do titular e aceite os termos.'},{status:400});
   const data=parsed.data,cpfCnpj=data.cpfCnpj.replace(/\D/g,'');
-  if(![11,14].includes(cpfCnpj.length))return Response.json({error:'CPF ou CNPJ inválido.'},{status:400});
+  if(!validBrazilTaxId(cpfCnpj))return Response.json({error:'CPF ou CNPJ inválido. Confira os dígitos informados.'},{status:400});
   const now=Math.floor(Date.now()/1000);
   const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first();
   if(!legal)return Response.json({error:'Identificação comercial pendente.'},{status:503});
