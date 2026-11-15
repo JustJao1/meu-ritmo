@@ -1,7 +1,7 @@
 import {test,after} from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import {build} from 'esbuild';import {mkdtemp,readFile,readdir,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {deflateSync} from 'node:zlib';
 const dir=await mkdtemp(join(tmpdir(),'ritmo-social-')),db=new DatabaseSync(':memory:');for(const f of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())db.exec(await readFile('drizzle/'+f,'utf8'));
 function prep(sql){const st=db.prepare(sql);let args=[];return {bind(...a){args=a;return this},async first(){return st.get(...args)||null},async all(){return {results:st.all(...args)}},async run(){return this.execute()},execute(){const r=st.run(...args);return {meta:{changes:r.changes}}}}}const objects=new Map();globalThis.__socialEnv={ADMIN_OWNER_EMAIL:'owner@test.example',ADMIN_OWNER_USER_ID:'owner',DB:{prepare:prep,async batch(s){db.exec('BEGIN IMMEDIATE');try{const r=s.map(x=>x.execute());db.exec('COMMIT');return r}catch(e){db.exec('ROLLBACK');throw e}}},BUCKET:{async put(k,b,o){objects.set(k,{body:b,httpMetadata:o?.httpMetadata})},async get(k){return objects.get(k)||null},async delete(k){objects.delete(k)}}};
-const plugin={name:'identity',setup(b){b.onResolve({filter:/session$/},()=>({path:'auth',namespace:'test'}));b.onResolve({filter:/avatar-store$/},()=>({path:'storage',namespace:'test'}));b.onResolve({filter:/^cloudflare:workers$/},()=>({path:'env',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},({path})=>({contents:path==='storage'?'export const avatarStore=globalThis.__socialEnv.BUCKET;':path==='auth'?'export async function getUser(){return globalThis.__socialUser}':'export const env=globalThis.__socialEnv'}));}};const api={};for(const [name,path]of Object.entries({profile:'app/api/profile/route.ts',social:'app/api/social/route.ts',avatar:'app/api/avatar/route.ts',discount:'app/api/admin/discounts/route.ts',checkout:'app/api/billing/checkout/route.ts',webhook:'app/api/billing/webhook/asaas/route.ts',account:'app/api/account/route.ts',privacy:'app/api/privacy/route.ts'})){await build({entryPoints:[path],outfile:join(dir,name+'.mjs'),bundle:true,platform:'node',format:'esm',plugins:[plugin]});api[name]=await import(join(dir,name+'.mjs'))}
+const plugin={name:'identity',setup(b){b.onResolve({filter:/session$/},()=>({path:'auth',namespace:'test'}));b.onResolve({filter:/avatar-store$/},()=>({path:'storage',namespace:'test'}));b.onResolve({filter:/^cloudflare:workers$/},()=>({path:'env',namespace:'test'}));b.onLoad({filter:/.*/,namespace:'test'},({path})=>({contents:path==='storage'?'export const avatarStore=globalThis.__socialEnv.BUCKET;':path==='auth'?'export async function getUser(){return globalThis.__socialUser}':'export const env=globalThis.__socialEnv'}));}};const api={};for(const [name,path]of Object.entries({profile:'app/api/profile/route.ts',social:'app/api/social/route.ts',avatar:'app/api/avatar/route.ts',discount:'app/api/admin/discounts/route.ts',checkout:'app/api/billing/checkout/route.ts',quote:'app/api/billing/quote/route.ts',webhook:'app/api/billing/webhook/asaas/route.ts',account:'app/api/account/route.ts',privacy:'app/api/privacy/route.ts'})){await build({entryPoints:[path],outfile:join(dir,name+'.mjs'),bundle:true,platform:'node',format:'esm',plugins:[plugin]});api[name]=await import(join(dir,name+'.mjs'))}
 const who=(id)=>globalThis.__socialUser=id?{userId:id,email:id+'@test.example',displayName:id,fullName:id}:null;const request=(name,body,method='POST',origin='https://test.example')=>api[name][method](new Request('https://test.example/api/'+name,{method,headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(body)}));const feed=(q='')=>api.social.GET(new Request('https://test.example/api/social'+q));const profile=(username,name)=>({username,name,bio:'Sobre a rotina',accept:true,adult:true});let postId;
 for(const id of ['owner','alice','bob']){who(id);await api.account.GET()}
 test('perfil exige identidade, aceite, maioridade declarada e nomes únicos',async()=>{who(null);assert.equal((await request('profile',profile('alice','Alice'),'PUT')).status,401);who('alice');assert.equal((await request('profile',{...profile('alice','Alice'),adult:false},'PUT')).status,400);assert.equal((await request('profile',profile('alice','Alice'),'PUT')).status,200);who('bob');assert.equal((await request('profile',profile('alice','Bob'),'PUT')).status,409);assert.equal((await request('profile',profile('bobrotina','Bob'),'PUT')).status,200);});
@@ -27,6 +27,22 @@ test('uniqueness before confirmation and profile reports',async()=>{
  who('owner');
  const result=await (await feed('?moderation=1')).json();
  assert(result.reports.some(r=>r.profile_id===alice.id&&r.username==='alice_novo'));
+});
+test('cotação Asaas mostra desconto sem criar cobrança ou consumir cupom',async()=>{
+ who('bob');
+ const before=db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n;
+ const regular=await request('quote',{price:'plus_month'});
+ assert.equal(regular.status,200);
+ assert.deepEqual(await regular.json(),{plan:'plus_month',firstAmountCents:1990,renewalAmountCents:1990,savingsCents:0,discountApplied:false,interval:'month',checkoutAvailable:false});
+ const discounted=await request('quote',{price:'plus_month',discountCode:'DESCONTO10'});
+ assert.equal(discounted.status,200);
+ const v=await discounted.json();
+ assert.equal(v.firstAmountCents,1791);
+ assert.equal(v.renewalAmountCents,1990);
+ assert.equal(v.savingsCents,199);
+ assert.equal(v.discountApplied,true);
+ assert.equal((await request('quote',{price:'pro_month',discountCode:'INVALID'})).status,400);
+ assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,before);
 });
 test('checkout Asaas valida plano, termos e cupom no servidor antes da contratação',async()=>{
   const e=globalThis.__socialEnv;
@@ -55,6 +71,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
     who('bob');
     assert.equal((await request('checkout',{...payer,price:'__proto__',acceptTerms:true})).status,400);
     assert.equal((await request('checkout',{...payer,price:'plus_month'})).status,400);
+    assert.equal((await request('checkout',{...payer,cpfCnpj:'00000000000',price:'plus_month',acceptTerms:true})).status,400);
     assert.equal((await request('checkout',{...payer,price:'pro_month',acceptTerms:true,discountCode:'DESCONTO10'})).status,400);
     const response=await request('checkout',{...payer,price:'plus_month',acceptTerms:true,discountCode:'DESCONTO10'});
     assert.equal(response.status,200);
