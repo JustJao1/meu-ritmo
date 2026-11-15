@@ -3,6 +3,8 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Confirme o código enviado por e-mail antes de entrar.":["Confirm the code sent by email before signing in.","Confirma el código enviado por correo antes de iniciar sesión."],
+"A confirmação por código não está ativada no provedor de autenticação. O acesso permanecerá bloqueado até essa configuração ser corrigida.":["Code verification is not enabled in the authentication provider. Access will remain blocked until this setting is corrected.","La verificación por código no está habilitada en el proveedor de autenticación. El acceso permanecerá bloqueado hasta que se corrija esta configuración."],
 "Esse nome está reservado por um cadastro aguardando confirmação. Se foi você, abra Confirmar e-mail e reenvie o código usando o e-mail do primeiro cadastro.":["This username is reserved by a registration awaiting confirmation. If you started it, open Confirm email and resend the code using the original email address.","Este nombre está reservado por un registro pendiente de confirmación. Si fue tuyo, abre Confirmar correo y reenvía el código con el correo usado originalmente."],
 "Confirmar meu cadastro anterior":["Confirm my previous registration","Confirmar mi registro anterior"],
 "Não foi possível solicitar o código agora. Confira o e-mail informado e tente novamente mais tarde.":["Could not request the code right now. Check the email address and try again later.","No se pudo solicitar el código ahora. Revisa el correo indicado e inténtalo de nuevo más tarde."],
