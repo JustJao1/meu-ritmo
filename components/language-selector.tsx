@@ -3,6 +3,9 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Abrir espaços":["Open workspaces","Abrir espacios"],
+"Seu acesso a este espaço foi removido.":["Your access to this workspace has been revoked.","Se ha revocado tu acceso a este espacio."],
+
 "Espaço compartilhado":["Shared workspace","Espacio compartido"],
 "Criador do espaço":["Workspace owner","Creador del espacio"],
 "Tarefas, agenda, lembretes, notas e recados são visíveis para todos os participantes. Seus gastos, alarmes e tema continuam pessoais.":["Tasks, events, reminders, notes and messages are visible to members. Your expenses, alarms and theme stay personal.","Las tareas, eventos, recordatorios, notas y mensajes son visibles para todos. Tus gastos, alarmas y tema siguen siendo personales."],
