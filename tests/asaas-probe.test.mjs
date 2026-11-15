@@ -13,7 +13,7 @@ globalThis.__probeTest={config,error:null,requestCount:()=>requests,env:{
  DB:{prepare:()=>({async first(){return null}})}
 }};
 const mocks={name:'mock-probe-dependencies',setup(api){
- api.onResolve({filter:/^cloudflare:workers$|lib\/asaas$|lib\/entitlements$|lib\/admin-access$|app\/session$/},args=>({namespace:'probe',path:args.path}));
+ api.onResolve({filter:/^cloudflare:workers$|lib\/asaas$|lib\/entitlements$|lib\/admin-access$|(?:^|\/)session$/},args=>({namespace:'probe',path:args.path}));
  api.onLoad({filter:/.*/,namespace:'probe'},args=>{
   if(args.path==='cloudflare:workers')return {loader:'js',contents:'export const env=globalThis.__probeTest.env;'};
   if(args.path.endsWith('lib/asaas'))return {loader:'js',contents:
