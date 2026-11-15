@@ -1,62 +1,45 @@
 /**
- * Conservative server-side screening for PUBLIC profile identifiers and display names.
- * Rejects clear abuse and impersonation. Context-sensitive cases stay reportable,
- * rather than blocking every substring in ordinary names.
+ * Public profile-name policy. Kept intentionally conservative to avoid
+ * rejecting ordinary names that contain innocent substrings.
  */
+const banned=new Set([
+  'fdp','pqp','puta','puto','putaria','putinha','caralho','porra',
+  'merda','foda','foder','fodase','buceta','xota','arrombado',
+  'arrombada','cuzao','cuzona','filhodaputa','filhadaputa',
+  'pedofilo','pedofila','pedofilia','estuprador','estupradora',
+  'nazista','neonazi','racista','racismo','idiota','imbecil',
+  'vagabundo','vagabunda','asshole','motherfucker','fuckyou',
+  'bitch','bastard','mierda','pendejo','pendeja','chingada'
+]);
+const serious=['pedofil','estupr','neonazi','filhodaputa','filhadaputa','motherfucker','pornograf','pornhub','racist','fuckyou','heilhitler'];
+const official=new Set([
+  'admin','administrador','administradora','administrator','moderador',
+  'moderadora','moderator','suporte','support','atendimento','equipe',
+  'staff','official','oficial','meuritmo','meuritmoadmin','mradmin',
+  'root','system','sistema','seguranca','security','verificado',
+  'verified','helpdesk'
+]);
 function fold(value:string){
-  return value.normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g,'')
-    .toLowerCase()
-    .replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g,'');
+  return value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/g,'');
 }
-const offensiveWords=new Set([
-  'fdp','pqp','puta','puto','putaria','putinha','caralho','porra','merda','foda',
-  'foder','fodase','buceta','xota','arrombado','arrombada','cuzao','cuzona',
-  'filhodaputa','filhadaputa','pedofilo','pedofila','pedofilia','estuprador',
-  'estupradora','estuprar','estupramento','nazista','neonazi',
-  'racista','racismo','idiota','imbecil','vagabundo','vagabunda',
-  'asshole','motherfucker','fuckyou','bitch','bastard',
-  'mierda','pendejo','pendeja','chingada','gilipollas'
-]);
-const dangerousSegments=[
-  'pedofil','estupr','neonazi','filhodaputa','filhadaputa','motherfucker',
-  'pornograf','pornhub','racist','fuckyou','heilhitler'
-];
-const reservedWords=new Set([
-  'admin','administrador','administradora','administrator','moderador','moderadora','moderator',
-  'suporte','support','atendimento','equipe','staff','official','oficial',
-  'meuritmo','meuritmoadmin','mradmin','root','system','sistema','seguranca',
-  'security','verificado','verified','helpdesk'
-]);
-
-export function nameIssue(value:string,kind:'username'|'display'):'inappropriate'|'impersonation'|null {
+function tokens(value:string):string[]{
+  const words=value.replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(Boolean);
+  return words.length>1&&words.every(word=>word.length===1)
+    ? [...words,words.join('')] : words;
+}
+export function nameIssue(value:string,kind:'username'|'display'):'inappropriate'|'impersonation'|null{
   const raw=fold(value.trim());
-  const leet=raw.replace(/[013457@$!]/g,c=>({'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t','@':'a','
-  if(each.some(w=>reservedWords.has(w)) || kind==='username'&&raw.split('_').some(w=>reservedWords.has(w.replace(/\d+$/,''))))
+  const leet=raw.replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e')
+    .replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t')
+    .replace(/@/g,'a').replace(/\$/g,'s').replace(/!/g,'i');
+  if(kind==='display'&&/(?:^|[^a-z])(?:meu[\s_-]*ritmo|mr[\s_-]*(?:oficial|suporte|admin)|(?:suporte|atendimento)[\s_-]*meu[\s_-]*ritmo)(?:$|[^a-z])/.test(raw))
     return 'impersonation';
-  if(each.some(w=>offensiveWords.has(w)))return 'inappropriate';
+  const candidates=[...tokens(raw),...tokens(leet)];
+  const all=[...candidates,...candidates.map(w=>w.replace(/\d+$/,''))];
+  if(all.some(w=>official.has(w)))return 'impersonation';
+  if(all.some(w=>banned.has(w)))return 'inappropriate';
   const compact=leet.replace(/[^a-z]/g,'');
-  // Detect only distinctive, severe substrings to avoid blocking names
-  // like "Computador" because they happen to contain a shorter term.
-  if(dangerousSegments.some(w=>compact.includes(w)))return 'inappropriate';
-  return null;
-}
-:'s','!':'i'} as Record<string,string>)[c]||c);
-  const tokenize=(s:string)=>{
-    const words=s.replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(Boolean);
-    const joined=words.length>=2&&words.every(w=>w.length===1)?words.join(''):null;
-    return [...words,...(joined?[joined]:[])];
-  };
-  if(kind==='display'&&/(?:^|[^a-z])(?:meu[\\s_-]*ritmo|mr[\\s_-]*(?:oficial|suporte|admin)|(?:suporte|atendimento)[\\s_-]*meu[\\s_-]*ritmo)(?:$|[^a-z])/.test(raw))return 'impersonation';
-  const candidates=[...tokenize(raw),...tokenize(leet)];
-  const withNumericSuffix=candidates.map(w=>w.replace(/\d+$/,''));
-  const each=[...candidates,...withNumericSuffix];
-  if(each.some(w=>reservedWords.has(w)) || kind==='username'&&raw.split('_').some(w=>reservedWords.has(w.replace(/\d+$/,''))))
-    return 'impersonation';
-  if(each.some(w=>offensiveWords.has(w)))return 'inappropriate';
-  const compact=raw.replace(/[^a-z]/g,'');
-  // Detect only distinctive, severe substrings to avoid blocking names
-  // like "Computador" because they happen to contain a shorter term.
-  if(dangerousSegments.some(w=>compact.includes(w)))return 'inappropriate';
+  if(serious.some(part=>compact.includes(part)))return 'inappropriate';
   return null;
 }
