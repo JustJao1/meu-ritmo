@@ -8,6 +8,7 @@ import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
 
 const inputSchema=z.object({
   price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
+  paymentMethod:z.enum(['PIX','CREDIT_CARD']),
   name:z.string().trim().min(3).max(120),
   cpfCnpj:z.string().trim().min(11).max(18),
   discountCode:z.string().trim().max(32).optional(),
@@ -51,7 +52,7 @@ export async function POST(req:Request){
       customer={customer_id:customerId};
     }
     const sub=await asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body:{
-      customer:customer.customer_id,billingType:'UNDEFINED',value:first/100,
+      customer:customer.customer_id,billingType:data.paymentMethod,value:first/100,
       nextDueDate:new Date().toISOString().slice(0,10),
       cycle:plan.endsWith('_year')?'YEARLY':'MONTHLY',externalReference:id,
       description:'MR: Meu Ritmo - '+plan,
