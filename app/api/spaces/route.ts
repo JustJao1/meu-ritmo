@@ -4,6 +4,7 @@ import {getUser} from '../../session';
 import {sameOrigin,registerMember} from '../../../lib/admin-access';
 import {planAccess} from '../../../lib/entitlements';
 import {stateInput} from '../../../lib/state-validation';
+import {socialRate} from '../../../lib/social';
 
 const actions=z.discriminatedUnion('action',[
  z.object({action:z.literal('create'),name:z.string().trim().min(3).max(64)}),
@@ -82,14 +83,14 @@ export async function POST(req:Request){
    return reply({error:'Não foi possível gerar um código exclusivo. Tente novamente.'},503);
   }
   if(a.action==='join'){
+   if(!await socialRate(user.userId,'space-join',10,900))return reply({error:'Muitas tentativas de convite. Aguarde 15 minutos.'},429);
    await registerMember(user);
    const target=await env.DB!.prepare('SELECT id FROM shared_spaces WHERE join_code=?').bind(a.code).first<{id:string}>();
    if(!target)return reply({error:'Código inválido ou alterado pelo criador.'},404);
    const existing=await member(user.userId,target.id);
    if(existing)return reply({message:'Você já participa deste espaço.',id:target.id});
-   const n=await env.DB!.prepare('SELECT count(*) AS n FROM shared_space_members WHERE space_id=?').bind(target.id).first<{n:number}>();
-   if((n?.n||0)>=40)return reply({error:'Este espaço atingiu o limite de 40 participantes.'},409);
-   await env.DB!.prepare('INSERT INTO shared_space_members(space_id,user_id,joined_at) VALUES (?,?,?) ON CONFLICT(space_id,user_id) DO NOTHING').bind(target.id,user.userId,now).run();
+   const joined=await env.DB!.prepare('INSERT INTO shared_space_members(space_id,user_id,joined_at) SELECT ?,?,? WHERE (SELECT count(*) FROM shared_space_members WHERE space_id=?)<40 ON CONFLICT(space_id,user_id) DO NOTHING').bind(target.id,user.userId,now,target.id).run();
+   if(!joined.meta.changes)return reply({error:'Não foi possível entrar: o espaço está cheio ou você já participa.'},409);
    return reply({message:'Você entrou no espaço.',id:target.id});
   }
   const s=await member(user.userId,a.id);
