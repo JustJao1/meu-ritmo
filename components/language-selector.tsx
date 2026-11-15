@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Esse nome está reservado por um cadastro aguardando confirmação. Se foi você, abra Confirmar e-mail e reenvie o código usando o e-mail do primeiro cadastro.":["This username is reserved by a registration awaiting confirmation. If you started it, open Confirm email and resend the code using the original email address.","Este nombre está reservado por un registro pendiente de confirmación. Si fue tuyo, abre Confirmar correo y reenvía el código con el correo usado originalmente."],
+"Confirmar meu cadastro anterior":["Confirm my previous registration","Confirmar mi registro anterior"],
+"Não foi possível solicitar o código agora. Confira o e-mail informado e tente novamente mais tarde.":["Could not request the code right now. Check the email address and try again later.","No se pudo solicitar el código ahora. Revisa el correo indicado e inténtalo de nuevo más tarde."],
+"Solicitação de reenvio aceita. Confira a caixa de entrada e o spam.":["Resend request accepted. Check your inbox and spam folder.","Solicitud de reenvío aceptada. Revisa la bandeja de entrada y el correo no deseado."],
 "Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.":["Enter the six-digit code sent to your email. If you did not receive it, request another below.","Introduce el código de seis dígitos enviado a tu correo. Si no lo recibiste, solicita otro abajo."],
 "Reenviar código de confirmação":["Resend verification code","Reenviar código de confirmación"],
 "Informe seu e-mail para reenviar o código.":["Enter your email to resend the code.","Introduce tu correo para reenviar el código."],
