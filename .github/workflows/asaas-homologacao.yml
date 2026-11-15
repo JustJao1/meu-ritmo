@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/asaas-homologacao.yml'
       - 'scripts/asaas-sandbox-smoke.mjs'
+      - 'scripts/asaas-sandbox-e2e.mjs'
 permissions:
   contents: read
 jobs:
@@ -26,3 +27,25 @@ jobs:
           SANDBOX_ASAAS_WEBHOOK_READY: ${{ vars.SANDBOX_ASAAS_WEBHOOK_READY }}
           SANDBOX_ASAAS_BILLING_ENABLED: ${{ vars.SANDBOX_ASAAS_BILLING_ENABLED }}
         run: node scripts/asaas-sandbox-smoke.mjs
+
+  testar_pagamento_simulado:
+    name: Pix simulado, webhook, cancelamento e estorno (isolados)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    needs: [asaas_sandbox]
+    environment: sandbox
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Executar homologação financeira sem dinheiro real
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+          SANDBOX_ASAAS_WEBHOOK_TOKEN: ${{ secrets.SANDBOX_ASAAS_WEBHOOK_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SANDBOX_D1_DATABASE_ID: ${{ vars.SANDBOX_D1_DATABASE_ID }}
+          PRODUCTION_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+        run: node scripts/asaas-sandbox-e2e.mjs
