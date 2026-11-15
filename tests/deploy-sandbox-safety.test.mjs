@@ -34,6 +34,10 @@ test('sandbox workflow is manual and bound only to the sandbox environment',()=>
  assert.doesNotMatch(workflow,/branches:\s*\[main\]/);
  assert.match(workflow,/SANDBOX_D1_DATABASE_ID/);
  assert.match(workflow,/SANDBOX_SUPABASE_URL/);
+ assert.match(workflow,/ASAAS_WEBHOOK_TOKEN:\s*\$\{\{ secrets\.SANDBOX_ASAAS_WEBHOOK_TOKEN \}\}/);
+ assert.doesNotMatch(workflow,/ASAAS_WEBHOOK_TOKEN:\s*\$\{\{ secrets\.ASAAS_WEBHOOK_TOKEN \}\}/);
+ assert.match(workflow,/ASAAS_WEBHOOK_READY:\s*\$\{\{ vars\.SANDBOX_ASAAS_WEBHOOK_READY/);
+ assert.match(workflow,/ASAAS_BILLING_ENABLED:\s*\$\{\{ vars\.SANDBOX_ASAAS_BILLING_ENABLED/);
  assert.doesNotMatch(workflow,/run: npm run deploy\s*$/m);
 });
 test('deployment refuses any production D1 ID before touching Cloudflare',()=>{

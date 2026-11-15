@@ -12,8 +12,8 @@ No GitHub, abra **Settings → Environments → sandbox → Environment variable
 
 - `SANDBOX_D1_DATABASE_ID` = UUID do novo D1, **não o banco já usado pelo site principal**.
 - `ASAAS_MODE` = `sandbox` (já cadastrada).
-- `ASAAS_WEBHOOK_READY` = `false`.
-- `ASAAS_BILLING_ENABLED` = `false`.
+- `SANDBOX_ASAAS_WEBHOOK_READY` = `false`.
+- `SANDBOX_ASAAS_BILLING_ENABLED` = `false`.
 
 O script bloqueia a implantação se o UUID do D1 for idêntico ao de produção.
 
@@ -44,9 +44,9 @@ No painel do **Asaas Sandbox**, crie outro webhook, diferente do webhook já con
 - API: v3; entrega sequencial; fila ativa; eventos de cobranças.
 - Token distinto de produção.
 
-Cadastre esse token no ambiente `sandbox` como Secret `ASAAS_WEBHOOK_TOKEN`. Depois de confirmar que o endereço de testes está publicado e o token coincide, mude `ASAAS_WEBHOOK_READY=true` e publique de novo **apenas o workflow Sandbox**.
+Cadastre esse token no ambiente `sandbox` como Secret `SANDBOX_ASAAS_WEBHOOK_TOKEN`. O workflow o fornecerá internamente ao Worker com o nome `ASAAS_WEBHOOK_TOKEN`, sem reaproveitar o token de produção. Depois de confirmar que o endereço de testes está publicado e o token coincide, mude `SANDBOX_ASAAS_WEBHOOK_READY=true` e publique de novo **apenas o workflow Sandbox**.
 
-Para permitir simular contratações na homologação, altere `ASAAS_BILLING_ENABLED=true` **somente no ambiente sandbox**, publique o Worker de teste, e execute as operações Pix e cartão no Asaas Sandbox.
+Para permitir simular contratações na homologação, altere `SANDBOX_ASAAS_BILLING_ENABLED=true` **somente no ambiente sandbox**, publique o Worker de teste, e execute as operações Pix e cartão no Asaas Sandbox.
 
 Os planos devem permanecer pendentes até confirmação via webhook. Teste também renovação, cupom, cancelamento, duplicação de eventos e estorno. Nunca utilize a chave de produção nos testes. Mesmo no Sandbox, use somente usuários e documentos fictícios fornecidos para testes pelo provedor.
 

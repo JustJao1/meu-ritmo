@@ -33,6 +33,6 @@ jobs:
           SANDBOX_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SANDBOX_SUPABASE_SERVICE_ROLE_KEY }}
           ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
           ASAAS_MODE: ${{ vars.ASAAS_MODE }}
-          ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}
-          ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY || 'false' }}
-          ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED || 'false' }}
+          ASAAS_WEBHOOK_TOKEN: ${{ secrets.SANDBOX_ASAAS_WEBHOOK_TOKEN }}
+          ASAAS_WEBHOOK_READY: ${{ vars.SANDBOX_ASAAS_WEBHOOK_READY || 'false' }}
+          ASAAS_BILLING_ENABLED: ${{ vars.SANDBOX_ASAAS_BILLING_ENABLED || 'false' }}
