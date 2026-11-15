@@ -44,7 +44,7 @@ No painel do **Asaas Sandbox**, crie outro webhook, diferente do webhook já con
 - API: v3; entrega sequencial; fila ativa; eventos de cobranças.
 - Token distinto de produção.
 
-Cadastre esse token no ambiente `sandbox` como Secret `ASAAS_WEBHOOK_TOKEN`. Depois de confirmar que o endereço de testes está publicado e o token coincide, mude `ASAAS_WEBHOOK_READY=true` e publique de novo **apenas o workflow Sandbox**.
+Cadastre esse token no ambiente `sandbox` como Secret `SANDBOX_ASAAS_WEBHOOK_TOKEN`. O workflow o fornecerá internamente ao Worker com o nome `ASAAS_WEBHOOK_TOKEN`, sem reaproveitar o token de produção. Depois de confirmar que o endereço de testes está publicado e o token coincide, mude `ASAAS_WEBHOOK_READY=true` e publique de novo **apenas o workflow Sandbox**.
 
 Para permitir simular contratações na homologação, altere `ASAAS_BILLING_ENABLED=true` **somente no ambiente sandbox**, publique o Worker de teste, e execute as operações Pix e cartão no Asaas Sandbox.
 
