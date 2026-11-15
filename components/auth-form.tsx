@@ -70,6 +70,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
     e.preventDefault();
     const form=new FormData(e.currentTarget),b=Object.fromEntries(form);
     if(mode==='password')b.email=recoveryEmail;
+    delete b.passwordConfirmation;
     if(mode==='signup'||mode==='password'){
       if(!passwordMeetsPolicy(newPassword)){setError(t(PASSWORD_GUIDANCE));return;}
       if(newPassword!==passwordConfirmation){setError(t('As senhas não coincidem.'));return;}
@@ -93,7 +94,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
       }else{
         setMessage(v.message||t('Concluído.'));
       }
-    }catch(e){setError(e instanceof Error?e.message:t('Não foi possível concluir.'));}
+    }catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível concluir.'));}
     finally{setBusy(false);}
   }
   const needPassword=mode==='login'||mode==='signup'||mode==='password';
