@@ -11,6 +11,23 @@ test('respostas, bloqueio bilateral e denúncias respeitam permissões',async()=
 function png(){const crc=b=>{let c=0xffffffff;for(const v of b){c^=v;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0)}return(c^0xffffffff)>>>0};const chunk=(type,data)=>{const b=Buffer.concat([Buffer.from(type),data]),n=Buffer.alloc(4),c=Buffer.alloc(4);n.writeUInt32BE(data.length);c.writeUInt32BE(crc(b));return Buffer.concat([n,b,c])};const h=Buffer.from([0,0,0,1,0,0,0,1,8,6,0,0,0]);return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',h),chunk('tEXt',Buffer.from('private\0SECRET_METADATA')),chunk('IDAT',deflateSync(Buffer.from([0,255,0,0,255]))),chunk('IEND',Buffer.alloc(0))])}
 test('foto recusa SVG e remove metadados PNG no servidor',async()=>{who('bob');assert.equal((await api.avatar.POST(new Request('https://test.example/api/avatar',{method:'POST',headers:{origin:'https://test.example','Content-Type':'image/svg+xml'},body:'<svg/>'}))).status,400);const r=await api.avatar.POST(new Request('https://test.example/api/avatar',{method:'POST',headers:{origin:'https://test.example','Content-Type':'image/png'},body:png()}));assert.equal(r.status,200);assert.equal(objects.size,1);assert(!Buffer.from([...objects.values()][0].body).includes(Buffer.from('SECRET_METADATA')));});
 test('descontos podem ser rascunhados sem pagamento e não liberam planos gratuitos',async()=>{who('bob');assert.equal((await request('discount',{action:'create'})).status,403);who('owner');const r=await request('discount',{action:'create',code:'DESCONTO10',label:'Primeira cobrança',plan:'all',kind:'percent',value:10,expiresAt:Math.floor(Date.now()/1000)+86400,maxUses:10});assert.equal(r.status,200);assert.equal(db.prepare('SELECT stripe_id FROM discount_codes WHERE code=?').get('DESCONTO10').stripe_id,null);});
+test('uniqueness before confirmation and profile reports',async()=>{
+ const now=Math.floor(Date.now()/1000);
+ db.prepare('INSERT INTO auth_pending_profiles(user_id,username,name,accepted_at,created_at) VALUES (?,?,?,?,?)').run('pending_a','reserved_name','Example',now,now);
+ assert.throws(()=>db.prepare('INSERT INTO auth_pending_profiles(user_id,username,name,accepted_at,created_at) VALUES (?,?,?,?,?)').run('pending_b','RESERVED_NAME','Other',now,now),/UNIQUE/i);
+ who('eve');
+ assert.equal((await request('profile',profile('reserved_name','Alice nova'),'PUT')).status,409);
+ assert.equal((await request('profile',profile('eve_person','Alice nova'),'PUT')).status,200);
+ const alice=db.prepare('SELECT id FROM profiles WHERE user_id=?').get('alice');
+ who('bob');
+ const report={action:'report',profileId:alice.id,reason:'Nome inadequado para a comunidade'};
+ assert.equal((await request('social',report)).status,200);
+ assert.equal((await request('social',report)).status,200);
+ assert.equal(db.prepare('SELECT count(*) AS n FROM social_reports WHERE reporter_id=? AND profile_id=?').get('bob',alice.id).n,1);
+ who('owner');
+ const result=await (await feed('?moderation=1')).json();
+ assert(result.reports.some(r=>r.profile_id===alice.id&&r.username==='alice_novo'));
+});
 test('checkout Asaas valida plano, termos e cupom no servidor antes da contratação',async()=>{
   const e=globalThis.__socialEnv;
   e.ASAAS_API_KEY='sandbox-test-key';
