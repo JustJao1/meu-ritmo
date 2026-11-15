@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync,statSync} from 'node:fs';
 
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const areas=[
@@ -13,6 +13,21 @@ const areas=[
  'components/privacy-center.tsx',
  'components/premium-studio.tsx'
 ];
+function visibleCodeFiles(directory){
+ return readdirSync(new URL('../'+directory+'/',import.meta.url)).flatMap(entry=>{
+  if(entry==='ui')return [];
+  const path=directory+'/'+entry;
+  if(statSync(new URL('../'+path,import.meta.url)).isDirectory())return visibleCodeFiles(path);
+  return /\\.(?:tsx|jsx|ts|js)$/.test(entry)?[path]:[];
+ });
+}
+test('no app or first-party component uses native browser dialogs',()=>{
+ for(const path of [...visibleCodeFiles('app'),...visibleCodeFiles('components')]){
+  const source=read(path);
+  const native=/(?<![\\w.])(?:window\\.|globalThis\\.)?(?:confirm|prompt|alert)\\s*\\(/g;
+  assert.equal([...source.matchAll(native)].length,0,path+' still uses a blocking browser dialog');
+ }
+});
 test('critical browser confirmations use the Meu Ritmo dialog rather than native blocking popups',()=>{
  for(const area of areas){
   const source=read(area);
