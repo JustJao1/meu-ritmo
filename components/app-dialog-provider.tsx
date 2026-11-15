@@ -2,7 +2,7 @@
 
 import {createContext,useCallback,useContext,useRef,useState,type ReactNode} from 'react';
 import {Dialog as RadixDialog} from 'radix-ui';
-import {AlertTriangle,CheckCircle2,HelpCircle,Info,ShieldAlert,X} from 'lucide-react';
+import {AlertTriangle,CheckCircle2,Info,ShieldAlert,X} from 'lucide-react';
 import {useLocale} from './language-selector';
 
 export type DialogIntent='default'|'danger'|'warning'|'success';
