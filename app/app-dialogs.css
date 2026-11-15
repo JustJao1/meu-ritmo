@@ -1,0 +1,58 @@
+/* Uma caixa consistente com os temas individuais do Meu Ritmo. */
+.mr-confirm-overlay{
+ position:fixed;inset:0;z-index:99980;
+ background:rgba(8,12,17,.66);backdrop-filter:blur(5px);
+ animation:mr-confirm-fade .16s ease-out;
+}
+.mr-confirm-dialog{
+ position:fixed;z-index:99981;left:50%;top:50%;
+ width:min(460px,calc(100vw - 28px));max-height:min(86vh,750px);
+ transform:translate(-50%,-50%);
+ overflow:auto;overscroll-behavior:contain;
+ background:var(--paper);color:var(--ink);
+ border:1px solid color-mix(in srgb,var(--ink) 20%,transparent);
+ border-radius:16px;
+ box-shadow:0 28px 85px rgba(0,0,0,.28),0 4px 16px rgba(0,0,0,.11);
+ font:inherit;outline:none;
+ animation:mr-confirm-enter .19s cubic-bezier(.2,.8,.2,1);
+}
+.mr-confirm-dialog form{display:block;margin:0}
+.mr-confirm-header{display:flex;align-items:flex-start;gap:13px;padding:24px 24px 15px}
+.mr-confirm-icon{
+ display:inline-flex;align-items:center;justify-content:center;flex:0 0 42px;
+ width:42px;height:42px;border-radius:12px;
+ color:var(--ink);background:color-mix(in srgb,var(--accent) 18%,var(--paper));
+}
+.mr-confirm-danger .mr-confirm-icon{color:#bb3a45;background:color-mix(in srgb,#e95661 14%,var(--paper))}
+.mr-confirm-warning .mr-confirm-icon{color:#bd7715;background:color-mix(in srgb,#eaa839 17%,var(--paper))}
+.mr-confirm-success .mr-confirm-icon{color:#20875c;background:color-mix(in srgb,#3cb97f 17%,var(--paper))}
+.mr-confirm-heading{min-width:0;flex:1;display:grid;gap:7px;padding-top:1px}
+.mr-confirm-heading h2{font:700 clamp(17px,2.4vw,20px)/1.35 Manrope,'DM Sans',sans-serif;letter-spacing:-.035em;overflow-wrap:anywhere}
+.mr-confirm-heading p{font-size:14px;line-height:1.58;color:var(--ink);opacity:.8;white-space:pre-line;overflow-wrap:anywhere}
+.mr-confirm-close{flex:0 0 30px;display:inline-flex;justify-content:center;align-items:center;width:30px;height:30px;
+ border-radius:9px;color:var(--ink);opacity:.7;background:transparent;border:1px solid transparent;cursor:pointer}
+.mr-confirm-close:hover{opacity:1;background:color-mix(in srgb,var(--ink) 8%,var(--paper));border-color:color-mix(in srgb,var(--ink) 15%,transparent)}
+.mr-confirm-body{display:grid;gap:9px;padding:4px 24px 12px}
+.mr-confirm-body label{font-size:13px;font-weight:700;color:var(--ink)}
+.mr-confirm-body input{display:block;width:100%;min-height:46px;border-radius:10px;
+ padding:11px 13px;border:1px solid color-mix(in srgb,var(--ink) 30%,transparent);
+ background:color-mix(in srgb,var(--paper) 93%,var(--ink));color:var(--ink);font:500 14px 'DM Sans',sans-serif;
+ transition:border-color .16s,box-shadow .16s}
+.mr-confirm-body input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.mr-confirm-hint{font-size:12px;line-height:1.5;color:var(--ink);opacity:.84;overflow-wrap:anywhere}
+.mr-confirm-hint strong{font-weight:700;opacity:1;user-select:text}
+.mr-confirm-mismatch{display:block;color:#b83d4c;padding-top:3px;font-weight:600}
+.mr-confirm-actions{display:flex;justify-content:flex-end;align-items:center;gap:9px;padding:13px 24px 23px;flex-wrap:wrap}
+.mr-confirm-actions button{min-height:43px;display:inline-flex;justify-content:center;align-items:center;padding:10px 18px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid color-mix(in srgb,var(--ink) 20%,transparent);transition:background .15s,transform .15s;cursor:pointer}
+.mr-confirm-cancel{background:transparent;color:var(--ink)}
+.mr-confirm-cancel:hover{background:color-mix(in srgb,var(--ink) 8%,var(--paper))}
+.mr-confirm-submit{background:var(--ink);color:var(--paper);border-color:var(--ink)!important}
+.mr-confirm-submit:hover{filter:brightness(1.14);transform:translateY(-1px)}
+.mr-confirm-danger .mr-confirm-submit{background:#b83e49!important;border-color:#b83e49!important;color:white!important}
+.mr-confirm-warning .mr-confirm-submit{background:var(--ink)!important;color:var(--paper)!important}
+.mr-confirm-actions button:focus-visible,.mr-confirm-close:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.mr-confirm-actions button:disabled{cursor:not-allowed;opacity:.42;transform:none}
+@keyframes mr-confirm-fade{from{opacity:0}to{opacity:1}}
+@keyframes mr-confirm-enter{from{opacity:0;transform:translate(-50%,calc(-50% + 12px)) scale(.98)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media(max-width:600px){.mr-confirm-dialog{border-radius:14px;width:calc(100vw - 24px)}.mr-confirm-header{padding:20px 17px 12px;gap:10px}.mr-confirm-icon{width:38px;height:38px;flex-basis:38px}.mr-confirm-body{padding:5px 17px 14px}.mr-confirm-actions{padding:12px 17px 19px;gap:9px}.mr-confirm-actions button{flex:1;min-width:0}}
+@media(prefers-reduced-motion:reduce){.mr-confirm-overlay,.mr-confirm-dialog{animation:none}.mr-confirm-actions button{transition:none}}
