@@ -10,6 +10,7 @@ import ProfileEditor,{type SocialProfile} from '../components/profile-editor';
 import PrivacyCenter from '../components/privacy-center';
 import ChangePasswordForm from '../components/change-password-form';
 import SharedSpaces from '../components/shared-spaces';
+import {useAppDialog} from '../components/app-dialog-provider';
 import {preferenceAllowed} from '../components/cookie-consent';
 import PremiumStudio, {ProfileMark,PlanTag} from '../components/premium-studio';
 import PlanComparison from '../components/plan-comparison';
@@ -32,6 +33,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     user?: string;
 }) {
     const {t,locale}=useLocale();
+    const dialogs=useAppDialog();
     const currency=(v:number)=>money(v,locale);
     const [publicPage, setPublicPage] = useState(landing), [demo, setDemo] = useState(false), [area, setArea] = useState(initialArea), [data, setData] = useState<Data>(initial), [loaded, setLoaded] = useState(false), [status, setStatus] = useState(''), [error, setError] = useState(''), [modal, setModal] = useState<Item | null>(null), [panel, setPanel] = useState(''), [guide, setGuide] = useState(0), [query, setQuery] = useState(''), [selected, setSelected] = useState(today), [view, setView] = useState('Semana'), [filter, setFilter] = useState('Todas'), [archived, setArchived] = useState(false), [annual, setAnnual] = useState(false), [toast, setToast] = useState(''), [undo, setUndo] = useState<Data | null>(null), [permission, setPermission] = useState('default'), [saving, setSaving] = useState(false);
     const [showEarlyAccess,setShowEarlyAccess]=useState(true);
@@ -123,7 +125,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     function startDemo() { setData(demoData()); setDemo(true); setLoaded(true); setPublicPage(false); setArea('Hoje'); window.scrollTo(0, 0); }
     function open(type: Kind) { setModal(blank(type)); setPanel(''); }
     function update(x: Item) { change({ ...data, items: data.items.some(i => i.id === x.id) ? data.items.map(i => i.id === x.id ? x : i) : [...data.items, x] }); }
-    function remove(x: Item) { if (!confirm('Excluir “' + x.title + '”?'))
+    async function remove(x: Item) { if (!await dialogs.confirm({title:t('Excluir item'),description:t('Deseja excluir este item?')+' “'+x.title+'”',confirmText:t('Excluir'),intent:'danger'}))
         return; setUndo(data); change({ ...data, items: data.items.filter(i => i.id !== x.id) }); setModal(null); setToast('Item excluído.'); }
     function toggle(x: Item) { const d = area === 'Rotina' ? selected : today, done = isDone(x, d); setUndo(data); update(x.repeat !== 'none' || x.days.length ? { ...x, completedDates: done ? (x.completedDates || []).filter(v => v !== d) : [...(x.completedDates || []), d] } : { ...x, done: !done }); setToast(done ? 'Tarefa reaberta.' : 'Tarefa concluída.'); }
     function postpone(x: Item) { const current = area === 'Rotina' ? selected : today; const d = dayDate(current); d.setDate(d.getDate() + 1); setUndo(data); if (x.repeat !== 'none' || x.days.length) {
@@ -202,7 +204,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
         setSaving(false);
     } }
     async function cancelSubscription(){
-      if(!confirm('Cancelar próximas renovações? O acesso já pago será mantido até o vencimento.'))return;
+      if(!await dialogs.confirm({title:t('Cancelar renovação'),description:t('As próximas cobranças serão canceladas, mas seu acesso já pago será mantido até o vencimento.'),confirmText:t('Cancelar renovação'),intent:'warning'}))return;
       setSaving(true);
       try{
         const r=await fetch('/api/billing/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
