@@ -29,7 +29,7 @@ test('resend uses signup-only action, rate limit and no user enumeration',()=>{
 
 test('new user-facing strings have translations for English and Spanish',()=>{
  for(const key of [
-  'Digite o código de seis dígitos enviado ao seu e-mail.',
+  'Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.',
   'Reenviar código de confirmação',
   'Informe seu e-mail para reenviar o código.',
   'Não foi possível reenviar o código.'
