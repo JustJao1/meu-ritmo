@@ -36,6 +36,7 @@ const mock={name:'mock-auth-dependencies',setup(buildApi){
     export const revoke=async()=>{};
     export const authRate=async()=>true;
     export const finishProfile=async()=>{};
+    export const hasPendingVerification=async()=>false;
   `};
  });
 }};
