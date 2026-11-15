@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"UMA FRASE PARA HOJE":["A THOUGHT FOR TODAY","UNA FRASE PARA HOY"],
 "Termos de uso":["Terms of use","Términos de uso"],
 "Li os termos e compreendi a renovação recorrente:":["I have read the terms and understand recurring renewals:","He leído los términos y entiendo las renovaciones recurrentes:"],
 "Li a política de cancelamento, reembolso e direito de arrependimento de 7 dias:":["I have read the cancellation, refund and seven-day withdrawal policy:","He leído la política de cancelación, reembolso y desistimiento de 7 días:"],
