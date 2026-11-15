@@ -174,32 +174,32 @@ test('estorno da renovação não retira o período anterior pago, e estorno tot
  db.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?)').run('cora','cus_cora',now);
  db.prepare("INSERT INTO asaas_orders(id,user_id,provider_subscription_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?,?)")
   .run('order_cora','cora','sub_cora','plus_month',1990,1990,'pending',now);
- const paymentStatuses=new Map([['pay_cora_first','RECEIVED'],['pay_cora_renewal','RECEIVED']]);
+ const paymentStatuses=new Map([['pay_corafirst','RECEIVED'],['pay_corarenewal','RECEIVED']]);
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
   const id=String(url).split('/').pop();
-  if(paymentStatuses.has(id))return Response.json({id,customer:'cus_cora',subscription:'sub_cora',billingType:'PIX',value:19.90,dueDate:id==='pay_cora_first'?due:renewalDue,status:paymentStatuses.get(id)});
+  if(paymentStatuses.has(id))return Response.json({id,customer:'cus_cora',subscription:'sub_cora',billingType:'PIX',value:19.90,dueDate:id==='pay_corafirst'?due:renewalDue,status:paymentStatuses.get(id)});
   throw Error('Unexpected provider call '+url);
  };
  let eventCount=0;
  const webhook=(paymentId)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json','asaas-access-token':'a'.repeat(48)},body:JSON.stringify({id:'evt_cora_'+(++eventCount),event:'PAYMENT_UPDATED',payment:{id:paymentId}})}));
  try{
-  assert.equal((await webhook('pay_cora_first')).status,200);
+  assert.equal((await webhook('pay_corafirst')).status,200);
   const firstUntil=db.prepare("SELECT valid_until FROM subscriptions WHERE user_id='cora'").get().valid_until;
   assert(firstUntil>now);
-  assert.equal((await webhook('pay_cora_renewal')).status,200);
+  assert.equal((await webhook('pay_corarenewal')).status,200);
   assert(db.prepare("SELECT valid_until FROM subscriptions WHERE user_id='cora'").get().valid_until>firstUntil);
-  paymentStatuses.set('pay_cora_renewal','PARTIALLY_REFUNDED');
-  assert.equal((await webhook('pay_cora_renewal')).status,200);
+  paymentStatuses.set('pay_corarenewal','PARTIALLY_REFUNDED');
+  assert.equal((await webhook('pay_corarenewal')).status,200);
   assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id='order_cora'").get().status,'review','Partial refunds require review');
   assert.equal(db.prepare("SELECT status FROM subscriptions WHERE user_id='cora'").get().status,'active');
-  paymentStatuses.set('pay_cora_renewal','REFUNDED');
-  assert.equal((await webhook('pay_cora_renewal')).status,200);
+  paymentStatuses.set('pay_corarenewal','REFUNDED');
+  assert.equal((await webhook('pay_corarenewal')).status,200);
   const remaining=db.prepare("SELECT valid_until,status FROM subscriptions WHERE user_id='cora'").get();
   assert.equal(remaining.valid_until,firstUntil);
   assert.equal(remaining.status,'active');
-  paymentStatuses.set('pay_cora_first','REFUNDED');
-  assert.equal((await webhook('pay_cora_first')).status,200);
+  paymentStatuses.set('pay_corafirst','REFUNDED');
+  assert.equal((await webhook('pay_corafirst')).status,200);
   const revoked=db.prepare("SELECT valid_until,status FROM subscriptions WHERE user_id='cora'").get();
   assert.equal(revoked.valid_until,0);
   assert.equal(revoked.status,'canceled');
@@ -217,11 +217,11 @@ test('pagamento atrasado de assinatura antiga não substitui plano mais recente'
  db.prepare("INSERT INTO subscriptions(user_id,subscription_id,plan,status,updated_at,valid_until) VALUES (?,?,?,?,?,?)").run('diana','sub_diana_new','pro','active',now,currentUntil);
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
-  if(String(url).endsWith('/payments/pay_diana_old'))return Response.json({id:'pay_diana_old',customer:'cus_diana',subscription:'sub_diana_old',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
+  if(String(url).endsWith('/payments/pay_dianaold'))return Response.json({id:'pay_dianaold',customer:'cus_diana',subscription:'sub_diana_old',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
   throw Error('Unexpected provider call '+url);
  };
  try{
-  const event=new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json','asaas-access-token':'a'.repeat(48)},body:JSON.stringify({id:'evt_diana_old',event:'PAYMENT_RECEIVED',payment:{id:'pay_diana_old'}})});
+  const event=new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json','asaas-access-token':'a'.repeat(48)},body:JSON.stringify({id:'evt_diana_old',event:'PAYMENT_RECEIVED',payment:{id:'pay_dianaold'}})});
   assert.equal((await api.webhook.POST(event)).status,200);
   const saved=db.prepare("SELECT subscription_id,plan,status,valid_until FROM subscriptions WHERE user_id='diana'").get();
   assert.equal(saved.subscription_id,'sub_diana_new');assert.equal(saved.plan,'pro');assert.equal(saved.valid_until,currentUntil);
