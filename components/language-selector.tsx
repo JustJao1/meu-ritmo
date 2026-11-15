@@ -3,6 +3,11 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Usar este modelo":["Use this template","Usar este modelo"],
+"Ver benefício Plus":["See Plus benefit","Ver beneficio Plus"],
+"Mover tarefa para cima":["Move task up","Subir tarea"],
+"Mover tarefa para baixo":["Move task down","Bajar tarea"],
+
 "20 notas fixadas e 12 modelos prontos de rotina":["20 pinned notes and 12 ready-made routine templates","20 notas fijadas y 12 modelos de rutina listos"],
 "Publicação de rotinas personalizadas no Social":["Publish custom routines in Social","Publicación de rutinas personalizadas en Social"],
 
