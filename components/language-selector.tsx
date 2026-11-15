@@ -3,6 +3,23 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Entre novamente para alterar a senha.":["Sign in again to change your password.","Vuelve a iniciar sesión para cambiar tu contraseña."],
+"Muitas tentativas de alteração. Tente novamente mais tarde.":["Too many password change attempts. Try again later.","Demasiados intentos de cambiar la contraseña. Vuelve a intentarlo más tarde."],
+"Muitas tentativas. Aguarde antes de tentar novamente.":["Too many attempts. Wait before trying again.","Demasiados intentos. Espera antes de volver a intentarlo."],
+"Não foi possível verificar sua senha atual. Tente novamente.":["We couldn't verify your current password. Try again.","No pudimos verificar tu contraseña actual. Vuelve a intentarlo."],
+"A senha atual está incorreta.":["The current password is incorrect.","La contraseña actual es incorrecta."],
+"Não foi possível confirmar a identidade desta conta.":["We couldn't confirm this account's identity.","No pudimos confirmar la identidad de esta cuenta."],
+"Não foi possível alterar a senha. Confira as regras e tente novamente.":["We couldn't change your password. Check the requirements and try again.","No pudimos cambiar tu contraseña. Revisa los requisitos y vuelve a intentarlo."],
+"Senha alterada. Entre novamente com a nova senha.":["Password updated. Sign in again with the new password.","Contraseña actualizada. Inicia sesión de nuevo con la nueva contraseña."],
+"Confira seu e-mail, senha e a confirmação do cadastro.":["Check your email, password, and account confirmation.","Revisa tu correo, tu contraseña y la confirmación del registro."],
+"Não foi possível cadastrar. Confira os dados ou recupere sua senha.":["We couldn't create your account. Check your details or reset your password.","No pudimos crear tu cuenta. Revisa tus datos o recupera tu contraseña."],
+"Esse nome de usuário já está em uso.":["This username is already in use.","Este nombre de usuario ya está en uso."],
+"Confira o código enviado ao seu e-mail.":["Check the code sent to your email.","Revisa el código enviado a tu correo."],
+"Código inválido ou expirado. Solicite outro.":["Invalid or expired code. Request another one.","Código no válido o caducado. Solicita otro."],
+"O link de recuperação não foi validado ou expirou. Solicite um novo link por e-mail.":["The recovery link could not be verified or has expired. Request another email.","No se pudo verificar el enlace de recuperación o ha caducado. Solicita otro correo."],
+"Não foi possível atualizar a senha.":["We couldn't update the password.","No pudimos actualizar la contraseña."],
+"Confira os campos. Use de 8 a 128 caracteres, com letra maiúscula, minúscula, número e símbolo. Os dados de cadastro e os consentimentos também são obrigatórios.":["Check the fields. Use 8 to 128 characters with uppercase, lowercase, a number, and a symbol. Registration details and consent are also required.","Revisa los campos. Usa entre 8 y 128 caracteres con mayúscula, minúscula, número y símbolo. Los datos de registro y el consentimiento también son obligatorios."],
+"Não foi possível acessar sua conta agora. Tente novamente em instantes.":["We couldn't access your account right now. Please try again shortly.","No pudimos acceder a tu cuenta en este momento. Vuelve a intentarlo en unos instantes."],
 "Use de 8 a 128 caracteres, com letra maiúscula, minúscula, número e símbolo.":["Use 8 to 128 characters, including an uppercase letter, lowercase letter, number, and symbol.","Usa entre 8 y 128 caracteres, con una letra mayúscula, una minúscula, un número y un símbolo."],
 "Entre com o e-mail e a senha usados no cadastro.":["Sign in with the email and password you used to register.","Inicia sesión con el correo y la contraseña que usaste al registrarte."],
 "Crie sua conta gratuitamente. Depois, confirme o e-mail para começar a usar o Meu Ritmo.":["Create your free account. Then confirm your email to start using Meu Ritmo.","Crea tu cuenta gratis. Después, confirma tu correo para comenzar a usar Meu Ritmo."],
