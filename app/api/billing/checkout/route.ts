@@ -5,6 +5,7 @@ import {asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type A
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
 import {z} from 'zod';
 import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
+import {parseLegalSettings} from '../../../../lib/legal-settings';
 
 const inputSchema=z.object({
   price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
@@ -12,7 +13,8 @@ const inputSchema=z.object({
   name:z.string().trim().min(3).max(120),
   cpfCnpj:z.string().trim().min(11).max(18),
   discountCode:z.string().trim().max(32).optional(),
-  acceptTerms:z.literal(true)
+  acceptTerms:z.literal(true),
+  acceptRefundPolicy:z.literal(true)
 });
 function verifiedInvoice(link:unknown){
   if(typeof link!=='string')return null;
@@ -25,12 +27,12 @@ export async function POST(req:Request){
   if(req.headers.get('origin')!==new URL(req.url).origin)return Response.json({error:'Origem inválida.'},{status:403});
   if(!asaasConfig().enabled)return Response.json({error:'Pagamento ainda não configurado.'},{status:503});
   const parsed=inputSchema.safeParse(await req.json().catch(()=>null));
-  if(!parsed.success)return Response.json({error:'Confira o plano, os dados do titular e aceite os termos.'},{status:400});
+  if(!parsed.success)return Response.json({error:'Confira o plano, os dados do titular, os termos e a política de cancelamento e reembolso.'},{status:400});
   const data=parsed.data,cpfCnpj=data.cpfCnpj.replace(/\D/g,'');
   if(!validBrazilTaxId(cpfCnpj))return Response.json({error:'CPF ou CNPJ inválido. Confira os dígitos informados.'},{status:400});
   const now=Math.floor(Date.now()/1000);
-  const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first();
-  if(!legal)return Response.json({error:'Identificação comercial pendente.'},{status:503});
+  const legalRecord=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first<{value:string}>();
+  if(!parseLegalSettings(legalRecord?.value))return Response.json({error:'Identificação comercial do fornecedor pendente ou inválida. Não é possível contratar neste momento.'},{status:503});
   const paid=await env.DB!.prepare('SELECT status,valid_until FROM subscriptions WHERE user_id=?').bind(user.userId).first<any>();
   if(paid&&['active','trialing'].includes(paid.status)&&(paid.valid_until||0)>now)return Response.json({error:'Você já possui uma assinatura ativa.'},{status:409});
   const plan=data.price as AsaasPlanCode;
