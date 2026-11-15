@@ -34,7 +34,7 @@ export async function GET(req:Request){
         }catch(error){
           diagnostic.apiReachable=false;
           const message=error instanceof Error?error.message:'';
-          const status=/\\((\\d{3})\\)/.exec(message)?.[1];
+          const status=/\((\d{3})\)/.exec(message)?.[1];
           if(status){
             const code=Number(status);
             diagnostic.apiHttpStatus=code;
