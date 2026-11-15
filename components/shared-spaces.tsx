@@ -165,14 +165,39 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
 
    {editing&&<form className="shared-editor" onSubmit={e=>void saveItem(e)}>
     <div className="shared-editor-header"><h3>{t('Editar item compartilhado')}</h3><button type="button" className="iconbtn" aria-label={t('Fechar')} onClick={()=>setEditing(null)}><X size={16}/></button></div>
-    <label>{t('Tipo')}<select value={editing.type} onChange={e=>setEditing({...editing,type:e.target.value as Kind,notify:false,time:e.target.value==='note'?'':editing.time})}>{kinds.map(k=><option key={k} value={k}>{t(kindNames[k])}</option>)}</select></label>
-    <label>{t('Título')}<input required maxLength={200} value={editing.title} onChange={e=>setEditing({...editing,title:e.target.value})}/></label>
-    {!['note','message'].includes(editing.type)&&<div className="shared-time-row"><label>{t('Data')}<input type="date" required value={editing.date} onChange={e=>setEditing({...editing,date:e.target.value})}/></label><label>{t('Horário')}{editing.type==='task'?' (opcional)':''}<input type="time" required={editing.type==='event'||editing.type==='reminder'} value={editing.time} onChange={e=>setEditing({...editing,time:e.target.value})}/></label>{editing.type==='event'&&<label>{t('Término')}<input type="time" required value={editing.end} onChange={e=>setEditing({...editing,end:e.target.value})}/></label>}</div>}
-    <label>{t('Detalhes (opcional)')}<textarea maxLength={10000} rows={3} value={editing.body} onChange={e=>setEditing({...editing,body:e.target.value})}/></label>
-    <p className="muted">{t('Ao salvar, todos os participantes verão a alteração. O lembrete compartilhado não aciona alarmes individuais.')}</p>
-    <div className="dialogactions"><button type="button" onClick={()=>setEditing(null)}>{t('Cancelar')}</button><button className="primary" type="submit" disabled={busy}><Check size={15}/>{t('Salvar para todos')}</button></div>
+    <div className="shared-draft-fields">
+     <label>{t('Tipo')}<select value={editing.type} onChange={e=>{const type=e.target.value as Kind;setEditing({...editing,type,time:['note','message'].includes(type)?'':editing.time,end:type==='event'?editing.end:'',notify:false,repeat:'none',checks:type==='task'?editing.checks:[]})}}>{kinds.map(k=><option key={k} value={k}>{t(kindNames[k])}</option>)}</select></label>
+     <label className="shared-field-grow">{t('Título')}<input required maxLength={200} value={editing.title} onChange={e=>setEditing({...editing,title:e.target.value})}/></label>
+    </div>
+    {!['note','message'].includes(editing.type)&&<div className="shared-time-row"><label>{t('Data')}<input type="date" required value={editing.date} onChange={e=>setEditing({...editing,date:e.target.value})}/></label><label>{t('Horário')}<input type="time" required={editing.type==='event'||editing.type==='reminder'} value={editing.time} onChange={e=>setEditing({...editing,time:e.target.value})}/></label>{editing.type==='event'&&<label>{t('Término')}<input type="time" required value={editing.end} onChange={e=>setEditing({...editing,end:e.target.value})}/></label>}</div>}
+    {!['note','message'].includes(editing.type)&&<label>{t('Repetição')}<select value={editing.repeat} onChange={e=>setEditing({...editing,repeat:e.target.value,completedDates:[]})}><option value="none">{t('Não repetir')}</option><option value="daily">{t('Todos os dias')}</option><option value="weekly">{t('Toda semana')}</option><option value="monthly">{t('Todo mês')}</option></select></label>}
+    <label>{t('Detalhes (opcional)')}<textarea maxLength={10000} rows={4} value={editing.body} onChange={e=>setEditing({...editing,body:e.target.value})}/></label>
+    <label>{t('Etiquetas (opcional)')}<input maxLength={500} placeholder={t('Ex.: urgente, equipe')} value={editing.tags} onChange={e=>setEditing({...editing,tags:e.target.value})}/></label>
+    {editing.type==='task'&&<label>{t('Checklist (uma etapa por linha)')}<textarea rows={4} maxLength={4000} value={editing.checks.join('\n')} onChange={e=>setEditing({...editing,checks:e.target.value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,30)})}/></label>}
+    {['note','message'].includes(editing.type)&&<div className="shared-color-row" role="group" aria-label={t('Cor do item')}>{(['blue','coral','yellow','pink'] as const).map(color=><button type="button" key={color} className={'shared-color shared-color-'+color+(editing.color===color?' selected':'')} aria-label={t('Cor')+' '+color} aria-pressed={editing.color===color} onClick={()=>setEditing({...editing,color})}/>)}</div>}
+    {editing.type==='note'&&<label className="shared-inline-check"><input type="checkbox" checked={editing.pinned} onChange={e=>setEditing({...editing,pinned:e.target.checked})}/>{t('Fixar nota no início')}</label>}
+    <p className="muted">{t('As alterações aparecem para todos. Lembretes compartilhados não acionam alarmes pessoais.')}</p>
+    <div className="dialogactions"><button type="button" onClick={()=>setEditing(null)}>{t('Cancelar')}</button><button className="primary" type="submit" disabled={busy}><Check size={15}/>{t('Salvar alterações')}</button></div>
    </form>}
-   <div className="shared-items">{visible.length?visible.map(i=>{const Icon=kindIcons[i.type]||ListChecks;return <article key={i.id} className="shared-item"><div className="shared-item-icon"><Icon size={19}/></div><div className="shared-item-info"><small>{t(kindNames[i.type]||i.type)}{!['note','message'].includes(i.type)?' · '+i.date+(i.time?' · '+i.time:''):''}</small><strong className={i.done?'shared-done':''}>{i.title}</strong>{i.body&&<p>{i.body}</p>}</div><div className="shared-item-actions">{i.type==='task'&&<button type="button" title={t('Concluir')} disabled={busy} onClick={()=>void toggleDone(i)}><Check size={16}/></button>}<button type="button" title={t('Editar')} onClick={()=>setEditing(i)}>{t('Editar')}</button><button type="button" aria-label={t('Excluir')} disabled={busy} onClick={()=>void removeItem(i)}><Trash2 size={16}/></button></div></article>}):<p className="muted">{t('Nenhum item compartilhado ainda. Adicione o primeiro.')}</p>}</div>
+   <div className="shared-items">{visible.length?visible.map(i=>{
+    const Icon=kindIcons[i.type]||ListChecks,done=i.type==='task'&&isDone(i,newDate());
+    return <article key={i.id} className={'shared-item '+(['note','message'].includes(i.type)?'shared-item-color-'+i.color:'')}>
+     <div className="shared-item-icon"><Icon size={19}/></div>
+     <div className="shared-item-info">
+      <small>{t(kindNames[i.type]||i.type)}{!['note','message'].includes(i.type)?' · '+i.date+(i.time?' · '+i.time:''):''}{i.repeat!=='none'?' · '+t({daily:'Todos os dias',weekly:'Toda semana',monthly:'Todo mês'}[i.repeat]||''):''}{i.pinned?' · '+t('Fixada'):''}</small>
+      <strong className={done?'shared-done':''}>{i.title}</strong>
+      {i.body&&<p>{i.body}</p>}
+      {i.tags&&<small className="shared-item-tags">{i.tags}</small>}
+      {i.type==='task'&&i.checks?.length>0&&<ul className="shared-checklist">{i.checks.map((step,index)=><li key={index}>{step}</li>)}</ul>}
+     </div>
+     <div className="shared-item-actions">
+      {i.type==='task'&&<button type="button" title={t(done?'Reabrir':'Concluir')} aria-label={t(done?'Reabrir':'Concluir')} disabled={busy||batchOpen||!!editing} onClick={()=>void toggleDone(i)}><Check size={16}/></button>}
+      <button type="button" title={t('Editar')} disabled={busy||batchOpen||!!editing} onClick={()=>setEditing({...i})}>{t('Editar')}</button>
+      <button type="button" title={t('Duplicar')} disabled={busy||batchOpen||!!editing} onClick={()=>void update([...(selected.items||[]),{...i,id:crypto.randomUUID(),title:i.title+' ('+t('cópia')+')',done:false,completedDates:[]}])}>{t('Duplicar')}</button>
+      <button type="button" aria-label={t('Excluir')} disabled={busy||batchOpen||!!editing} onClick={()=>void removeItem(i)}><Trash2 size={16}/></button>
+     </div>
+    </article>;
+   }):<p className="muted">{t('Nenhum item compartilhado ainda. Adicione o primeiro.')}</p>}</div>
   </div>:<div className="shared-list">
    <p className="muted">{t('Seu espaço pessoal continua privado. Você pode participar de espaços por convite, mesmo no plano gratuito.')}</p>
    <button type="button" className="shared-personal" onClick={onPersonal}><span><strong>{t('Meu espaço')}</strong><small>{t('Pessoal')} · {t('Privado')}</small></span><ArrowLeft size={15}/></button>
