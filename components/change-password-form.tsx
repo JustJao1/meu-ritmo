@@ -27,7 +27,7 @@ export default function ChangePasswordForm(){
       if(!response.ok)throw Error(result.error||t('Não foi possível alterar a senha.'));
       // The server expires all existing sessions. Never retain a stale logged-in page.
       location.replace('/entrar?password_changed=1');
-    }catch(e){setError(e instanceof Error?e.message:t('Não foi possível alterar a senha.'));}
+    }catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível alterar a senha.'));}
     finally{setBusy(false);}
   }
   return <form onSubmit={save} className="passwordchangeform">
