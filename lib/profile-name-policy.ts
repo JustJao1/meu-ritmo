@@ -47,6 +47,7 @@ export function nameIssue(value:string,kind:'username'|'display'):'inappropriate
     const joined=words.length>=2&&words.every(w=>w.length===1)?words.join(''):null;
     return [...words,...(joined?[joined]:[])];
   };
+  if(kind==='display'&&/(?:^|[^a-z])(?:meu[\\s_-]*ritmo|mr[\\s_-]*(?:oficial|suporte|admin)|(?:suporte|atendimento)[\\s_-]*meu[\\s_-]*ritmo)(?:$|[^a-z])/.test(raw))return 'impersonation';
   const candidates=[...tokenize(raw),...tokenize(leet)];
   const withNumericSuffix=candidates.map(w=>w.replace(/\d+$/,''));
   const each=[...candidates,...withNumericSuffix];
