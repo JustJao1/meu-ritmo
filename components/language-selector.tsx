@@ -3,6 +3,23 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Seu @usuário é único e não pode ser igual ao de outra pessoa. Após salvar, só poderá mudar novamente em 30 dias.":["Your username is unique and cannot be the same as someone else's. After saving, you can change it again in 30 days.","Tu nombre de usuario es único y no puede ser igual al de otra persona. Después de guardarlo, podrás cambiarlo en 30 días."],
+"O nome de exibição pode se repetir entre usuários. Intervalo de 14 dias entre alterações.":["Display names can be shared by different users. You can change yours every 14 days.","El nombre visible puede repetirse entre usuarios. Puedes cambiarlo cada 14 días."],
+"Nomes ofensivos, discriminatórios ou que imitem a equipe do Meu Ritmo não são permitidos.":["Offensive, discriminatory names or names impersonating the Meu Ritmo team are not allowed.","No se permiten nombres ofensivos, discriminatorios ni que suplanten al equipo de Meu Ritmo."],
+"O @usuário é exclusivo. Duas contas não podem usar o mesmo identificador.":["Usernames are exclusive. Two accounts cannot use the same handle.","Los nombres de usuario son exclusivos. Dos cuentas no pueden usar el mismo identificador."],
+"O nome de exibição pode ser igual ao de outras pessoas. Evite ofensas e imitações de contas oficiais.":["Your display name can match another person's. Avoid offensive names or impersonating official accounts.","Tu nombre visible puede coincidir con el de otras personas. Evita los insultos y la suplantación de cuentas oficiales."],
+"Denunciar perfil":["Report profile","Denunciar perfil"],
+"Motivo da denúncia":["Reason for report","Motivo de la denuncia"],
+"Nome ofensivo":["Offensive name","Nombre ofensivo"],
+"Falsa identidade ou perfil oficial falso":["Impersonation or fake official profile","Suplantación de identidad o perfil oficial falso"],
+"Assédio ou ameaça":["Harassment or threats","Acoso o amenazas"],
+"Biografia inadequada":["Inappropriate biography","Biografía inapropiada"],
+"Outro motivo":["Other reason","Otro motivo"],
+"Perfil denunciado":["Reported profile","Perfil denunciado"],
+"Nome não disponível":["Name unavailable","Nombre no disponible"],
+"Resposta denunciada":["Reported reply","Respuesta denunciada"],
+"Motivo":["Reason","Motivo"],
+
 "Entre novamente para alterar a senha.":["Sign in again to change your password.","Vuelve a iniciar sesión para cambiar tu contraseña."],
 "Muitas tentativas de alteração. Tente novamente mais tarde.":["Too many password change attempts. Try again later.","Demasiados intentos de cambiar la contraseña. Vuelve a intentarlo más tarde."],
 "Muitas tentativas. Aguarde antes de tentar novamente.":["Too many attempts. Wait before trying again.","Demasiados intentos. Espera antes de volver a intentarlo."],

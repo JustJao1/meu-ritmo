@@ -132,10 +132,10 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {mode==='signup'&&<>
           <label>{t('Nome de usuário')}<input name="username" autoComplete="username" required
             pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24}/>
-            <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small>
+            <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small><small>{t('O @usuário é exclusivo. Duas contas não podem usar o mesmo identificador.')}</small>
           </label>
           <label>{t('Nome de exibição')}<input name="name" autoComplete="nickname" required minLength={2} maxLength={50}/>
-            <small>{t('Como você aparece no Meu Ritmo. Pode mudar a cada 14 dias.')}</small>
+            <small>{t('Como você aparece no Meu Ritmo. Pode mudar a cada 14 dias.')}</small><small>{t('O nome de exibição pode ser igual ao de outras pessoas. Evite ofensas e imitações de contas oficiais.')}</small>
           </label>
           <label className="checkline"><input type="checkbox" name="accept" required/>
             {t('Li os')} <a href="/termos" target="_blank" rel="noreferrer">{t('termos')}</a> {t('e a')} <a href="/privacidade" target="_blank" rel="noreferrer">{t('política de privacidade')}</a>.
