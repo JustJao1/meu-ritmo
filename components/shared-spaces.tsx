@@ -5,6 +5,7 @@ import {useLocale} from './language-selector';
 import type {Item,Kind} from '../lib/ritmo-domain';
 import {isDone} from '../lib/ritmo-domain';
 import SharedSpaceBatchEditor from './shared-space-batch-editor';
+import {useAppDialog} from './app-dialog-provider';
 
 type Member={user_id:string;name:string;username:string};
 type Space={id:string;name:string;owner:boolean;ownerId:string;revision:number;joinCode?:string;items?:Item[];members?:Member[]};
@@ -25,6 +26,7 @@ async function request<T=any>(body?:unknown,id?:string):Promise<T>{
 }
 export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  const {t}=useLocale();
+ const dialogs=useAppDialog();
  const [spaces,setSpaces]=useState<Space[]>([]);
  const [selected,setSelected]=useState<Space|null>(null);
  const [canCreate,setCanCreate]=useState(false);
@@ -101,7 +103,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
   });
  }
  async function removeItem(item:Item){
-  if(!selected||!confirm('Excluir este item para todos os participantes?'))return;
+  if(!selected||!await dialogs.confirm({title:t('Excluir item compartilhado'),description:t('Este item será excluído para todos os participantes.'),confirmText:t('Excluir item'),intent:'danger'}))return;
   await update((selected.items||[]).filter(i=>i.id!==item.id));
  }
  async function toggleDone(item:Item){
@@ -120,7 +122,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  }
  async function deleteSpace(){
   if(!selected||!selected.owner)return;
-  const value=window.prompt('Para excluir definitivamente o espaço e todos os itens compartilhados, digite exatamente: '+selected.name);
+  const value=await dialogs.prompt({title:t('Excluir espaço definitivamente'),description:t('Todos os itens e participantes serão removidos. Esta ação não pode ser desfeita.'),label:t('Confirme o nome do espaço'),expectedValue:selected.name,placeholder:t('Nome do espaço'),confirmText:t('Excluir definitivamente'),intent:'danger'});
   if(value===null)return;
   if(value!==selected.name){setError('Nome diferente. O espaço não foi excluído.');return;}
   await act({action:'delete',id:selected.id,confirmName:value},()=>{
@@ -154,8 +156,8 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
    </section>}
    {showMembers&&<div className="shared-members">
     <h3>{t('Participantes')}</h3>
-    {(selected.members||[]).map(member=><div className="shared-member" key={member.user_id}><span>{member.name}{member.username?' · @'+member.username:''}</span>{selected.owner&&member.user_id!==selected.ownerId&&<button type="button" disabled={busy} onClick={()=>{if(confirm('Remover '+member.name+' deste espaço?'))void act({action:'remove',id:selected.id,userId:member.user_id},()=>void open(selected.id))}}>{t('Remover')}</button>}</div>)}
-    {selected.owner?<div className="shared-invite"><span><strong>{t('Código de convite')}</strong> <code>{selected.joinCode}</code></span><button type="button" onClick={()=>{if(selected.joinCode)void navigator.clipboard.writeText(selected.joinCode).then(()=>setNotice('Código copiado.'))}}><Copy size={15}/>{t('Copiar')}</button><button disabled={busy} type="button" onClick={()=>{if(confirm('Gerar outro código? O anterior deixará de funcionar.'))void act({action:'rotate',id:selected.id},()=>void open(selected.id))}}><RefreshCw size={15}/>{t('Trocar código')}</button></div>:<button type="button" className="secondary" disabled={busy} onClick={()=>{if(confirm('Sair deste espaço? Os itens continuarão para os demais membros.'))void act({action:'leave',id:selected.id},()=>{setSelected(null);void list()})}}>{t('Sair do espaço')}</button>}
+    {(selected.members||[]).map(member=><div className="shared-member" key={member.user_id}><span>{member.name}{member.username?' · @'+member.username:''}</span>{selected.owner&&member.user_id!==selected.ownerId&&<button type="button" disabled={busy} onClick={async()=>{if(await dialogs.confirm({title:t('Remover participante'),description:t('Deseja remover do espaço?')+' '+member.name,confirmText:t('Remover'),intent:'danger'}))void act({action:'remove',id:selected.id,userId:member.user_id},()=>void open(selected.id))}}>{t('Remover')}</button>}</div>)}
+    {selected.owner?<div className="shared-invite"><span><strong>{t('Código de convite')}</strong> <code>{selected.joinCode}</code></span><button type="button" onClick={()=>{if(selected.joinCode)void navigator.clipboard.writeText(selected.joinCode).then(()=>setNotice('Código copiado.'))}}><Copy size={15}/>{t('Copiar')}</button><button disabled={busy} type="button" onClick={async()=>{if(await dialogs.confirm({title:t('Trocar código de convite'),description:t('O código anterior deixará de funcionar. Os participantes atuais continuarão no espaço.'),confirmText:t('Trocar código'),intent:'warning'}))void act({action:'rotate',id:selected.id},()=>void open(selected.id))}}><RefreshCw size={15}/>{t('Trocar código')}</button></div>:<button type="button" className="secondary" disabled={busy} onClick={async()=>{if(await dialogs.confirm({title:t('Sair do espaço'),description:t('Os itens compartilhados continuarão disponíveis para os outros membros.'),confirmText:t('Sair do espaço'),intent:'warning'}))void act({action:'leave',id:selected.id},()=>{setSelected(null);void list()})}}>{t('Sair do espaço')}</button>}
    </div>}
    <div className="shared-toolbar">
     <div className="shared-filter"><span className="shared-filter-title">{t('Filtrar por tipo')}</span><div className="shared-filter-options" role="group" aria-label={t('Filtrar por tipo')}>{(['all',...kinds] as string[]).map(kind=><button type="button" key={kind} className={filter===kind?'is-active':''} aria-pressed={filter===kind} onClick={()=>setFilter(kind)}><span>{kind==='all'?t('Tudo'):t(kindNames[kind])}</span><small>{counts[kind]}</small></button>)}</div></div>
