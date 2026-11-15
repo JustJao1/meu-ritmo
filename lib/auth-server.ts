@@ -72,7 +72,9 @@ export async function resolveSession(e:AuthEnv,req:Request):Promise<Identity|nul
  if(!tokens)return null;
  let response=await provider(e,'/user',undefined,tokens.accessToken);
  providerUnavailable(response.status);
- if(response.status===401){
+ // Supabase may reject an expired JWT with either 401 or 403.
+ // Both require a single, serialized refresh attempt before considering the session invalid.
+ if(response.status===401||response.status===403){
   tokens=await refreshSessionTokens(e,id,row.tokens);
   if(!tokens)return null;
   response=await provider(e,'/user',undefined,tokens.accessToken);
