@@ -31,10 +31,14 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [error,setError]=useState('');
   const [pendingSignup,setPendingSignup]=useState(false);
   useEffect(()=>{
+    if(mode!=='verify')return;
+    // Restore the previous email only on page entry; never overwrite user edits.
     try{setPendingEmail(sessionStorage.getItem('mr-pending-email')||'');}catch{}
+  },[mode]);
+  useEffect(()=>{
     if(mode==='login'&&new URLSearchParams(location.search).get('password_changed')==='1')
       setMessage(t('Senha alterada. Entre com a nova senha.'));
-  },[mode,t]);
+  },[mode]);
   useEffect(()=>{
     if(mode!=='logout')return;
     try{
