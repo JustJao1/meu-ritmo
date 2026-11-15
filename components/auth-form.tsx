@@ -65,7 +65,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         setRecoveryEmail(v.email);setRecoveryReady(true);setError('');
       }catch(e){setError(e instanceof Error?e.message:t('Não foi possível validar o link.'));}
     })();
-  },[mode,t]);
+  },[mode]);
   async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();
     const form=new FormData(e.currentTarget),b=Object.fromEntries(form);
