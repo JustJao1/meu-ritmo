@@ -3,6 +3,22 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"MEU RITMO APP":["MEU RITMO APP","MEU RITMO APP"],
+"Seu espaço, sempre por perto.":["Your space, always within reach.","Tu espacio, siempre a mano."],
+"Use a mesma conta do site para acompanhar seus compromissos, tarefas, notas e finanças no celular.":["Use the same account as on the website to manage appointments, tasks, notes and finances on your phone.","Usa la misma cuenta del sitio para seguir tus compromisos, tareas, notas y finanzas en el móvil."],
+"Aplicativo para Android":["Android app","Aplicación para Android"],
+"Instale o APK oficial do Meu Ritmo. Entre com a mesma conta utilizada no site.":["Install the official Meu Ritmo APK. Sign in with the same account you use on the website.","Instala el APK oficial de Meu Ritmo. Inicia sesión con la misma cuenta que utilizas en el sitio."],
+"Baixar APK":["Download APK","Descargar APK"],
+"Versão":["Version","Versión"],
+"Android":["Android","Android"],
+"O APK é distribuído pelo GitHub. Confira a versão e autorize a instalação apenas se você confia no arquivo.":["The APK is distributed through GitHub. Check the version and install it only if you trust the file.","El APK se distribuye por GitHub. Comprueba la versión e instálalo solo si confías en el archivo."],
+"Instalar como aplicativo":["Install as an app","Instalar como aplicación"],
+"No iPhone, abra o Meu Ritmo no Safari, toque em Compartilhar e escolha Adicionar à Tela de Início. No Android, o navegador também pode oferecer a instalação.":["On iPhone, open Meu Ritmo in Safari, tap Share, and choose Add to Home Screen. On Android, your browser may also offer to install the app.","En iPhone, abre Meu Ritmo en Safari, toca Compartir y elige Añadir a pantalla de inicio. En Android, el navegador también puede ofrecer la instalación."],
+"Abrir Meu Ritmo":["Open Meu Ritmo","Abrir Meu Ritmo"],
+"Instalar neste dispositivo":["Install on this device","Instalar en este dispositivo"],
+"Aplicativo instalado neste dispositivo.":["App installed on this device.","Aplicación instalada en este dispositivo."],
+"O app e o site compartilham a conta e os dados do Meu Ritmo. Os pagamentos e assinaturas dependem das funcionalidades disponíveis no servidor.":["The app and website share your Meu Ritmo account and data. Payments and subscriptions depend on features available on the server.","La aplicación y el sitio comparten tu cuenta y tus datos de Meu Ritmo. Los pagos y suscripciones dependen de las funciones disponibles en el servidor."],
+
 "Protocolo":["Protocol","Protocolo"],
 "Seus registros pessoais e sociais podem ser exportados sem assinatura. Solicitações ficam vinculadas à sua conta.":["You can export your personal and social records without a subscription. Requests are linked to your account.","Puedes exportar tus registros personales y sociales sin suscripción. Las solicitudes quedan vinculadas a tu cuenta."],
 "Exportar meus dados":["Export my data","Exportar mis datos"],
