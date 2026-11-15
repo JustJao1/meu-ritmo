@@ -22,13 +22,15 @@ if(sandboxUrl.protocol!=='https:'||productionUrl.protocol!=='https:'||
  sandboxUrl.origin===productionUrl.origin||
  !sandboxUrl.hostname.endsWith('.supabase.co'))
  throw Error('Configure um projeto Supabase de testes separado do de produção.');
-if(process.env.SANDBOX_SESSION_ENCRYPTION_KEY===process.env.PRODUCTION_SESSION_ENCRYPTION_KEY)
+if(process.env.SANDBOX_SESSION_ENCRYPTION_KEY.length<32||process.env.SANDBOX_SESSION_ENCRYPTION_KEY===process.env.PRODUCTION_SESSION_ENCRYPTION_KEY)
  throw Error('A chave de sessão de homologação deve ser diferente da de produção.');
 if(process.env.ASAAS_MODE!=='sandbox'||!process.env.ASAAS_API_KEY.startsWith('$aact_hmlg_'))
  throw Error('Publicação bloqueada: utilize somente chave e ambiente Asaas Sandbox.');
 if(!['true','false'].includes(process.env.ASAAS_WEBHOOK_READY||'false')||
  !['true','false'].includes(process.env.ASAAS_BILLING_ENABLED||'false'))
  throw Error('Variáveis de ativação da homologação inválidas.');
+if(process.env.ASAAS_WEBHOOK_READY==='true'&&!process.env.ASAAS_WEBHOOK_TOKEN)
+ throw Error('Webhook marcado como pronto sem token de homologação.');
 if(process.env.ASAAS_BILLING_ENABLED==='true'&&
  (process.env.ASAAS_WEBHOOK_READY!=='true'||!process.env.ASAAS_WEBHOOK_TOKEN))
  throw Error('Não habilite checkout de testes antes de configurar o webhook do Sandbox.');
@@ -52,7 +54,10 @@ run(['node_modules/vinext/dist/cli.js','build']);
 const generatedPath='dist/server/wrangler.json';
 const generated=JSON.parse(await readFile(generatedPath,'utf8'));
 generated.name=name;
-if(!generated.d1_databases?.some(db=>db.binding==='DB'))
+generated.workers_dev=true;
+delete generated.route;
+delete generated.routes;
+if(generated.d1_databases?.length!==1||!generated.d1_databases?.some(db=>db.binding==='DB'))
  throw Error('O build não gerou o binding D1 esperado.');
 generated.d1_databases=generated.d1_databases.map(db=>db.binding==='DB'
  ?{...db,database_name:name,database_id:staging}:db);
