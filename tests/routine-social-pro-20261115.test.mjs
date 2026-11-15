@@ -65,7 +65,7 @@ test('Social uses a dedicated, accessible custom routine editor without changing
  assert.match(community,/if\(plan!=='pro'\)\{onUpgrade\(\);return;\}/);
  assert.match(community,/community-create-actions/);
  assert.match(community,/CommunityRoutineComposer/);
- assert.match(community,/category:'rotinas'/);
+ assert.match(editor,/category:'rotinas'/);
  assert.match(editor,/role="dialog" aria-modal="true"/);
  assert.match(editor,/type="time"/);
  assert.match(editor,/onClick=\{\(\)=>move\(index,-1\)\}/);
