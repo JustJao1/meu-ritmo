@@ -1,0 +1,31 @@
+.sharedspaces{display:grid;gap:18px;min-width:0;font:inherit;color:var(--ink)}
+.sharedspaces button,.sharedspaces input,.sharedspaces select,.sharedspaces textarea{font:inherit}
+.sharedspaces button{cursor:pointer}
+.shared-header,.shared-heading,.shared-toolbar,.shared-editor-header,.shared-member,.shared-invite{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.shared-heading{align-items:flex-start;margin:8px 0 20px}
+.shared-heading h2{font-size:clamp(1.35rem,3vw,2rem);margin:6px 0}
+.shared-heading p{max-width:680px;line-height:1.6}
+.shared-list{display:grid;gap:15px}
+.shared-personal,.shared-space-entry{display:flex;align-items:center;gap:13px;text-align:left;width:100%;padding:16px 18px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);border-radius:12px;background:color-mix(in srgb,var(--paper) 93%,var(--ink));color:var(--ink)}
+.shared-personal:hover,.shared-space-entry:hover{border-color:var(--accent)}
+.shared-personal span,.shared-space-entry span{display:grid;gap:3px;flex:1}.shared-personal small,.shared-space-entry small{opacity:.7}
+.shared-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:8px}
+.shared-box,.shared-editor,.shared-members{padding:20px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);border-radius:14px;background:color-mix(in srgb,var(--paper) 96%,var(--ink));display:grid;gap:13px}
+.shared-box h3,.shared-members h3{margin:0;font-size:1.04rem}.shared-box p{margin:0}
+.sharedspaces label{display:grid;gap:6px;min-width:0;font-weight:600;font-size:.88rem}
+.sharedspaces input,.sharedspaces select,.sharedspaces textarea{width:100%;min-height:44px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--ink) 25%,transparent);border-radius:9px;background:var(--paper);color:var(--ink)}
+.sharedspaces textarea{min-height:92px;resize:vertical}
+.sharedspaces .primary,.sharedspaces .secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.shared-invite{justify-content:flex-start;padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}
+.shared-invite code{font-weight:700;letter-spacing:.06em;overflow-wrap:anywhere}
+.shared-invite button,.shared-member button,.shared-item-actions button{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:8px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);color:var(--ink);background:transparent}
+.shared-member{padding:9px 0;border-bottom:1px solid color-mix(in srgb,var(--ink) 11%,transparent)}
+.shared-members{margin-bottom:20px}
+.shared-toolbar{padding:12px 0;margin:8px 0}.shared-toolbar label{display:flex;align-items:center;gap:10px}.shared-toolbar select{width:auto}
+.shared-time-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.shared-items{display:grid;gap:10px}
+.shared-item{display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);border-radius:12px}
+.shared-item-icon{padding:9px;border-radius:10px;background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--ink)}
+.shared-item-info{flex:1;min-width:0;display:grid;gap:5px}.shared-item-info small{opacity:.7}.shared-item-info strong{overflow-wrap:anywhere}.shared-item-info p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;margin:0}.shared-done{text-decoration:line-through;opacity:.6}
+.shared-item-actions{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:700px){.shared-columns,.shared-time-row{grid-template-columns:1fr}.shared-box,.shared-editor{padding:15px}.shared-item{flex-wrap:wrap}.shared-item-actions{margin-left:auto}}
