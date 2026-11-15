@@ -1,6 +1,6 @@
 # Integração Asaas: ativação controlada do Meu Ritmo
 
-O checkout oferece **somente Pix ou cartão de crédito**. O cliente escolhe o método antes de prosseguir e o servidor envia exclusivamente `PIX` ou `CREDIT_CARD` ao Asaas; `BOLETO` e `UNDEFINED` são rejeitados. Plus e Pro possuem assinaturas mensais e anuais. O cupom desconta somente a primeira cobrança e a recorrência retorna ao valor normal. Isso não é Pix Automático: cada renovação Pix precisa ser paga; no cartão, a cobrança pode ser automática.
+**Durante a homologação, descontos promocionais na primeira cobrança são aceitos apenas com Pix.** A documentação do Asaas exige tokenização para alterar o valor de assinaturas com cartão; só habilite cupom em cartão depois de validar esse requisito e os testes de renovação, sem cobrar o valor errado nem bloquear um benefício pago. <https://docs.asaas.com/reference/atualizar-assinatura-existente>\n\nO checkout oferece **somente Pix ou cartão de crédito**. O cliente escolhe o método antes de prosseguir e o servidor envia exclusivamente `PIX` ou `CREDIT_CARD` ao Asaas; `BOLETO` e `UNDEFINED` são rejeitados. Plus e Pro possuem assinaturas mensais e anuais. O cupom desconta somente a primeira cobrança e a recorrência retorna ao valor normal. Isso não é Pix Automático: cada renovação Pix precisa ser paga; no cartão, a cobrança pode ser automática.
 
 ## 1. Configurar ambientes separados
 
@@ -43,7 +43,7 @@ Teste com dados e chave exclusivamente do Sandbox:
 5. Contratar usando cupom válido; confirmar desconto apenas na primeira cobrança e preço padrão na renovação seguinte.
 6. Validar cupons vencidos, limite de usos, código inválido e tentativas simultâneas.
 7. Cancelar a renovação; confirmar ausência de novas cobranças e preservação do período já pago.
-8. Simular reenvio de eventos, estorno e chargeback; confirmar que não há duplicação e o benefício é revisto conforme o pagamento.
+8. Simular reenvio de eventos, estorno e chargeback; confirmar que não há duplicação e o benefício é revisto conforme o pagamento. Testar também estorno parcial, estorno de renovação mantendo o período anterior pago, fatura paga após o cancelamento e evento atrasado de assinatura antiga.
 9. Testar um código inválido e um token de webhook incorreto: ambos devem ser rejeitados.
 10. Conferir resultados em dois usuários para garantir que faturas e planos não se misturam.
 
