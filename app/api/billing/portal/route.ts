@@ -9,7 +9,7 @@ export async function POST(req:Request){
   const u=await getUser();
   if(!u)return Response.json({error:'Entre na conta.'},{status:401});
   if(req.headers.get('origin')!==new URL(req.url).origin)return Response.json({error:'Origem inválida.'},{status:403});
-  if(!asaasConfig().enabled)return Response.json({error:'Pagamentos ainda não configurados.'},{status:503});
+  if(!asaasConfig().apiReady)return Response.json({error:'Consulta de faturas indisponível no momento.'},{status:503});
   const order=await env.DB!.prepare("SELECT id,provider_subscription_id,status FROM asaas_orders WHERE user_id=? ORDER BY created_at DESC LIMIT 1").bind(u.userId).first<any>();
   if(!order?.provider_subscription_id)return Response.json({error:'Não há assinatura Asaas para gerenciar.'},{status:404});
   try{

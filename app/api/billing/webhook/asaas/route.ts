@@ -6,17 +6,20 @@ const reversed=new Set(['REFUNDED','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','
 function periodEnd(due:string,cycle:string){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(due))throw Error('Data inválida.');
   const d=new Date(due+'T12:00:00Z');
-  if(!Number.isFinite(d.getTime()))throw Error('Data inválida.');
-  if(cycle==='year')d.setUTCFullYear(d.getUTCFullYear()+1);else d.setUTCMonth(d.getUTCMonth()+1);
-  return Math.floor(d.getTime()/1000);
+  if(!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==due)throw Error('Data inválida.');
+  const year=d.getUTCFullYear()+(cycle==='year'?1:0);
+  const month=d.getUTCMonth()+(cycle==='year'?0:1);
+  const day=Math.min(d.getUTCDate(),new Date(Date.UTC(year,month+1,0)).getUTCDate());
+  return Math.floor(Date.UTC(year,month,day,12)/1000);
 }
 export async function POST(req:Request){
   const config=asaasConfig();
-  if(!config.enabled)return Response.json({error:'Webhook não ativado.'},{status:503});
+  if(!config.webhookReady)return Response.json({error:'Webhook não configurado.'},{status:503});
   if(!hasValidAsaasWebhookToken(req.headers.get('asaas-access-token')))return Response.json({error:'Não autorizado.'},{status:401});
+  if(Number(req.headers.get('content-length')||0)>65536)return Response.json({error:'Evento muito grande.'},{status:413});
   let event:any;
-  try{event=await req.json();}catch{return Response.json({error:'JSON inválido.'},{status:400});}
-  if(typeof event?.id!=='string'||event.id.length>150||typeof event.event!=='string'||typeof event.payment?.id!=='string')
+  try{const raw=await req.text();if(raw.length>65536)return Response.json({error:'Evento muito grande.'},{status:413});event=JSON.parse(raw);}catch{return Response.json({error:'JSON inválido.'},{status:400});}
+  if(typeof event?.id!=='string'||event.id.length>150||typeof event.event!=='string'||event.event.length>100||typeof event.payment?.id!=='string'||!/^pay_[A-Za-z0-9]+$/.test(event.payment.id))
     return Response.json({error:'Evento inválido.'},{status:400});
   if(await env.DB!.prepare('SELECT event_id FROM asaas_webhook_events WHERE event_id=?').bind(event.id).first())return Response.json({received:true});
   if(!event.event.startsWith('PAYMENT_'))return Response.json({received:true});
