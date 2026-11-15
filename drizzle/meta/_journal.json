@@ -71,6 +71,13 @@
       "when": 1794700000001,
       "tag": "0009_identity_moderation",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1794700000002,
+      "tag": "0010_shared_spaces",
+      "breakpoints": true
     }
   ]
 }
