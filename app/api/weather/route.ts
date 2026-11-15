@@ -7,7 +7,8 @@ export async function GET(request:Request){
   const name=(p.get('name')||'').trim();
   if(name.length<2||name.length>100)return json({error:'Informe uma cidade válida.'},400);
   upstream=new URL('https://geocoding-api.open-meteo.com/v1/search');
-  upstream.searchParams.set('name',name);upstream.searchParams.set('count','6');upstream.searchParams.set('language','pt');upstream.searchParams.set('format','json');
+  const requestedLanguage=p.get('lang');const lang=requestedLanguage==='en'||requestedLanguage==='es'?requestedLanguage:'pt';
+  upstream.searchParams.set('name',name);upstream.searchParams.set('count','6');upstream.searchParams.set('language',lang);upstream.searchParams.set('format','json');
  }else if(mode==='forecast'){
   const lat=Number(p.get('lat')),lon=Number(p.get('lon'));
   if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180||!p.has('lat')||!p.has('lon'))return json({error:'Coordenadas inválidas.'},400);
