@@ -39,9 +39,14 @@ export async function POST(req:Request){
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
-  try{await env.DB!.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,coupon_id,coupon_code,status,created_at) VALUES (?,?,?,?,?,?,?,?,?)")
-    .bind(id,user.userId,plan,base,first,coupon?.coupon.id||null,coupon?.coupon.code||null,'creating',now).run();}
-  catch{return Response.json({error:'Já existe uma contratação em andamento. Consulte sua assinatura.'},{status:409});}
+  try{
+    await env.DB!.batch([
+      env.DB!.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,coupon_id,coupon_code,status,created_at) VALUES (?,?,?,?,?,?,?,?,?)")
+        .bind(id,user.userId,plan,base,first,coupon?.coupon.id||null,coupon?.coupon.code||null,'creating',now),
+      env.DB!.prepare("INSERT INTO asaas_order_consents(order_id,user_id,policy_version,payment_method,first_price_cents,renewal_price_cents,accepted_at) VALUES (?,?,?,?,?,?,?)")
+        .bind(id,user.userId,'2026-11-15',data.paymentMethod,first,base,now)
+    ]);
+  }catch{return Response.json({error:'Já existe uma contratação em andamento ou o registro de consentimento está indisponível. Consulte sua assinatura.'},{status:409});}
   try{
     if(coupon)await reserveCoupon(id,user.userId,coupon.coupon);
     let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
