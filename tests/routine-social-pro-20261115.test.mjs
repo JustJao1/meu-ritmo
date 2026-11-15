@@ -61,7 +61,7 @@ test('social route enforces Pro on the server even when clients forge a routine 
 
 test('Social uses a dedicated, accessible custom routine editor without changing regular posts',()=>{
  const community=read('components/community.tsx'),editor=read('components/community-routine-composer.tsx');
- assert.match(community,/onUpgrade:()=>void;plan:Plan/);
+ assert.ok(community.includes('onUpgrade:()=>void;plan:Plan'));
  assert.match(community,/if\(plan!=='pro'\)\{onUpgrade\(\);return;\}/);
  assert.match(community,/community-create-actions/);
  assert.match(community,/CommunityRoutineComposer/);
