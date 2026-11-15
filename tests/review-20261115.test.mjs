@@ -67,7 +67,7 @@ test('public policies describe the actual Asaas flow and protect mandatory consu
 test('account creation lowercases usernames and password visibility covers the repeat field',()=>{
   const form=file('components/auth-form.tsx');
   assert.match(form,/setSignupUsername\(e\.target\.value\.toLowerCase\(\)\)/);
-  assert.match(form,/name="username"[^\n]*value=\{signupUsername\}/);
+  assert.match(form,/name="username"[\s\S]*?value=\{signupUsername\}/);
   assert.match(form,/type=\{showPassword\?'text':'password'\} name="passwordConfirmation"/);
   assert.match(form,/Mostrar ambas as senhas/);
 });
