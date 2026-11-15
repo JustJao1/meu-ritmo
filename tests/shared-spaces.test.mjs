@@ -100,4 +100,49 @@ test('personal account rows stay unchanged by shared-space updates',()=>{
  assert.equal(db.prepare('SELECT count(*) n FROM accounts').get().n,0);
  assert.equal(db.prepare('SELECT count(*) n FROM shared_spaces').get().n,1);
 });
+
+test('batch save accepts five distinct shared item types with advanced fields',async()=>{
+ user(a);
+ const detail=await (await get(id)).json();
+ const rev=detail.space.revision;
+ const items=[
+  {...defaultItem('task-a'),type:'task',title:'Revisão em grupo',repeat:'weekly',checks:['Primeira etapa','Segunda etapa'],tags:'equipe'},
+  {...defaultItem('event-a'),type:'event',title:'Reunião da equipe',time:'08:00',end:'09:00'},
+  {...defaultItem('reminder-a'),type:'reminder',title:'Enviar pauta',time:'10:00'},
+  {...defaultItem('note-a'),type:'note',title:'Notas da reunião',color:'pink',pinned:true},
+  {...defaultItem('message-a'),type:'message',title:'Recado importante',color:'yellow'}
+ ];
+ const response=await post({action:'update',id,revision:rev,items});
+ assert.equal(response.status,200,await response.clone().text());
+ const stored=(await (await get(id)).json()).space.items;
+ assert.deepEqual(stored.map(item=>item.type),['task','event','reminder','note','message']);
+ assert.deepEqual(stored[0].checks,['Primeira etapa','Segunda etapa']);
+ assert.equal(stored[0].repeat,'weekly');
+ assert.equal(stored[3].color,'pink');
+ assert.equal(stored[3].pinned,true);
+});
+test('Pro account can create only two spaces and deleting one frees its slot',async()=>{
+ user(a);
+ const second=await post({action:'create',name:'Espaço secundário'});
+ assert.equal(second.status,201);
+ const secondId=(await second.json()).space.id;
+ const list=await (await get()).json();
+ assert.equal(list.createdCount,2);
+ assert.equal(list.maxCreated,2);
+ const rejected=await post({action:'create',name:'Terceiro espaço'});
+ assert.equal(rejected.status,409);
+ assert.match((await rejected.json()).error,/2 espaços/);
+ user(c);
+ assert.equal((await post({action:'rename',id:secondId,name:'Nome invadido'})).status,404);
+ assert.equal((await post({action:'delete',id:secondId,confirmName:'Espaço secundário'})).status,404);
+ user(a);
+ assert.equal((await post({action:'rename',id:secondId,name:'Trabalho de equipe'})).status,200);
+ assert.equal((await post({action:'delete',id:secondId,confirmName:'Nome incorreto'})).status,400);
+ assert.equal((await (await get(secondId)).json()).space.name,'Trabalho de equipe');
+ assert.equal((await post({action:'delete',id:secondId,confirmName:'Trabalho de equipe'})).status,200);
+ assert.equal((await get(secondId)).status,404);
+ const next=await post({action:'create',name:'Novo espaço'});
+ assert.equal(next.status,201);
+ assert.equal((await (await get()).json()).createdCount,2);
+});
 after(async()=>{db.close();await rm(folder,{force:true,recursive:true});delete globalThis.__testSpacesEnv;delete globalThis.__testSpacesUser;delete globalThis.__testSpacesOwner});
