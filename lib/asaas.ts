@@ -38,10 +38,18 @@ export function asaasConfig() {
   const e = environment();
   const mode = e.ASAAS_MODE === 'production' ? 'production' : 'sandbox';
   const baseUrl = mode === 'production' ? 'https://api.asaas.com/v3' : 'https://api-sandbox.asaas.com/v3';
-  // Explicit opt-in to avoid charging customers before the webhook and reconciliation are tested.
-  const enabled = e.ASAAS_BILLING_ENABLED === 'true' && !!e.ASAAS_API_KEY &&
-    !!e.ASAAS_WEBHOOK_TOKEN && e.ASAAS_WEBHOOK_READY === 'true';
-  return {mode,baseUrl,enabled,key:e.ASAAS_API_KEY,webhookToken:e.ASAAS_WEBHOOK_TOKEN};
+  const key=e.ASAAS_API_KEY?.trim();
+  // New Asaas keys identify their environment. Older, unprefixed keys remain valid.
+  // Never send an obviously production key to Sandbox or a Sandbox key to production.
+  const keyMatchesMode=!!key && (mode==='production'
+    ?!key.startsWith('$aact_hmlg_'):!key.startsWith('$aact_prod_'));
+  const apiReady=!!key && keyMatchesMode;
+  const token=e.ASAAS_WEBHOOK_TOKEN;
+  const tokenReady=!!token && token.length>=32 && token.length<=255 && !/\\s/.test(token);
+  const webhookReady=apiReady&&tokenReady&&e.ASAAS_WEBHOOK_READY==='true';
+  // Closing new sales must never stop processing existing payments or refunds.
+  const enabled=webhookReady&&e.ASAAS_BILLING_ENABLED==='true';
+  return {mode,baseUrl,enabled,apiReady,webhookReady,keyMatchesMode,key,webhookToken:token};
 }
 
 function endpoint(path:string) {
@@ -52,7 +60,7 @@ function endpoint(path:string) {
 }
 export async function asaasRequest<T>(path:string,options:{method?:'GET'|'POST'|'PUT'|'DELETE';body?:unknown}={}):Promise<T> {
   const c=asaasConfig();
-  if (!c.enabled) throw new Error('Pagamentos Asaas indisponíveis até a configuração segura ser concluída.');
+  if (!c.apiReady) throw new Error('Credenciais Asaas indisponíveis ou incompatíveis com o ambiente.');
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),12000);
   try {
