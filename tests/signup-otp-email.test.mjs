@@ -21,10 +21,19 @@ test('signup verification uses the provider signup OTP type, not email magic lin
 test('resend uses signup-only action, rate limit and no user enumeration',()=>{
  assert.match(route,/action==='resend-signup'\?3:10/);
  assert.match(route,/provider\(e,'\/resend',\{type:'signup',email:mail\}\)/);
- assert.match(route,/Se o cadastro ainda estiver pendente/);
+ assert.match(route,/if\(!r\.ok\)\{/);
+ assert.match(route,/auth_resend_signup_rejected/);
+ assert.match(route,/Solicitação de reenvio aceita/);
  assert.match(form,/fetch\('\/api\/auth\/resend-signup'/);
  assert.match(form,/Reenviar código de confirmação/);
  assert.match(form,/onChange=\{mode==='verify'\?e=>setPendingEmail/);
+});
+
+test('pending usernames redirect their original owner to verification rather than being silently freed',()=>{
+ assert.match(route,/SELECT 1 FROM auth_pending_profiles WHERE username=\?/);
+ assert.match(route,/pendingVerification:true/);
+ assert.match(form,/Confirmar meu cadastro anterior/);
+ assert.match(form,/v\.pendingVerification===true/);
 });
 
 test('new user-facing strings have translations for English and Spanish',()=>{
@@ -32,7 +41,9 @@ test('new user-facing strings have translations for English and Spanish',()=>{
   'Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.',
   'Reenviar código de confirmação',
   'Informe seu e-mail para reenviar o código.',
-  'Não foi possível reenviar o código.'
+  'Não foi possível reenviar o código.',
+  'Confirmar meu cadastro anterior',
+  'Solicitação de reenvio aceita. Confira a caixa de entrada e o spam.'
  ]){
    assert.ok(translations.includes(JSON.stringify(key)),key);
  }
