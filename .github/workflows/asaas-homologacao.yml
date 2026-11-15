@@ -1,0 +1,28 @@
+name: Homologar Asaas Sandbox (diagnóstico)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/asaas-homologacao.yml'
+      - 'scripts/asaas-sandbox-smoke.mjs'
+permissions:
+  contents: read
+jobs:
+  asaas_sandbox:
+    name: Verificar ambiente isolado (sem cobrança)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: sandbox
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Conferir conexão, webhooks e configurações reais
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+          SANDBOX_ASAAS_WEBHOOK_READY: ${{ vars.SANDBOX_ASAAS_WEBHOOK_READY }}
+          SANDBOX_ASAAS_BILLING_ENABLED: ${{ vars.SANDBOX_ASAAS_BILLING_ENABLED }}
+        run: node scripts/asaas-sandbox-smoke.mjs
