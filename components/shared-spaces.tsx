@@ -5,10 +5,9 @@ import {useLocale} from './language-selector';
 import type {Item,Kind} from '../lib/ritmo-domain';
 
 type Member={user_id:string;name:string;username:string};
-type Space={id:string;name:string;owner:boolean;revision:number;joinCode?:string;items?:Item[];members?:Member[]};
+type Space={id:string;name:string;owner:boolean;ownerId:string;revision:number;joinCode?:string;items?:Item[];members?:Member[]};
 const kinds:Kind[]=['task','event','reminder','note','message'];
 const newDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date());
-const pad=(n:number)=>String(n).padStart(2,'0');
 const kindNames:Record<string,string>={task:'Tarefa',event:'Compromisso',reminder:'Lembrete',note:'Nota',message:'Recado'};
 const kindIcons:Record<string,typeof ListChecks>={task:ListChecks,event:CalendarDays,reminder:Clock,note:NotebookPen,message:MessageSquare};
 function itemDefault(type:Kind):Item{
@@ -117,7 +116,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
    <div className="shared-heading"><div><span className="eyebrow">{selected.owner?t('Criador do espaço'):t('Espaço compartilhado')}</span><h2>{selected.name}</h2><p className="muted">{t('Tarefas, agenda, lembretes, notas e recados são visíveis para todos os participantes. Seus gastos, alarmes e tema continuam pessoais.')}</p></div><button type="button" className="secondary" onClick={()=>setShowMembers(v=>!v)}><Users size={16}/>{selected.members?.length||0} {t('membros')}</button></div>
    {showMembers&&<div className="shared-members">
     <h3>{t('Participantes')}</h3>
-    {(selected.members||[]).map(member=><div className="shared-member" key={member.user_id}><span>{member.name}{member.username?' · @'+member.username:''}</span>{selected.owner&&member.user_id!==(selected.members||[])[0]?.user_id&&<button type="button" disabled={busy} onClick={()=>{if(confirm('Remover '+member.name+' deste espaço?'))void act({action:'remove',id:selected.id,userId:member.user_id},()=>void open(selected.id))}}>{t('Remover')}</button>}</div>)}
+    {(selected.members||[]).map(member=><div className="shared-member" key={member.user_id}><span>{member.name}{member.username?' · @'+member.username:''}</span>{selected.owner&&member.user_id!==selected.ownerId&&<button type="button" disabled={busy} onClick={()=>{if(confirm('Remover '+member.name+' deste espaço?'))void act({action:'remove',id:selected.id,userId:member.user_id},()=>void open(selected.id))}}>{t('Remover')}</button>}</div>)}
     {selected.owner?<div className="shared-invite"><span><strong>{t('Código de convite')}</strong> <code>{selected.joinCode}</code></span><button type="button" onClick={()=>{if(selected.joinCode)void navigator.clipboard.writeText(selected.joinCode).then(()=>setNotice('Código copiado.'))}}><Copy size={15}/>{t('Copiar')}</button><button disabled={busy} type="button" onClick={()=>{if(confirm('Gerar outro código? O anterior deixará de funcionar.'))void act({action:'rotate',id:selected.id},()=>void open(selected.id))}}><RefreshCw size={15}/>{t('Trocar código')}</button></div>:<button type="button" className="secondary" disabled={busy} onClick={()=>{if(confirm('Sair deste espaço? Os itens continuarão para os demais membros.'))void act({action:'leave',id:selected.id},()=>{setSelected(null);void list()})}}>{t('Sair do espaço')}</button>}
    </div>}
    <div className="shared-toolbar"><label>{t('Mostrar')} <select value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">{t('Tudo')}</option>{kinds.map(k=><option key={k} value={k}>{t(kindNames[k])}</option>)}</select></label><button type="button" className="primary" onClick={()=>setEditing(itemDefault('task'))}><Plus size={16}/>{t('Adicionar item')}</button></div>
