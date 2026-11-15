@@ -32,6 +32,50 @@ test('expired session refreshes once across concurrent hard reload requests',asy
  assert.equal((await a.unseal(e,stored.tokens)).refreshToken,'rotating-token-2');
  assert.equal((await a.resolveSession(e,req))?.user.userId,id,'hard reload must keep the same login');
 });
+
+test('Supabase 403 for expired JWT refreshes the login across parallel hard reloads',async()=>{
+ let expired=false,refreshCalls=0;
+ globalThis.fetch=async(input,init)=>{
+  const url=String(input),authorization=new Headers(init?.headers).get('Authorization');
+  if(url.includes('/token?grant_type=refresh_token')){
+   refreshCalls++;
+   assert.equal(JSON.parse(String(init?.body)).refresh_token,'refresh-for-403');
+   await new Promise(resolve=>setTimeout(resolve,60));
+   return Response.json({access_token:'fresh-403-access',refresh_token:'fresh-403-refresh',user});
+  }
+  if(url.endsWith('/user')&&expired&&authorization==='Bearer old-403-access')
+   return Response.json({message:'JWT expired'},{status:403});
+  return Response.json(user);
+ };
+ const cookie=await a.issueSession(e,{access_token:'old-403-access',refresh_token:'refresh-for-403'});
+ expired=true;
+ const request=new Request('https://site.test/app',{headers:{cookie:cookie.split(';')[0]}});
+ const result=await Promise.all(Array.from({length:5},()=>a.resolveSession(e,request)));
+ assert.equal(refreshCalls,1,'refresh token rotates exactly once despite concurrent reload');
+ for(const session of result){
+   assert.equal(session?.user.userId,id);
+   assert.equal(session?.accessToken,'fresh-403-access');
+ }
+ assert.equal((await a.resolveSession(e,request))?.user.userId,id,'reload still works after the 403 refresh');
+ const saved=db.prepare('SELECT tokens FROM auth_sessions WHERE id_hash=?').get(await a.hash(cookie.split(';')[0].split('=')[1]));
+ assert.equal((await a.unseal(e,saved.tokens)).refreshToken,'fresh-403-refresh');
+});
+
+test('a revoked refresh token never bypasses provider verification after 403',async()=>{
+ let expired=false;
+ globalThis.fetch=async(input,init)=>{
+  const url=String(input),authorization=new Headers(init?.headers).get('Authorization');
+  if(url.includes('/token?grant_type=refresh_token'))
+   return Response.json({msg:'Invalid Refresh Token'},{status:400});
+  if(url.endsWith('/user')&&expired&&authorization==='Bearer revoked-access')
+   return Response.json({msg:'JWT expired'},{status:403});
+  return Response.json(user);
+ };
+ const cookie=await a.issueSession(e,{access_token:'revoked-access',refresh_token:'revoked-refresh'});
+ expired=true;
+ const request=new Request('https://site.test/app',{headers:{cookie:cookie.split(';')[0]}});
+ assert.equal(await a.resolveSession(e,request),null,'invalid refresh cannot create an authenticated session');
+});
 test('temporary auth provider failure preserves stored cookie session',async()=>{
  let fail=false;
  globalThis.fetch=async(input,init)=>{
