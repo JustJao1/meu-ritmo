@@ -85,7 +85,7 @@ try{
   nextDueDate:today,externalReference:orderId,
   description:'MR Meu Ritmo homologacao exclusiva sandbox'
  });
- if(!/^sub_[A-Za-z0-9]+$/.test(subscription.id||''))fail('Assinatura Pix de teste sem ID.');
+ if(!/^sub_[A-Za-z0-9_-]{1,90}$/.test(subscription.id||''))fail('Assinatura Pix de teste sem ID.');
  subscriptionId=subscription.id;
  await query("INSERT INTO asaas_orders(id,user_id,provider_subscription_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?,?)",
  [orderId,userId,subscriptionId,'plus_month',1990,1990,'pending',now]);
@@ -99,7 +99,7 @@ try{
   await new Promise(resolve=>setTimeout(resolve,1250));
  }
  if(payment?.id)log('Identificador sintético de fatura',String(payment.id));
- if(!payment?.id||!/^pay_[A-Za-z0-9]+$/.test(payment.id))
+ if(!payment?.id||!/^pay_[A-Za-z0-9_-]{1,90}$/.test(payment.id))
   fail('Assinatura não gerou uma fatura Pix testável; resposta não seguiu o identificador esperado.');
  paymentId=payment.id;
  const before=await asaas('/payments/'+encodeURIComponent(paymentId));
