@@ -107,6 +107,21 @@ test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada
     assert.equal(db.prepare('SELECT status FROM subscriptions WHERE user_id=?').get('bob').status,'canceled');
   }finally{globalThis.fetch=prevFetch;e.ASAAS_BILLING_ENABLED='false';}
 });
+test('webhook ainda concilia pagamentos existentes quando novas vendas foram pausadas',async()=>{
+ const e=globalThis.__socialEnv;
+ e.ASAAS_BILLING_ENABLED='false';
+ const original=globalThis.fetch;
+ globalThis.fetch=async url=>{
+   if(String(url).includes('/payments/pay_second'))
+     return Response.json({id:'pay_second',customer:'cus_test',subscription:'sub_test',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
+   throw Error('Unexpected Asaas request '+url);
+ };
+ try{
+   const webhook=new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json','asaas-access-token':'a'.repeat(48)},body:JSON.stringify({id:'evt_second_payment',event:'PAYMENT_RECEIVED',payment:{id:'pay_second'}})});
+   assert.equal((await api.webhook.POST(webhook)).status,200);
+   assert.equal(db.prepare('SELECT status FROM asaas_payments WHERE payment_id=?').get('pay_second').status,'RECEIVED');
+ }finally{globalThis.fetch=original;}
+});
 test('exportação e exclusão autenticada não afetam outra conta',async()=>{who('bob');const exportData=await(await api.privacy.GET()).json();assert(!JSON.stringify(exportData).includes('MEUS_GASTOS_PRIVADOS'));assert.equal((await request('privacy',{confirm:'errado'},'DELETE')).status,400);assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS'},'DELETE')).status,200);assert.equal(objects.size,0);assert(db.prepare('SELECT payload FROM accounts WHERE user_id=?').get('alice'));assert.equal(db.prepare('SELECT id FROM profiles WHERE user_id=?').get('bob'),undefined);});
 test('encerramento exige confirmação e cancelamento prévio da assinatura',async()=>{who('closing');assert.equal((await request('profile',profile('closing','Encerramento'),'PUT')).status,200);db.prepare('INSERT INTO subscriptions(user_id,subscription_id,plan,status,updated_at,valid_until) VALUES (?,?,?,?,?,?)').run('closing','sub_closing','plus','active',1,Math.floor(Date.now()/1000)+86400);assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS',closeAccount:true},'DELETE')).status,409);assert(db.prepare('SELECT id FROM profiles WHERE user_id=?').get('closing'));db.prepare('UPDATE subscriptions SET status=? WHERE user_id=?').run('canceled','closing');assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS',closeAccount:true},'DELETE')).status,503);globalThis.__socialEnv.SUPABASE_SERVICE_ROLE_KEY='test-service-role';globalThis.__socialEnv.SUPABASE_URL='https://auth.test';const originalFetch=globalThis.fetch;globalThis.fetch=async()=>Response.json({});assert.equal((await request('privacy',{confirm:'EXCLUIR MEUS DADOS',closeAccount:true},'DELETE')).status,200);assert(db.prepare('SELECT user_id FROM closed_accounts WHERE user_id=?').get('closing'));assert.equal(db.prepare('SELECT id FROM profiles WHERE user_id=?').get('closing'),undefined);assert.equal((await request('profile',profile('closing','Encerramento'),'PUT')).status,403);globalThis.fetch=originalFetch;});
 after(async()=>{db.close();await rm(dir,{recursive:true,force:true})});
