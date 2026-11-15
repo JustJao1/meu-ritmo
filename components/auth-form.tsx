@@ -14,7 +14,7 @@ const descriptions:Partial<Record<AuthMode,string>>={
   login:'Entre com o e-mail e a senha usados no cadastro.',
   signup:'Crie sua conta gratuitamente. Depois, confirme o e-mail para começar a usar o Meu Ritmo.',
   recover:'Informe o e-mail cadastrado para receber as instruções de recuperação.',
-  verify:'Confira sua caixa de entrada e o spam. Ative a conta pelo link do e-mail ou use o código recebido abaixo.',
+  verify:'Confira sua caixa de entrada e o spam. Digite o código de confirmação recebido para ativar sua conta.',
   password:'Escolha uma nova senha para voltar a acessar sua conta.'
 };
 export default function AuthForm({mode}:{mode:AuthMode}){
@@ -25,6 +25,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [verificationType,setVerificationType]=useState<'signup'|'recovery'>('signup');
   const [showPassword,setShowPassword]=useState(false);
   const [newPassword,setNewPassword]=useState('');
+  const [signupUsername,setSignupUsername]=useState('');
   const [passwordConfirmation,setPasswordConfirmation]=useState('');
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState('');
@@ -137,7 +138,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
             onChange={newPasswordMode?e=>setNewPassword(e.target.value):undefined}
             required/>
           <button type="button" className="authshowpassword" onClick={()=>setShowPassword(v=>!v)} aria-pressed={showPassword}>
-            {t(showPassword?'Ocultar senha':'Mostrar senha')}
+            {t(showPassword?(newPasswordMode?'Ocultar ambas as senhas':'Ocultar senha'):(newPasswordMode?'Mostrar ambas as senhas':'Mostrar senha'))}
           </button>
           {newPasswordMode&&<small>{t(PASSWORD_GUIDANCE)}</small>}
         </label>}
@@ -148,7 +149,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         </label>}
         {mode==='signup'&&<>
           <label>{t('Nome de usuário')}<input name="username" autoComplete="username" required
-            pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24}/>
+            pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24} value={signupUsername} onChange={e=>setSignupUsername(e.target.value.toLowerCase())}/>
             <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small><small>{t('O @usuário é exclusivo. Duas contas não podem usar o mesmo identificador.')}</small>
           </label>
           <label>{t('Nome de exibição')}<input name="name" autoComplete="nickname" required minLength={2} maxLength={50}/>
