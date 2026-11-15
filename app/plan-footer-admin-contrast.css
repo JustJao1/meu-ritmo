@@ -260,14 +260,14 @@
   line-height:1.5;
 }
 .appframe .appfooter>span{color:inherit;font-size:13px}
-.appframe .appfooter .appfooter-brand{
+:root .appframe .appfooter>span.appfooter-brand{
   display:inline-flex;align-items:center;gap:9px;
   font-size:15px;
   font-weight:750;
   color:var(--ink);
   letter-spacing:-.015em;
 }
-.appframe .appfooter .appfooter-brand .coraltext{
+:root .appframe .appfooter>span.appfooter-brand .coraltext{
   margin:0;
   font-size:20px;
   line-height:1;
