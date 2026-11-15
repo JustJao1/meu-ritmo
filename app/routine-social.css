@@ -1,0 +1,71 @@
+/* Pro routine publishing and comprehensive starter library. */
+.community .community-create-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.community .community-create-actions button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;white-space:nowrap;font-size:12px;font-weight:700}
+.community .routine-publish-action{border:1px solid color-mix(in srgb,var(--ink) 24%,transparent);background:var(--theme-raised,var(--paper));color:var(--ink)}
+.community .routine-pro-label{display:inline-flex;align-items:center;padding:4px 6px;background:color-mix(in srgb,var(--accent) 16%,var(--paper));color:var(--ink);border-radius:4px;font-size:10px;line-height:1}
+.overlay .community-routine-editor{width:min(720px,calc(100vw - 32px));max-width:720px;max-height:min(90svh,880px);overflow:auto;overscroll-behavior:contain;background:var(--paper);color:var(--ink)}
+.overlay .community-routine-editor *{box-sizing:border-box}
+.overlay .community-routine-editor>header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:12px}
+.overlay .community-routine-editor .routine-editor-heading{min-width:0}
+.overlay .community-routine-editor .routine-editor-heading h2{margin:5px 0 0;font-size:22px;line-height:1.3;color:var(--ink)}
+.overlay .community-routine-editor .routine-editor-intro{max-width:600px;margin:0 0 22px;color:var(--theme-foreground-muted,var(--ink));font-size:13px;line-height:1.7}
+.overlay .community-routine-editor form{display:flex;flex-direction:column;gap:19px}
+.overlay .community-routine-editor label{display:flex;flex-direction:column;gap:8px;min-width:0;margin:0;color:var(--ink);font-size:12px;font-weight:650}
+.overlay .community-routine-editor :is(input:not([type=checkbox]),select,textarea){width:100%;min-width:0;min-height:44px;margin:0;border:1px solid color-mix(in srgb,var(--ink) 23%,transparent);border-radius:8px;background:var(--theme-raised,var(--paper));color:var(--ink);font:inherit;font-size:13px;line-height:1.4;padding:11px 12px}
+.overlay .community-routine-editor input[type=time]{color-scheme:normal;min-width:0}
+.overlay .community-routine-editor textarea{resize:vertical;min-height:90px;line-height:1.6}
+.overlay .community-routine-editor .routine-editor-metadata{display:grid;gap:17px}
+.overlay .community-routine-editor .routine-editor-task-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:16px;border-top:1px solid var(--line)}
+.overlay .community-routine-editor .routine-editor-task-header h3{margin:0 0 6px;font-size:16px;color:var(--ink)}
+.overlay .community-routine-editor .routine-editor-task-header p{font-size:12px;line-height:1.5;color:var(--theme-foreground-muted,var(--ink));margin:0}
+.overlay .community-routine-editor .routine-editor-count{font-size:11px;color:var(--ink);font-variant-numeric:tabular-nums;background:var(--theme-raised,var(--paper));border:1px solid var(--line);padding:8px 12px;border-radius:6px;white-space:nowrap}
+.overlay .community-routine-editor .routine-editor-tasks{display:flex;flex-direction:column;gap:10px}
+.overlay .community-routine-editor .routine-editor-task{display:grid;grid-template-columns:27px minmax(0,1fr) 123px 112px;align-items:end;gap:9px;min-width:0;padding:13px;background:var(--theme-raised,var(--paper));border:1px solid var(--line);border-radius:10px}
+.overlay .community-routine-editor .routine-editor-number{display:grid;place-items:center;align-self:center;width:27px;height:27px;border-radius:50%;border:1px solid var(--line);font-size:11px;font-weight:750;color:var(--ink)}
+.overlay .community-routine-editor .routine-editor-task :is(input[type=text],input[type=time]){min-height:41px;background:var(--paper)}
+.overlay .community-routine-editor .routine-editor-task-name{flex:1}
+.overlay .community-routine-editor .routine-editor-controls{display:flex;align-items:center;justify-content:flex-end;gap:3px;min-width:0;padding-bottom:1px}
+.overlay .community-routine-editor .routine-editor-controls button{display:grid;place-items:center;width:35px;min-width:35px;height:40px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink)}
+.overlay .community-routine-editor .routine-editor-controls button:disabled{opacity:.35;cursor:not-allowed}
+.overlay .community-routine-editor .routine-editor-add{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;min-height:40px;padding:9px 13px;border:1px dashed color-mix(in srgb,var(--ink) 38%,transparent);border-radius:7px;color:var(--ink);font-size:12px;font-weight:700;background:transparent}
+.overlay .community-routine-editor .routine-editor-preview{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;color:var(--ink);background:var(--theme-banner,var(--paper));border:1px solid var(--line);border-radius:8px;font-size:12px;line-height:1.6}
+.overlay .community-routine-editor .routine-editor-preview svg{flex:none}
+.overlay .community-routine-editor .routine-editor-confirm{display:flex;flex-direction:row;align-items:flex-start;gap:11px;font-weight:500;font-size:12px;line-height:1.7;color:var(--ink)}
+.overlay .community-routine-editor .routine-editor-confirm input{margin-top:3px;flex:none;accent-color:var(--accent)}
+.overlay .community-routine-editor .dialogactions{display:flex;justify-content:flex-end;gap:12px;margin:0;padding-top:18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.overlay .community-routine-editor .dialogactions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.overlay .community-routine-editor :is(input,textarea,select,button):focus-visible,
+.community .community-create-actions button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.premiumstudio .routine-library-filters{display:flex;gap:9px;flex-wrap:wrap;margin:17px 0 23px}
+.premiumstudio .routine-library-filters button{min-height:39px;padding:9px 14px;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--theme-raised,var(--paper));font-size:11px;font-weight:650}
+.premiumstudio .routine-library-filters button.selected{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.premiumstudio .templatelibrary article{min-width:0;display:flex;flex-direction:column;align-items:stretch;padding:21px;border-radius:11px}
+.premiumstudio .templatelibrary .routine-library-cardhead{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--ink)}
+.premiumstudio .templatelibrary .routine-library-badge{font-size:10px;font-weight:700;padding:5px 8px;border:1px solid var(--line);border-radius:5px;color:var(--ink)}
+.premiumstudio .templatelibrary h4{font-size:15px;line-height:1.35;margin:12px 0 7px}
+.premiumstudio .templatelibrary p{font-size:12px;line-height:1.65;color:var(--theme-foreground-muted,var(--ink));min-height:0}
+.premiumstudio .templatelibrary .routine-library-count{display:block;margin-top:11px;color:var(--ink);font-size:11px;font-weight:750}
+.premiumstudio .templatelibrary ul{flex:1;margin:12px 0 18px;padding:0;display:flex;flex-direction:column;gap:0}
+.premiumstudio .templatelibrary li{align-items:flex-start;gap:9px;padding:8px 0;line-height:1.5;color:var(--ink)}
+.premiumstudio .templatelibrary li>span:last-child{flex:1;font-size:11px;overflow-wrap:anywhere}
+.premiumstudio .templatelibrary li small{display:block;color:var(--theme-foreground-muted,var(--ink));font-size:10px;margin-top:3px;font-variant-numeric:tabular-nums}
+.premiumstudio .routine-social-tip{margin:15px 0 23px;padding:13px 15px;border:1px solid var(--line);border-radius:8px;background:var(--theme-banner,var(--paper));color:var(--ink);font-size:12px;line-height:1.65}
+@media(max-width:780px){
+ .community .communityhead{align-items:flex-start;gap:15px}
+ .community .community-create-actions{width:100%;justify-content:flex-start}
+ .community .community-create-actions button{flex:1 1 175px}
+ .overlay .community-routine-editor .routine-editor-task{grid-template-columns:24px minmax(0,1fr) 116px;gap:8px;padding:11px}
+ .overlay .community-routine-editor .routine-editor-number{width:24px;height:24px}
+ .overlay .community-routine-editor .routine-editor-controls{grid-column:2 / -1;justify-content:flex-start}
+}
+@media(max-width:500px){
+ .overlay .community-routine-editor{width:calc(100vw - 20px);max-height:94svh;padding:16px}
+ .overlay .community-routine-editor .routine-editor-heading h2{font-size:19px}
+ .overlay .community-routine-editor .routine-editor-task{grid-template-columns:24px minmax(0,1fr);gap:8px}
+ .overlay .community-routine-editor .routine-editor-task-time{grid-column:2}
+ .overlay .community-routine-editor .routine-editor-controls{grid-column:2}
+ .overlay .community-routine-editor .dialogactions button{flex:1 1 135px}
+ .premiumstudio .routine-library-filters{gap:6px}
+ .premiumstudio .routine-library-filters button{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.overlay .community-routine-editor *{scroll-behavior:auto}}
