@@ -1,5 +1,180 @@
 'use client';
 import {useEffect,useState,type FormEvent} from 'react';
 import {safeReturnPath} from '../lib/return-path';
+import {passwordMeetsPolicy,PASSWORD_GUIDANCE} from '../lib/password-policy';
 import LanguageSelector,{useLocale} from './language-selector';
-export default function AuthForm({mode}:{mode:'login'|'signup'|'recover'|'verify'|'password'|'logout'}){const {t}=useLocale();const [recoveryReady,setRecoveryReady]=useState(false);const [recoveryEmail,setRecoveryEmail]=useState('');const [busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState(''),[recovery,setRecovery]=useState(false);useEffect(()=>{if(mode!=='logout')return;try{const raw=sessionStorage.getItem('meur ritmo-logout-theme');if(!raw)return;const t=JSON.parse(raw);const root=document.documentElement;const validColor=(v:unknown)=>typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v);for(const [key,val] of [['--paper',t.paper],['--ink',t.ink],['--accent',t.accent],['--theme-side',t.side],['--theme-banner',t.banner]] as const){if(validColor(val))root.style.setProperty(key,val);}if(typeof t.theme==='string'&&/^[a-z0-9-]{1,40}$/.test(t.theme))root.dataset.theme=t.theme;}catch{}},[mode]);const titles={login:'Bom ter você por aqui.',signup:'Seu espaço começa aqui.',recover:'Recupere seu acesso.',verify:'Confira seu e-mail.',password:'Escolha uma nova senha.',logout:'Sair da sua conta?'};useEffect(()=>{if(mode!=='password')return;const fragment=new URLSearchParams(location.hash.slice(1));const access=fragment.get('access_token'),refresh=fragment.get('refresh_token'),type=fragment.get('type');if(!access||!refresh||type!=='recovery'){setError('Abra o link de recuperação recebido por e-mail para definir uma nova senha.');return;}history.replaceState(null,'',location.pathname);void (async()=>{try{const r=await fetch('/api/auth/recovery-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:access,refresh_token:refresh})});const v=await r.json() as {error?:string;email?:string};if(!r.ok)throw Error(v.error||'Link inválido ou expirado.');if(!v.email)throw Error('Não foi possível identificar a conta.');setRecoveryEmail(v.email);setRecoveryReady(true);setError('');}catch(e){setError(e instanceof Error?e.message:'Não foi possível validar o link.');}})();},[mode]);async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');setMessage('');const f=new FormData(e.currentTarget),b=Object.fromEntries(f);if(mode==='password')b.email=recoveryEmail;try{const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...b,bio:'',accept:f.has('accept'),adult:f.has('adult')})});const v:any=await r.json();if(!r.ok)throw Error(v.error);if(mode==='signup')location.href='/confirmar-email';else if(mode==='login')location.href=safeReturnPath(new URLSearchParams(location.search).get('return_to')||'/app');else if(mode==='verify')location.href=b.type==='recovery'?'/nova-senha':'/app';else if(mode==='logout')location.href='/';else setMessage(v.message||'Concluído.');}catch(e){setError(e instanceof Error?e.message:'Não foi possível concluir.')}finally{setBusy(false)}}return <main className="authpage"><header className="authheader"><a className="brand" href="/" aria-label="MR: Meu Ritmo"><img className="brandmark brandmark-icon" src="/favicon-mr-v3.svg" alt="" width="34" height="34"/>MR: Meu Ritmo<span className="branddot">®</span></a><LanguageSelector className="mr-language-auth"/></header><section className="authsheet"><span className="eyebrow">{t("Seu dia, no seu ritmo").toUpperCase()}</span><h1>{t(titles[mode])}</h1><form onSubmit={submit}>{mode!=='logout'&&mode!=='password'&&(mode!=='verify'||recovery)&&<label>{t('E-mail')}<input type="email" name="email" autoComplete="email" maxLength={254} required/></label>}{['login','signup','password'].includes(mode)&&<label>{t(mode==='password'?'Nova senha':'Senha')}<input type="password" name="password" autoComplete={mode==='login'?'current-password':'new-password'} minLength={mode==='login'?1:12} maxLength={128} required/>{mode!=='login'&&<small>{t("Use pelo menos 12 caracteres.")}</small>}</label>}{mode==='signup'&&<><label>{t("Nome de usuário")}<input name="username" autoComplete="username" required pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24}/><small>{t("Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.")}</small></label><label>{t("Nome de exibição")}<input name="name" required minLength={2} maxLength={50}/><small>{t("Como você aparece no Meu Ritmo. Pode mudar a cada 14 dias.")}</small></label><label className="checkline"><input type="checkbox" name="accept" required/>Li os <a href="/termos">{t("termos")}</a> e a <a href="/privacidade">{t("política de privacidade")}</a>.</label><label className="checkline"><input type="checkbox" name="adult" required/>{t("Tenho 18 anos ou mais.")}</label><p className="muted">{t("Você pode adicionar sua foto no perfil após confirmar o e-mail.")}</p></>}{mode==='verify'&&<><p>{t("Enviamos um link de confirmação para seu e-mail. Abra a mensagem e toque no link para ativar sua conta.")}</p><p className="muted">{t("Depois da confirmação, volte ao Meu Ritmo e entre com seu e-mail e senha. Se não encontrar a mensagem, confira também a pasta de spam.")}</p><label>{t("Precisa recuperar sua senha?")}<select name="type" value={recovery?'recovery':'signup'} onChange={e=>setRecovery(e.target.value==='recovery')}><option value="signup">{t("Não, estou confirmando meu cadastro")}</option><option value="recovery">{t("Sim, recebi um código de recuperação")}</option></select></label>{recovery&&<><label>{t("Código de recuperação")}<input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" required minLength={6} maxLength={10}/></label><small>{t("O código de recuperação permite trocar sua senha.")}</small></>}</>}{mode==='logout'&&<p>{t("Seus dados salvos continuam na sua conta.")}</p>}{error&&<p role="alert" className="autherror">{error}</p>}{message&&<p role="status">{message}</p>}{(mode!=='verify'||recovery)&&(mode!=='password'||recoveryReady)&&<button className="primary" disabled={busy}>{busy?t('Aguarde…'):t({login:'Entrar',signup:'Criar minha conta',recover:'Enviar link de recuperação',verify:'Confirmar código',password:'Salvar nova senha',logout:'Sair da conta'}[mode])}</button>}</form><nav className="authlinks">{mode==='login'?<><a href="/criar-conta">{t("Criar conta grátis")}</a><a href="/recuperar-senha">{t("Esqueci a senha")}</a></>:<a href="/entrar">{t("Voltar para entrar")}</a>}{mode==='password'&&!recoveryReady&&<a href="/recuperar-senha">{t("Solicitar outro link")}</a>}{mode==='recover'&&<small>{t("O link de recuperação será enviado pelo Supabase. Se houver um limite temporário de envios, aguarde antes de solicitar novamente.")}</small>}{mode==='password'&&message&&<a href="/entrar">{t("Entrar com a nova senha")}</a>}</nav></section></main>}
+
+type AuthMode='login'|'signup'|'recover'|'verify'|'password'|'logout';
+const titles:Record<AuthMode,string>={
+  login:'Bom ter você por aqui.',signup:'Seu espaço começa aqui.',
+  recover:'Recupere seu acesso.',verify:'Confira seu e-mail.',
+  password:'Escolha uma nova senha.',logout:'Sair da sua conta?'
+};
+const descriptions:Partial<Record<AuthMode,string>>={
+  login:'Entre com o e-mail e a senha usados no cadastro.',
+  signup:'Crie sua conta gratuitamente. Depois, confirme o e-mail para começar a usar o Meu Ritmo.',
+  recover:'Informe o e-mail cadastrado para receber as instruções de recuperação.',
+  verify:'Confira sua caixa de entrada e o spam. Ative a conta pelo link do e-mail ou use o código recebido abaixo.',
+  password:'Escolha uma nova senha para voltar a acessar sua conta.'
+};
+export default function AuthForm({mode}:{mode:AuthMode}){
+  const {t}=useLocale();
+  const [recoveryReady,setRecoveryReady]=useState(false);
+  const [recoveryEmail,setRecoveryEmail]=useState('');
+  const [pendingEmail,setPendingEmail]=useState('');
+  const [verificationType,setVerificationType]=useState<'signup'|'recovery'>('signup');
+  const [showPassword,setShowPassword]=useState(false);
+  const [newPassword,setNewPassword]=useState('');
+  const [passwordConfirmation,setPasswordConfirmation]=useState('');
+  const [busy,setBusy]=useState(false);
+  const [message,setMessage]=useState('');
+  const [error,setError]=useState('');
+  useEffect(()=>{
+    try{setPendingEmail(sessionStorage.getItem('mr-pending-email')||'');}catch{}
+    if(mode==='login'&&new URLSearchParams(location.search).get('password_changed')==='1')
+      setMessage(t('Senha alterada. Entre com a nova senha.'));
+  },[mode,t]);
+  useEffect(()=>{
+    if(mode!=='logout')return;
+    try{
+      const raw=sessionStorage.getItem('meur ritmo-logout-theme');
+      if(!raw)return;
+      const theme=JSON.parse(raw),root=document.documentElement;
+      const validColor=(v:unknown)=>typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v);
+      for(const [key,val] of [['--paper',theme.paper],['--ink',theme.ink],['--accent',theme.accent],['--theme-side',theme.side],['--theme-banner',theme.banner]] as const)
+        if(validColor(val))root.style.setProperty(key,val);
+      if(typeof theme.theme==='string'&&/^[a-z0-9-]{1,40}$/.test(theme.theme))root.dataset.theme=theme.theme;
+    }catch{}
+  },[mode]);
+  useEffect(()=>{
+    if(mode!=='password')return;
+    const fragment=new URLSearchParams(location.hash.slice(1));
+    const access=fragment.get('access_token'),refresh=fragment.get('refresh_token'),type=fragment.get('type');
+    if(!access||!refresh||type!=='recovery'){
+      setError(t('Abra o link de recuperação recebido por e-mail para definir uma nova senha.'));
+      return;
+    }
+    history.replaceState(null,'',location.pathname);
+    void (async()=>{
+      try{
+        const r=await fetch('/api/auth/recovery-session',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({access_token:access,refresh_token:refresh})});
+        const v=await r.json() as {error?:string;email?:string};
+        if(!r.ok)throw Error(v.error||t('Link inválido ou expirado.'));
+        if(!v.email)throw Error(t('Não foi possível identificar a conta.'));
+        setRecoveryEmail(v.email);setRecoveryReady(true);setError('');
+      }catch(e){setError(e instanceof Error?e.message:t('Não foi possível validar o link.'));}
+    })();
+  },[mode]);
+  async function submit(e:FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    const form=new FormData(e.currentTarget),b=Object.fromEntries(form);
+    if(mode==='password')b.email=recoveryEmail;
+    delete b.passwordConfirmation;
+    if(mode==='signup'||mode==='password'){
+      if(!passwordMeetsPolicy(newPassword)){setError(t(PASSWORD_GUIDANCE));return;}
+      if(newPassword!==passwordConfirmation){setError(t('As senhas não coincidem.'));return;}
+    }
+    setBusy(true);setError('');setMessage('');
+    try{
+      const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({...b,bio:'',accept:form.has('accept'),adult:form.has('adult')})});
+      const v:any=await r.json();
+      if(!r.ok)throw Error(v.error||t('Não foi possível concluir.'));
+      if(mode==='signup'){
+        try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}
+        location.href='/confirmar-email';
+      }else if(mode==='login'){
+        location.href=safeReturnPath(new URLSearchParams(location.search).get('return_to')||'/app');
+      }else if(mode==='verify'){
+        try{sessionStorage.removeItem('mr-pending-email');}catch{}
+        location.href=verificationType==='recovery'?'/nova-senha':'/app';
+      }else if(mode==='logout'){
+        location.href='/';
+      }else{
+        setMessage(v.message||t('Concluído.'));
+      }
+    }catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível concluir.'));}
+    finally{setBusy(false);}
+  }
+  const needPassword=mode==='login'||mode==='signup'||mode==='password';
+  const newPasswordMode=mode==='signup'||mode==='password';
+  return <main className="authpage">
+    <header className="authheader">
+      <a className="brand" href="/" aria-label="MR: Meu Ritmo"><img className="brandmark brandmark-icon" src="/favicon-mr-v3.svg" alt="" width="34" height="34"/>MR: Meu Ritmo<span className="branddot">®</span></a>
+      <LanguageSelector className="mr-language-auth"/>
+    </header>
+    <section className="authsheet">
+      <span className="eyebrow">{t('Seu dia, no seu ritmo').toUpperCase()}</span>
+      <h1>{t(titles[mode])}</h1>
+      {descriptions[mode]&&<p className="muted">{t(descriptions[mode]!)}</p>}
+      <form onSubmit={submit}>
+        {mode!=='logout'&&mode!=='password'&&<label>{t('E-mail')}
+          <input type="email" name="email" autoComplete="email" maxLength={254} defaultValue={mode==='verify'?pendingEmail:undefined} required/>
+        </label>}
+        {needPassword&&<label>{t(mode==='password'?'Nova senha':'Senha')}
+          <input type={showPassword?'text':'password'} name="password"
+            autoComplete={mode==='login'?'current-password':'new-password'}
+            minLength={mode==='login'?1:8} maxLength={128}
+            value={newPasswordMode?newPassword:undefined}
+            onChange={newPasswordMode?e=>setNewPassword(e.target.value):undefined}
+            required/>
+          <button type="button" className="authshowpassword" onClick={()=>setShowPassword(v=>!v)} aria-pressed={showPassword}>
+            {t(showPassword?'Ocultar senha':'Mostrar senha')}
+          </button>
+          {newPasswordMode&&<small>{t(PASSWORD_GUIDANCE)}</small>}
+        </label>}
+        {newPasswordMode&&<label>{t('Confirme a nova senha')}
+          <input type={showPassword?'text':'password'} name="passwordConfirmation" autoComplete="new-password"
+            minLength={8} maxLength={128} value={passwordConfirmation}
+            onChange={e=>setPasswordConfirmation(e.target.value)} required/>
+        </label>}
+        {mode==='signup'&&<>
+          <label>{t('Nome de usuário')}<input name="username" autoComplete="username" required
+            pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24}/>
+            <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small>
+          </label>
+          <label>{t('Nome de exibição')}<input name="name" autoComplete="nickname" required minLength={2} maxLength={50}/>
+            <small>{t('Como você aparece no Meu Ritmo. Pode mudar a cada 14 dias.')}</small>
+          </label>
+          <label className="checkline"><input type="checkbox" name="accept" required/>
+            {t('Li os')} <a href="/termos" target="_blank" rel="noreferrer">{t('termos')}</a> {t('e a')} <a href="/privacidade" target="_blank" rel="noreferrer">{t('política de privacidade')}</a>.
+          </label>
+          <label className="checkline"><input type="checkbox" name="adult" required/>{t('Tenho 18 anos ou mais.')}</label>
+          <p className="muted">{t('Você pode adicionar sua foto no perfil após confirmar o e-mail.')}</p>
+        </>}
+        {mode==='verify'&&<>
+          <p className="muted">{t('Se já confirmou pelo link, pode entrar com seu e-mail e senha.')}</p>
+          <label>{t('Qual código você recebeu?')}
+            <select name="type" value={verificationType} onChange={e=>setVerificationType(e.target.value as 'signup'|'recovery')}>
+              <option value="signup">{t('Código de confirmação de cadastro')}</option>
+              <option value="recovery">{t('Código de recuperação de senha')}</option>
+            </select>
+          </label>
+          <label>{t('Código recebido por e-mail')}
+            <input name="code" inputMode="numeric" autoComplete="one-time-code"
+              pattern="[0-9]{6,10}" minLength={6} maxLength={10} required/>
+          </label>
+        </>}
+        {mode==='logout'&&<p>{t('Seus dados salvos continuam na sua conta.')}</p>}
+        {error&&<p role="alert" className="autherror">{error}</p>}
+        {message&&<p role="status">{message}</p>}
+        {(mode!=='password'||recoveryReady)&&<button className="primary" type="submit" disabled={busy}>
+          {busy?t('Aguarde…'):t({login:'Entrar',signup:'Criar minha conta',recover:'Enviar link de recuperação',verify:'Confirmar código',password:'Salvar nova senha',logout:'Sair da conta'}[mode])}
+        </button>}
+      </form>
+      <nav className="authlinks">
+        {mode==='login'?<>
+          <a href="/criar-conta">{t('Criar conta grátis')}</a>
+          <a href="/recuperar-senha">{t('Esqueci a senha')}</a>
+          <a href="/confirmar-email">{t('Ainda não confirmei meu e-mail')}</a>
+        </>:<>
+          <a href="/entrar">{t('Voltar para entrar')}</a>
+          {mode==='password'&&!recoveryReady&&<a href="/recuperar-senha">{t('Solicitar outro link')}</a>}
+          {mode==='recover'&&<small>{t('Caso não receba a mensagem, confira o spam e tente novamente mais tarde.')}</small>}
+          {mode==='password'&&message&&<a href="/entrar">{t('Entrar com a nova senha')}</a>}
+        </>}
+      </nav>
+    </section>
+  </main>;
+}

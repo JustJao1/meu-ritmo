@@ -1,0 +1,25 @@
+/* Focused auth additions; inherits the current Meu Ritmo theme and typography. */
+.authsheet .authshowpassword{
+  justify-self:start;
+  display:inline-flex;
+  padding:3px 0;
+  margin:0;
+  border:0;
+  background:none;
+  color:var(--ink);
+  font-size:.82rem;
+  font-weight:600;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  cursor:pointer;
+}
+.authsheet .authshowpassword:focus-visible,
+.passwordchangeform button:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+}
+.passwordchangeform{display:grid;gap:16px;}
+.passwordchangeform label{display:grid;gap:7px;}
+.passwordchangeform label input{width:100%;min-height:44px;padding:10px 12px;}
+.passwordchangeform .secondary{justify-self:start;}
+.passwordchangeform small{color:var(--ink);opacity:.8;line-height:1.5;}
