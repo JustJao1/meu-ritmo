@@ -3,6 +3,11 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Forma de pagamento":["Payment method","Forma de pago"],
+"Cartão de crédito":["Credit card","Tarjeta de crédito"],
+"Pagamento por Pix, renovado a cada período mediante nova cobrança.":["Pay by Pix. Each renewal requires a new payment.","Paga con Pix. Cada renovación requiere un nuevo pago."],
+"Pagamento seguro no Asaas com renovação recorrente.":["Secure payment through Asaas with recurring renewal.","Pago seguro mediante Asaas con renovación recurrente."],
+"O pagamento será feito na página segura do Asaas, usando a opção escolhida. No Pix, cada renovação exige um novo pagamento. No cartão de crédito, a renovação pode ser cobrada automaticamente.":["Payment takes place on Asaas's secure page with your selected method. Pix renewals require a new payment; credit card renewals may be charged automatically.","El pago se realiza en la página segura de Asaas con el método elegido. Con Pix, cada renovación requiere un nuevo pago; con tarjeta de crédito, el cobro puede ser automático."],
 "ano":["year","año"],
 "mês":["month","mes"],
 "O cupom deve ter pelo menos 6 caracteres.":["Coupons must contain at least 6 characters.","El cupón debe tener al menos 6 caracteres."],

@@ -6,6 +6,8 @@
 import {env} from 'cloudflare:workers';
 
 export type AsaasBillingType = 'UNDEFINED' | 'PIX' | 'BOLETO' | 'CREDIT_CARD';
+// Only these methods may be used when creating a Meu Ritmo charge or subscription.
+export type AsaasCheckoutMethod = 'PIX' | 'CREDIT_CARD';
 export type AsaasCycle = 'MONTHLY' | 'YEARLY';
 export type AsaasPlanCode = 'plus_month' | 'plus_year' | 'pro_month' | 'pro_year';
 
@@ -86,7 +88,7 @@ export function createAsaasCustomer(body:{name:string;cpfCnpj:string;email:strin
   return asaasRequest<AsaasCustomer>('/customers',{method:'POST',body});
 }
 export function createAsaasPayment(body:{
-  customer:string;billingType:AsaasBillingType;value:number;dueDate:string;
+  customer:string;billingType:AsaasCheckoutMethod;value:number;dueDate:string;
   externalReference:string;description:string;
 }) {
   return asaasRequest<AsaasPayment>('/payments',{method:'POST',body});
@@ -96,7 +98,7 @@ export function getAsaasPayment(id:string) {
   return asaasRequest<AsaasPayment>('/payments/'+id);
 }
 export function createAsaasSubscription(body:{
-  customer:string;billingType:AsaasBillingType;value:number;
+  customer:string;billingType:AsaasCheckoutMethod;value:number;
   nextDueDate:string;cycle:AsaasCycle;externalReference:string;description:string;
 }) {
   return asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body});
