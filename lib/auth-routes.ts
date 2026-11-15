@@ -31,10 +31,18 @@ if(action==='resend-signup'){
  stage='resend-signup-provider';
  const r=await provider(e,'/resend',{type:'signup',email:mail});
  if(r.status===429)return reply({error:'Aguarde um pouco antes de solicitar outro código.'},429);
- if(r.status>=500)return reply({error:'Não foi possível reenviar o código agora.'},503);
- return reply({ok:true,message:'Se o cadastro ainda estiver pendente, enviaremos um novo código. Confira também o spam.'});
+ if(!r.ok){
+   console.error('auth_resend_signup_rejected',{status:r.status});
+   return reply({error:'Não foi possível solicitar o código agora. Confira o e-mail informado e tente novamente mais tarde.'},r.status>=500?503:400);
+ }
+ return reply({ok:true,message:'Solicitação de reenvio aceita. Confira a caixa de entrada e o spam.'});
 }
-if(action==='signup'){stage='signup-validation';const pw=password.parse(b.password),p=profileInput.parse(b),taken=await e.DB!.prepare('SELECT user_id FROM profiles WHERE username=? UNION SELECT user_id FROM auth_pending_profiles WHERE username=?').bind(p.username,p.username).first();if(taken)return reply({error:'Esse nome de usuário já está em uso.'},409);stage='signup-provider';const r=await provider(e,'/signup',{email:mail,password:pw});if(!r.ok)return reply({error:'Não foi possível cadastrar. Confira os dados ou recupere sua senha.'},400);const v:any=await r.json(),id=v.user?.id||v.id;if(id){stage='signup-pending-profile';const now=Math.floor(Date.now()/1000);try{
+if(action==='signup'){stage='signup-validation';const pw=password.parse(b.password),p=profileInput.parse(b);
+ const used=await e.DB!.prepare('SELECT 1 FROM profiles WHERE username=?').bind(p.username).first();
+ if(used)return reply({error:'Esse nome de usuário já está em uso.'},409);
+ const pending=await e.DB!.prepare('SELECT 1 FROM auth_pending_profiles WHERE username=?').bind(p.username).first();
+ if(pending)return reply({error:'Esse nome está reservado por um cadastro aguardando confirmação. Se foi você, abra Confirmar e-mail e reenvie o código usando o e-mail do primeiro cadastro.',pendingVerification:true},409);
+ stage='signup-provider';const r=await provider(e,'/signup',{email:mail,password:pw});if(!r.ok)return reply({error:'Não foi possível cadastrar. Confira os dados ou recupere sua senha.'},400);const v:any=await r.json(),id=v.user?.id||v.id;if(id){stage='signup-pending-profile';const now=Math.floor(Date.now()/1000);try{
   await e.DB!.prepare('INSERT INTO auth_pending_profiles(user_id,username,name,accepted_at,created_at) VALUES (?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET username=excluded.username,name=excluded.name,accepted_at=excluded.accepted_at').bind(id,p.username,p.name,now,now).run();
 }catch(error){
   if(!/unique constraint/i.test(String(error)))throw error;
