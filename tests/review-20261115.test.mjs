@@ -40,7 +40,7 @@ test('legal identification fails closed on malformed, missing and invalid suppli
 
 test('checkout requires the policy consent, identifies the supplier and records the agreed conditions',()=>{
   const checkout=file('app/api/billing/checkout/route.ts');
-  const migration=file('drizzle/0009_asaas_consent.sql');
+  const migration=file('drizzle/0011_asaas_consents.sql');
   const app=file('app/ritmo.tsx');
   assert.match(checkout,/acceptTerms:z\.literal\(true\)/);
   assert.match(checkout,/acceptRefundPolicy:z\.literal\(true\)/);
