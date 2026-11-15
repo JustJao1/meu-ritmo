@@ -46,7 +46,7 @@ export default function ChangePasswordForm(){
         minLength={8} maxLength={128} required value={confirmation} onChange={e=>setConfirmation(e.target.value)}/>
     </label>
     <button type="button" className="secondary" onClick={()=>setVisible(v=>!v)} aria-pressed={visible}>
-      {t(visible?'Ocultar senha':'Mostrar senha')}
+      {t(visible?'Ocultar todas as senhas':'Mostrar todas as senhas')}
     </button>
     {error&&<p className="autherror" role="alert">{error}</p>}
     <p className="muted">{t('Após alterar, você precisará entrar novamente em seus dispositivos.')}</p>
