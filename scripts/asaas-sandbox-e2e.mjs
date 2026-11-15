@@ -98,8 +98,9 @@ try{
   if(payment)break;
   await new Promise(resolve=>setTimeout(resolve,1250));
  }
+ if(payment?.id)log('Identificador sintético de fatura',String(payment.id));
  if(!payment?.id||!/^pay_[A-Za-z0-9]+$/.test(payment.id))
-  fail('Assinatura não gerou uma fatura Pix testável.');
+  fail('Assinatura não gerou uma fatura Pix testável; resposta não seguiu o identificador esperado.');
  paymentId=payment.id;
  const before=await asaas('/payments/'+encodeURIComponent(paymentId));
  if(['CONFIRMED','RECEIVED'].includes(before.status))
