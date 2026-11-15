@@ -20,7 +20,7 @@ export async function POST(req:Request){
   if(Number(req.headers.get('content-length')||0)>65536)return Response.json({error:'Evento muito grande.'},{status:413});
   let event:any;
   try{const raw=await req.text();if(raw.length>65536)return Response.json({error:'Evento muito grande.'},{status:413});event=JSON.parse(raw);}catch{return Response.json({error:'JSON inválido.'},{status:400});}
-  if(typeof event?.id!=='string'||event.id.length>150||typeof event.event!=='string'||event.event.length>100||typeof event.payment?.id!=='string'||!/^pay_[A-Za-z0-9]+$/.test(event.payment.id))
+  if(typeof event?.id!=='string'||event.id.length>150||typeof event.event!=='string'||event.event.length>100||typeof event.payment?.id!=='string'||!/^pay_[A-Za-z0-9_-]{1,90}$/.test(event.payment.id))
     return Response.json({error:'Evento inválido.'},{status:400});
   if(await env.DB!.prepare('SELECT event_id FROM asaas_webhook_events WHERE event_id=?').bind(event.id).first())return Response.json({received:true});
   if(!event.event.startsWith('PAYMENT_'))return Response.json({received:true});

@@ -94,7 +94,7 @@ export function createAsaasPayment(body:{
   return asaasRequest<AsaasPayment>('/payments',{method:'POST',body});
 }
 export function getAsaasPayment(id:string) {
-  if(!/^pay_[A-Za-z0-9]+$/.test(id)) throw new Error('Identificador de cobrança inválido.');
+  if(!/^pay_[A-Za-z0-9_-]{1,90}$/.test(id)) throw new Error('Identificador de cobrança inválido.');
   return asaasRequest<AsaasPayment>('/payments/'+id);
 }
 export function createAsaasSubscription(body:{
@@ -104,7 +104,7 @@ export function createAsaasSubscription(body:{
   return asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body});
 }
 export function cancelAsaasSubscription(id:string) {
-  if(!/^sub_[A-Za-z0-9]+$/.test(id)) throw new Error('Identificador de assinatura inválido.');
+  if(!/^sub_[A-Za-z0-9_-]{1,90}$/.test(id)) throw new Error('Identificador de assinatura inválido.');
   return asaasRequest<unknown>('/subscriptions/'+id,{method:'DELETE'});
 }
 export function hasValidAsaasWebhookToken(supplied:string|null) {
