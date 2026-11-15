@@ -62,9 +62,9 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
     if(path.endsWith('/customers'))return Response.json({id:customerCount++===0?'cus_test':'cus_test_2'});
     if(path.endsWith('/subscriptions')&&init?.method==='POST'){
       subscriptionRequest=JSON.parse(init.body);
-      return Response.json({id:subscriptionCount++===0?'sub_test':'sub_test_2'});
+      return Response.json({id:subscriptionCount++===0?'sub_0_test':'sub_0_test_2'});
     }
-    if(path.includes('/subscriptions/sub_test/payments')||path.includes('/subscriptions/sub_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
+    if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
     throw Error('Network denied in test: '+path);
   };
   const payer={name:'Bob Teste',cpfCnpj:'52998224725'};
@@ -105,11 +105,11 @@ test('Asaas webhook autenticado libera Plus uma vez e revoga cobranÃ§a estornada
   let status='RECEIVED',updates=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
-    if(path.includes('/payments/pay_test'))return Response.json({id:'pay_test',customer:'cus_test',subscription:'sub_test',billingType:'UNDEFINED',value:17.91,dueDate:new Date().toISOString().slice(0,10),status});
-    if(path.includes('/subscriptions/sub_test')&&init?.method==='PUT'){updates++;return Response.json({id:'sub_test'});}
+    if(path.includes('/payments/pay_0_test'))return Response.json({id:'pay_0_test',customer:'cus_test',subscription:'sub_0_test',billingType:'UNDEFINED',value:17.91,dueDate:new Date().toISOString().slice(0,10),status});
+    if(path.includes('/subscriptions/sub_0_test')&&init?.method==='PUT'){updates++;return Response.json({id:'sub_0_test'});}
     throw Error('Unexpected Asaas request '+path);
   };
-  const send=(id,token)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json',...(token?{'asaas-access-token':token}:{})},body:JSON.stringify({id,event:'PAYMENT_RECEIVED',payment:{id:'pay_test'}})}));
+  const send=(id,token)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json',...(token?{'asaas-access-token':token}:{})},body:JSON.stringify({id,event:'PAYMENT_RECEIVED',payment:{id:'pay_0_test'}})}));
   try{
     assert.equal((await send('evt_payment_test',null)).status,401);
     assert.equal((await send('evt_payment_test','a'.repeat(48))).status,200);
@@ -128,7 +128,7 @@ test('webhook ainda concilia pagamentos existentes quando novas vendas foram pau
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
    if(String(url).includes('/payments/pay_second'))
-     return Response.json({id:'pay_second',customer:'cus_test',subscription:'sub_test',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
+     return Response.json({id:'pay_second',customer:'cus_test',subscription:'sub_0_test',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
    throw Error('Unexpected Asaas request '+url);
  };
  try{
