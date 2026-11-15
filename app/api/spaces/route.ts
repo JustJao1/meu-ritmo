@@ -36,8 +36,8 @@ async function member(userId:string,id:string){
 }
 async function allowedCreate(user:{userId:string;email:string;displayName:string;fullName:string|null}){
  const entitlement=await planAccess(user.userId);
- // Early-access Pro visuals do not silently grant the paid workspace-creation benefit.
- return entitlement.plan==='pro'&&entitlement.source!=='early_access';
+ // Honor the current Pro entitlement, including the temporary access campaign.
+ return entitlement.plan==='pro';
 }
 function view(space:any,userId:string){
  return {id:space.id,name:space.name,owner:space.owner_id===userId,ownerId:space.owner_id,revision:space.revision,joinCode:space.owner_id===userId?space.join_code:undefined};
