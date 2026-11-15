@@ -3,6 +3,9 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"20 notas fixadas e 12 modelos prontos de rotina":["20 pinned notes and 12 ready-made routine templates","20 notas fijadas y 12 modelos de rutina listos"],
+"Publicação de rotinas personalizadas no Social":["Publish custom routines in Social","Publicación de rutinas personalizadas en Social"],
+
 "Separar roupas, água e equipamentos":["Prepare clothes, water and equipment","Preparar ropa, agua y equipo"],
 "Aquecimento leve por 5 a 10 minutos":["Warm up gently for 5 to 10 minutes","Calentar suavemente de 5 a 10 minutos"],
 "Mobilidade das articulações envolvidas":["Mobilize the joints involved","Movilizar las articulaciones implicadas"],
