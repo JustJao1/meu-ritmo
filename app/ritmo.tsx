@@ -39,10 +39,10 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     const [showEarlyAccess,setShowEarlyAccess]=useState(true);
     useEffect(()=>{try{setShowEarlyAccess(localStorage.getItem('mr-early-access-dismissed')!=='1');}catch{}},[]);
     function dismissEarlyAccess(){setShowEarlyAccess(false);try{localStorage.setItem('mr-early-access-dismissed','1');}catch{}}
-    const [socialProfile,setSocialProfile]=useState<SocialProfile|null>(null),[discountCode,setDiscountCode]=useState(''),[billingName,setBillingName]=useState(''),[billingTaxId,setBillingTaxId]=useState(''),[purchaseTerms,setPurchaseTerms]=useState(false),[purchaseStatus,setPurchaseStatus]=useState<{configured:boolean;mode:string;earlyAccess?:boolean}|null>(null);
+    const [socialProfile,setSocialProfile]=useState<SocialProfile|null>(null),[discountCode,setDiscountCode]=useState(''),[billingName,setBillingName]=useState(''),[billingTaxId,setBillingTaxId]=useState(''),[purchaseTerms,setPurchaseTerms]=useState(false),[purchaseStatus,setPurchaseStatus]=useState<{configured:boolean;mode:string;earlyAccess?:boolean;manageAvailable?:boolean}|null>(null),[priceQuote,setPriceQuote]=useState<{plan:string;firstAmountCents:number;renewalAmountCents:number;savingsCents:number;discountCode:string}|null>(null),[priceQuoteError,setPriceQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false);
     useEffect(()=>{if(!landing&&initialArea==='Hoje'&&preferenceAllowed()){const saved=document.cookie.split('; ').find(x=>x.startsWith('mr_area='))?.split('=')[1];if(saved){const a=decodeURIComponent(saved);if(['Hoje','Agenda','Gastos','Notas','Rotina','Comunidade'].includes(a))setArea(a);}}},[landing,initialArea]);
     useEffect(()=>{if(!landing&&!demo&&loaded&&preferenceAllowed())document.cookie='mr_area='+encodeURIComponent(area)+'; Path=/; Max-Age=2592000; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');},[area,loaded,demo,landing]);
-    useEffect(()=>{if(panel==='Assinatura'||panel==='Planos')fetch('/api/billing/status').then(r=>r.json()).then((v:any)=>setPurchaseStatus(v)).catch(()=>setPurchaseStatus({configured:false,mode:'test'}));},[panel]);
+    useEffect(()=>{if(panel==='Assinatura'||panel==='Planos')fetch('/api/billing/status').then(r=>r.json()).then((v:any)=>setPurchaseStatus(v)).catch(()=>setPurchaseStatus({configured:false,mode:'sandbox'}));},[panel]);
     function copySharedTemplate(t:{title:string;time:string}[],author:string){if(demo){setToast('Entre na conta real para copiar um modelo da comunidade.');return;}const d=latest.current;change({...d,items:[...d.items,...t.map(x=>({...blank('task'),title:x.title,time:x.time,body:'Modelo compartilhado por @'+author,date:today}))]});setToast('Modelo copiado para hoje. Revise horários e dias na Rotina.');}
     const [accountRole,setAccountRole]=useState<'owner'|'admin'|'user'>('user'),[accountAccess,setAccountAccess]=useState<{source:string;until:number|null}|null>(null),[promoCode,setPromoCode]=useState(''),[promoBusy,setPromoBusy]=useState(false),[profileLoading,setProfileLoading]=useState(false);
     useEffect(()=>{if(demo)return;let alive=true;fetch('/api/account',{cache:'no-store'}).then(r=>r.ok?r.json():null).then((v:unknown)=>{if(!alive||!v||typeof v!=='object'||!('role' in v))return;const role=v.role;if(role==='owner'||role==='admin')setAccountRole(role)}).catch(()=>{});return()=>{alive=false}},[demo]);
@@ -50,6 +50,24 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     async function redeemPromo(){if(demo){setToast('Resgates funcionam apenas na conta real. A demonstração não consome códigos.');return;}setPromoBusy(true);try{const r=await fetch('/api/promotions/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:promoCode})});const v:any=await r.json();if(!r.ok)throw Error(v.error);setAccountPlan(v.access.plan);setAccountAccess(v.access);setPromoCode('');setPanel('Conta');setToast(v.message);}catch(e:any){setToast(e.message);}finally{setPromoBusy(false)}}
     const [accountPlan,setAccountPlan]=useState<Plan>('free'),[demoPlan,setDemoPlan]=useState<Plan>('free'),[studioTab,setStudioTab]=useState('Aparência'),[requestedPlan,setRequestedPlan]=useState<Plan>('plus'),[reviewReason,setReviewReason]=useState('');
     const plan=demo?demoPlan:accountPlan, appearance=effectiveAppearance(data,plan);
+    useEffect(()=>{
+      if(panel!=='Assinatura'||demo||requestedPlan==='free')return;
+      const code=discountCode.trim().toUpperCase();
+      if(code.length>0&&code.length<6){setPriceQuote(null);setPriceQuoteError(t('O cupom deve ter pelo menos 6 caracteres.'));return;}
+      let active=true;
+      const timer=setTimeout(async()=>{
+        setQuoteLoading(true);setPriceQuoteError('');
+        try{
+          const response=await fetch('/api/billing/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({price:requestedPlan+'_'+(annual?'year':'month'),discountCode:code||undefined})});
+          const quote:any=await response.json();
+          if(!response.ok)throw Error(quote.error||'Não foi possível verificar o cupom.');
+          if(active)setPriceQuote({...quote,discountCode:code});
+        }catch(e){if(active){setPriceQuote(null);setPriceQuoteError(e instanceof Error?e.message:'Não foi possível verificar o cupom.');}}
+        finally{if(active)setQuoteLoading(false);}
+      },380);
+      return ()=>{active=false;clearTimeout(timer);};
+    },[panel,demo,requestedPlan,annual,discountCode]);
+
     useEffect(()=>{const a=publicPage?defaultAppearance:appearance,t=themes.find(x=>x.id===a.theme)||themes[0];const root=document.documentElement;root.style.setProperty('--paper',t.paper);root.style.setProperty('--ink',t.ink);root.style.setProperty('--accent',a.accent);root.style.setProperty('--theme-side',t.side);root.style.setProperty('--theme-banner',t.banner);root.dataset.noteStyle=a.noteStyle;root.dataset.density=a.density;root.dataset.titleStyle=a.titleStyle;root.dataset.theme=t.id;if(!publicPage&&loaded){try{sessionStorage.setItem('meur ritmo-logout-theme',JSON.stringify({paper:t.paper,ink:t.ink,accent:a.accent,side:t.side,banner:t.banner,theme:t.id}));}catch{}}},[publicPage,loaded,appearance.theme,appearance.accent,appearance.noteStyle,appearance.density,appearance.titleStyle]);
     function studio(tab='Aparência'){setStudioTab(tab);setPanel('Meu estilo');}
     function upgrade(p:Plan){setRequestedPlan(p);setPanel('Benefício');}
