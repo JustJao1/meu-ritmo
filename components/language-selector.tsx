@@ -3,6 +3,13 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Pedidos registrados":["Registered orders","Pedidos registrados"],
+"Ativos":["Active","Activos"],
+"Em conferência":["Under review","En revisión"],
+"Cancelados":["Cancelled","Cancelados"],
+"Seu plano atual":["Your current plan","Tu plan actual"],
+"Plano simulado":["Simulated plan","Plan simulado"],
+
 "Usar este modelo":["Use this template","Usar este modelo"],
 "Ver benefício Plus":["See Plus benefit","Ver beneficio Plus"],
 "Mover tarefa para cima":["Move task up","Subir tarea"],
