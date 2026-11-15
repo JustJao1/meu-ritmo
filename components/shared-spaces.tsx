@@ -57,7 +57,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
   const interval=setInterval(()=>{
    request<{space:Space}>(undefined,selected.id).then(r=>{
     setSelected(prev=>prev?.id===r.space.id?r.space:prev);
-   }).catch(()=>{});
+   }).catch(e=>{if(e instanceof Error&&e.message.includes('acesso removido')){setSelected(null);setEditing(null);setError('Seu acesso a este espaço foi removido.');}});
   },20000);
   return()=>clearInterval(interval);
  },[selected?.id,editing,busy]);
