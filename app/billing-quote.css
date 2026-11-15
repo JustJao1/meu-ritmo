@@ -1,0 +1,7 @@
+.billing-quote{border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);background:color-mix(in srgb,var(--paper) 93%,var(--ink));padding:14px 16px;border-radius:12px;display:grid;gap:12px;margin:12px 0}
+.billing-quote>div{display:flex;align-items:baseline;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;color:var(--ink)}
+.billing-quote span{font-size:13px;opacity:.78;font-weight:600}
+.billing-quote strong{font-size:16px;font-weight:750;font-variant-numeric:tabular-nums;color:var(--ink)}
+.billing-quote p{border-top:1px solid color-mix(in srgb,var(--ink) 15%,transparent);padding-top:10px;margin:0;font-size:13px;font-weight:650;color:var(--ink)}
+.billing-quote-error{font-size:13px;line-height:1.45;color:#b64d52;margin:7px 0}
+@media(max-width:500px){.billing-quote{padding:12px}.billing-quote strong{font-size:15px}}
