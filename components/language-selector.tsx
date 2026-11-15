@@ -3,6 +3,8 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"ano":["year","año"],
+"mês":["month","mes"],
 "O cupom deve ter pelo menos 6 caracteres.":["Coupons must contain at least 6 characters.","El cupón debe tener al menos 6 caracteres."],
 "Conferindo valores e cupom…":["Checking prices and coupon…","Comprobando precios y cupón…"],
 "Primeira cobrança":["First charge","Primer cobro"],
