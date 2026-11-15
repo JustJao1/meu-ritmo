@@ -27,3 +27,6 @@
 .passwordchangeform small{color:var(--ink);opacity:.8;line-height:1.5;}
 
 .authsheet .authresend:disabled{opacity:.6;cursor:wait;}
+
+.authsheet .authpendinglink{display:inline-block;justify-self:start;color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px;margin-top:2px;}
+.authsheet .authpendinglink:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}

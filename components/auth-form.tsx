@@ -29,6 +29,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [busy,setBusy]=useState(false);
   const [message,setMessage]=useState('');
   const [error,setError]=useState('');
+  const [pendingSignup,setPendingSignup]=useState(false);
   useEffect(()=>{
     try{setPendingEmail(sessionStorage.getItem('mr-pending-email')||'');}catch{}
     if(mode==='login'&&new URLSearchParams(location.search).get('password_changed')==='1')
@@ -87,12 +88,12 @@ export default function AuthForm({mode}:{mode:AuthMode}){
       if(!passwordMeetsPolicy(newPassword)){setError(t(PASSWORD_GUIDANCE));return;}
       if(newPassword!==passwordConfirmation){setError(t('As senhas não coincidem.'));return;}
     }
-    setBusy(true);setError('');setMessage('');
+    setBusy(true);setError('');setMessage('');setPendingSignup(false);
     try{
       const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({...b,bio:'',accept:form.has('accept'),adult:form.has('adult')})});
       const v:any=await r.json();
-      if(!r.ok)throw Error(v.error||t('Não foi possível concluir.'));
+      if(!r.ok){if(mode==='signup'&&v.pendingVerification===true)setPendingSignup(true);throw Error(v.error||t('Não foi possível concluir.'));}
       if(mode==='signup'){
         try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}
         location.href='/confirmar-email';
@@ -170,6 +171,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         </>}
         {mode==='logout'&&<p>{t('Seus dados salvos continuam na sua conta.')}</p>}
         {error&&<p role="alert" className="autherror">{error}</p>}
+        {mode==='signup'&&pendingSignup&&<a className="authpendinglink" href="/confirmar-email">{t('Confirmar meu cadastro anterior')}</a>}
         {message&&<p role="status">{message}</p>}
         {(mode!=='password'||recoveryReady)&&<button className="primary" type="submit" disabled={busy}>
           {busy?t('Aguarde…'):t({login:'Entrar',signup:'Criar minha conta',recover:'Enviar link de recuperação',verify:'Confirmar código',password:'Salvar nova senha',logout:'Sair da conta'}[mode])}
