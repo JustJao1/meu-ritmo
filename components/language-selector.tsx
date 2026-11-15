@@ -3,6 +3,13 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Resumo das cobranças":["Billing overview","Resumen de cobros"],
+"Atualizando…":["Refreshing…","Actualizando…"],
+"Nenhuma cobrança registrada ainda.":["No charges recorded yet.","Aún no hay cobros registrados."],
+"As assinaturas aparecerão aqui quando os primeiros pedidos forem registrados.":["Subscriptions will appear here when the first orders are recorded.","Las suscripciones aparecerán aquí cuando se registren los primeros pedidos."],
+"Tente selecionar outra situação para consultar os pedidos registrados.":["Choose another status to find recorded orders.","Selecciona otro estado para consultar los pedidos registrados."],
+"Ver todas as cobranças":["View all charges","Ver todos los cobros"],
+
 "UMA FRASE PARA HOJE":["A THOUGHT FOR TODAY","UNA FRASE PARA HOY"],
 "Termos de uso":["Terms of use","Términos de uso"],
 "Li os termos e compreendi a renovação recorrente:":["I have read the terms and understand recurring renewals:","He leído los términos y entiendo las renovaciones recurrentes:"],
