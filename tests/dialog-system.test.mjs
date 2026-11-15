@@ -18,13 +18,13 @@ function visibleCodeFiles(directory){
   if(entry==='ui')return [];
   const path=directory+'/'+entry;
   if(statSync(new URL('../'+path,import.meta.url)).isDirectory())return visibleCodeFiles(path);
-  return /\\.(?:tsx|jsx|ts|js)$/.test(entry)?[path]:[];
+  return /\.(?:tsx|jsx|ts|js)$/.test(entry)?[path]:[];
  });
 }
 test('no app or first-party component uses native browser dialogs',()=>{
  for(const path of [...visibleCodeFiles('app'),...visibleCodeFiles('components')]){
   const source=read(path);
-  const native=/(?<![\\w.])(?:window\\.|globalThis\\.)?(?:confirm|prompt|alert)\\s*\\(/g;
+  const native=/(?<![\w.])(?:window\.|globalThis\.)?(?:confirm|prompt|alert)\s*\(/g;
   assert.equal([...source.matchAll(native)].length,0,path+' still uses a blocking browser dialog');
  }
 });
