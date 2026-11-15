@@ -21,6 +21,7 @@ import './billing-quote.css';
 import './daily-motivation.css';
 import './admin-billing-layout.css';
 import './legal-i18n.css';
+import './download-page.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';

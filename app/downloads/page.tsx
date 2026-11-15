@@ -1,6 +1,4 @@
 import {redirect} from 'next/navigation';
 
-/** Legacy downloads address: one canonical installation experience. */
-export default function DownloadsPage(){
-  redirect('https://meu-ritmo-lite.silva-joao-232334.workers.dev/?theme=paper');
-}
+/** Former Lite downloads route now uses the canonical Meu Ritmo App page. */
+export default function DownloadsPage(){redirect('/download');}
