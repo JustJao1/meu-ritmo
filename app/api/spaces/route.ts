@@ -1,7 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {z} from 'zod';
 import {getUser} from '../../session';
-import {sameOrigin,appRole,registerMember} from '../../../lib/admin-access';
+import {sameOrigin,registerMember} from '../../../lib/admin-access';
 import {planAccess} from '../../../lib/entitlements';
 import {stateInput} from '../../../lib/state-validation';
 
@@ -36,10 +36,10 @@ async function member(userId:string,id:string){
 async function allowedCreate(user:{userId:string;email:string;displayName:string;fullName:string|null}){
  const entitlement=await planAccess(user.userId);
  // Early-access Pro visuals do not silently grant the paid workspace-creation benefit.
- return entitlement.plan==='pro'&&entitlement.source!=='early_access'||await appRole(user)==='owner';
+ return entitlement.plan==='pro'&&entitlement.source!=='early_access';
 }
 function view(space:any,userId:string){
- return {id:space.id,name:space.name,owner:space.owner_id===userId,revision:space.revision,joinCode:space.owner_id===userId?space.join_code:undefined};
+ return {id:space.id,name:space.name,owner:space.owner_id===userId,ownerId:space.owner_id,revision:space.revision,joinCode:space.owner_id===userId?space.join_code:undefined};
 }
 export async function GET(req:Request){
  const user=await getUser();if(!user)return reply({error:'Entre na sua conta.'},401);
