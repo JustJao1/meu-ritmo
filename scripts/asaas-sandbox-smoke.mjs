@@ -34,7 +34,7 @@ if(mode!=='sandbox'||!key.startsWith('$aact_hmlg_')){
    show('Fila interrompida',String(w.interrupted===true));
    const events=Array.isArray(w.events)?w.events:[];
    show('Eventos essenciais presentes',String(['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'].every(e=>events.includes(e))));
-   if(!w.enabled||w.interrupted||!['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED'].every(e=>events.includes(e)))caution('Webhook precisa estar ativo e receber eventos de pagamento e reembolso.');
+   if(!w.enabled||w.interrupted||!['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'].every(e=>events.includes(e)))caution('Webhook precisa estar ativo e receber eventos de pagamento e reembolso.');
   }
  }catch(e){issue(e.message)}
  try{
