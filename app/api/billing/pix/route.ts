@@ -13,7 +13,7 @@ export async function POST(req:Request){
   if(!u)return output({error:'Entre na sua conta para acessar o pagamento Pix.'},401);
   if(req.headers.get('origin')!==new URL(req.url).origin)return output({error:'Origem inválida.'},403);
   if(!asaasConfig().apiReady)return output({error:'Consulta do pagamento Pix indisponível.'},503);
-  const input=await req.json().catch(()=>null);
+  const input=await req.json().catch(()=>null) as {orderId?:unknown}|null;
   const id=typeof input?.orderId==='string'?input.orderId:'';
   if(!uuid.test(id))return output({error:'Identificador de pedido inválido.'},400);
   const order=await env.DB!.prepare("SELECT id,provider_subscription_id,status,first_price_cents,base_price_cents,first_paid_at FROM asaas_orders WHERE id=? AND user_id=?")
