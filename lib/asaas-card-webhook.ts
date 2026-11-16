@@ -54,16 +54,17 @@ async function checkoutEvent(event:any){
 /** Bind the subscription that the hosted checkout created, not an arbitrary
  * subscription from a client's browser. The payment webhook remains the ONLY
  * event which grants a paid Plus/Pro period. */
-async function subscriptionCreated(event:any){
- const supplied=event.subscription?.id;
- if(!subscriptionId.test(supplied||''))return Response.json({error:'Assinatura inválida.'},{status:400});
+/** Used both by subscription webhooks and by a payment webhook that arrives
+ * before the subscription-created event has been correlated. Never grants access. */
+export async function bindCardSubscription(supplied:string):Promise<string|null>{
+ if(!subscriptionId.test(supplied||''))return null;
  const actual=await asaasRequest<RemoteSubscription>('/subscriptions/'+encodeURIComponent(supplied));
- if(actual.id!==supplied||!actual.customer||actual.billingType!=='CREDIT_CARD'||actual.deleted)
-  return Response.json({error:'Assinatura divergente.'},{status:409});
+ if(actual.id!==supplied||!customerId.test(actual.customer||'')||
+    actual.billingType!=='CREDIT_CARD'||actual.deleted)return null;
  const candidates=await env.DB!.prepare(
   "SELECT c.order_id,c.checkout_id,c.customer_id,c.status AS checkout_status,c.created_at,o.status AS order_status,o.plan_code,o.first_price_cents,o.provider_subscription_id "+
   "FROM asaas_card_checkouts c JOIN asaas_orders o ON o.id=c.order_id "+
-  "WHERE c.customer_id=? AND o.status IN ('pending','review','active') AND (o.provider_subscription_id IS NULL OR o.provider_subscription_id=?)"
+  "WHERE c.customer_id=? AND c.status='PAID' AND o.status IN ('pending','review','active') AND (o.provider_subscription_id IS NULL OR o.provider_subscription_id=?)"
  ).bind(actual.customer,supplied).all<CardOrder>();
  const time=now(),value=Math.round(actual.value*100);
  const matching=candidates.results.filter(c=>
@@ -72,22 +73,20 @@ async function subscriptionCreated(event:any){
    c.plan_code.endsWith('_year')===(actual.cycle==='YEARLY')&&
    (actual.cycle==='MONTHLY'||actual.cycle==='YEARLY')&&
    c.created_at>=time-86400&&c.created_at<=time+300&&
-   c.checkout_status==='PAID'&&
    (!actual.externalReference||actual.externalReference===c.order_id)
  );
- // If the provider supplies no external reference, correlate only when there
- // is exactly one recent pending checkout for this Asaas customer and amount.
- if(matching.length!==1)return ok();
+ if(matching.length!==1)return null;
  const found=matching[0];
- if(found.provider_subscription_id&&found.provider_subscription_id!==supplied)
-  return Response.json({error:'Assinatura já vinculada.'},{status:409});
- const updates=[
-  env.DB!.prepare("UPDATE asaas_orders SET provider_subscription_id=?,status=CASE WHEN status='review' THEN 'pending' ELSE status END WHERE id=? AND (provider_subscription_id IS NULL OR provider_subscription_id=?)")
-   .bind(supplied,found.order_id,supplied),
-  env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING')
-   .bind(event.id,event.event,time)
- ];
- await env.DB!.batch(updates);
+ await env.DB!.prepare("UPDATE asaas_orders SET provider_subscription_id=?,status=CASE WHEN status='review' THEN 'pending' ELSE status END WHERE id=? AND (provider_subscription_id IS NULL OR provider_subscription_id=?)")
+  .bind(supplied,found.order_id,supplied).run();
+ return found.order_id;
+}
+async function subscriptionCreated(event:any){
+ const supplied=event.subscription?.id;
+ if(!subscriptionId.test(supplied||''))
+  return Response.json({error:'Assinatura inválida.'},{status:400});
+ const orderId=await bindCardSubscription(supplied);
+ if(orderId)await storeEvent(event);
  return ok();
 }
 
