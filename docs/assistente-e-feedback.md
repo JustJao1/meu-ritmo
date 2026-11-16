@@ -14,7 +14,7 @@ pedem esclarecimento. A interface explicita a língua suportada e exemplos.
 
 Suporta tarefas, compromissos com horário, lembretes, notas, despesas, dias da
 semana e recorrências diárias/mensais. Um pedido pode conter várias instruções
-separadas por ponto e vírgula ou quebra de linha. Pode consultar os gastos do dia
+separadas por vírgulas, ponto e vírgula, quebra de linha ou conectivos reconhecidos. Vírgulas decimais são preservadas. Cada registro mostra o trecho interpretado; trechos não reconhecidos pedem esclarecimento, sem confirmação parcial silenciosa. Pode consultar os gastos do dia
 ou mês e mostrar as atividades de hoje/amanhã. Não registra receitas, transfere
 dinheiro, apaga registros ou envia mensagens.
 
@@ -61,3 +61,9 @@ Testes de parser e de endpoints com SQLite real: recorrências, conflitos, valor
 datas, isolamento de contas, bloqueio Free, Plus/Pro, respostas, avisos, auditoria,
 CSRF e idempotência. A suíte completa e o build devem passar antes de publicar.
 Nenhum conjunto finito de testes garante ausência absoluta de erros.
+
+Revisão de 16/11: a entrada cresce conforme o texto, com tipografia e foco próprios.
+A confirmação de conflitos só aparece se houver sobreposição real entre tarefas
+ou compromissos. Lembretes pontuais não ocupam blocos da agenda. No relato com
+dois gastos de transporte, trabalho e academia, os cinco registros são separados;
+a chegada à academia às 18h ou 18h30 exige escolha explícita antes de salvar.

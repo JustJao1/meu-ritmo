@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import './assistant-feedback.css';
 import './public-theme-audit.css';
 import './landing-refinement.css';
 import './app-visual-consistency.css';
@@ -26,6 +25,7 @@ import './download-page.css';
 import './routine-social.css';
 import './plan-footer-admin-contrast.css';
 import './theme-calendar-alarm-contrast.css';
+import './assistant-feedback.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';

@@ -33,3 +33,18 @@ test('consultas fora do período suportado pedem esclarecimento',()=>{for(const 
 test('recorrência detecta compromisso fixo bem depois de duas semanas',()=>{const weekly=task('Estudar inglês toda terça às 19h');const fixed={...task('Reunião das 19h às 20h'),date:'2027-02-02'};assert(overlaps(weekly,fixed));});
 test('recorrências mensais e semanais verificam um ciclo completo',()=>{const weekly=task('Estudar inglês toda terça às 19h');const monthly={...task('Reunião das 19h às 20h'),date:'2026-11-28',repeat:'monthly'};assert(overlaps(weekly,monthly));});
 test('datas relativas não suportadas não caem silenciosamente em hoje',()=>{const r=plan('Estudar inglês em 3 dias às 19h');assert(r.questions.length);assert.equal(r.drafts.length,0);});
+test('parágrafo real separa dois gastos, trabalho, saída e academia sem ignorar instruções',()=>{
+ const text='Preciso ir para a academia hoje as 18h, hoje de manhã às 10h gastei 10 reais com transporte, meio dia eu gastei mais 10 reais com transporte e desde as 12:30 estou no trabalho, preciso sair daqui as 18h para estar na academia ás 18:30';
+ const r=plan(text);assert.deepEqual(r.questions,[]);assert.equal(r.drafts.length,5);
+ const expenses=r.drafts.filter(d=>d.item.type==='expense').map(d=>d.item);assert.equal(expenses.length,2);assert.equal(expenses.reduce((sum,x)=>sum+x.amount,0),20);assert.deepEqual(expenses.map(x=>x.time),['10:00','12:00']);assert(expenses.every(x=>x.category==='Transporte'));
+ const work=r.drafts.find(d=>d.item.title==='Trabalho').item;assert.equal(work.time,'12:30');assert.equal(work.end,'18:00');
+ const leave=r.drafts.find(d=>d.item.title==='Sair do trabalho').item;assert.equal(leave.type,'reminder');assert.equal(leave.time,'18:00');assert.equal(leave.notify,true);
+ assert.equal(r.clarifications.length,1);assert.deepEqual(r.clarifications[0].choices.map(c=>c.time),['18:00','18:30']);
+ assert(r.drafts.every(d=>d.source));validate(r);
+});
+test('vírgulas monetárias não são separadores de instruções',()=>{const r=plan('Gastei R$ 10,50 no mercado, paguei 15,90 com transporte');assert.deepEqual(r.questions,[]);assert.equal(r.drafts.length,2);assert.deepEqual(r.drafts.map(d=>d.item.amount),[10.5,15.9]);});
+test('conjunções entre dias da semana não dividem a recorrência',()=>{const r=plan('Estudar toda terça e quinta às 19h, treinar toda segunda e quarta às 18h');assert.equal(r.drafts.length,2);assert.deepEqual(r.drafts[0].item.days,['2','4']);assert.deepEqual(r.drafts[1].item.days,['1','3']);});
+test('trecho desconhecido fica explícito e impede confirmação parcial silenciosa',()=>{const r=plan('Estudar amanhã às 19h, abacaxi sem qualquer ação');assert.equal(r.drafts.length,1);assert.equal(r.questions.length,1);assert(r.questions[0].includes('abacaxi'));});
+test('período de trabalho incompleto não recebe duração inventada',()=>{const r=plan('Desde as 12:30 estou no trabalho');assert.equal(r.drafts.length,0);assert(r.questions.some(q=>q.includes('termina seu trabalho')));});
+test('lembrete pontual não ocupa um bloco de tempo nem cria conflito artificial',()=>{const taskItem=task('Estudar às 18h');const reminder=task('Me lembre de pagar internet às 18h');assert.equal(overlaps(taskItem,reminder),false);});
+test('mais de um horário sem relação clara exige esclarecimento',()=>{const r=plan('Estudar às 18h ou às 19h');assert.equal(r.drafts.length,0);assert(r.questions.length);});

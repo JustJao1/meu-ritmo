@@ -3,6 +3,11 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Conflito de horário com:":["Time conflict with:", "Conflicto de horario con:"],
+"Trecho interpretado:":["Source text:", "Texto interpretado:"],
+"Quero manter esses horários mesmo com os conflitos indicados.":["Keep these times despite the listed conflicts.", "Quiero mantener estos horarios a pesar de los conflictos indicados."],
+"Você citou dois horários para a academia. Qual é o horário de chegada?":["You mentioned two times for the gym. Which is the arrival time?", "Mencionaste dos horarios para el gimnasio. ¿Cuál es la hora de llegada?"],
+"registros para conferir":["records to review", "registros para revisar"],
 "A resposta e as mudanças de status ficam disponíveis na conta da pessoa. Não são enviados e-mails automáticos.":["Replies and status changes appear in the user's account. No automatic emails are sent.", "Las respuestas y los cambios de estado aparecen en la cuenta. No se envían correos automáticos."],
 "Acompanhe avaliações, investigue problemas e responda dentro do Meu Ritmo.":["Review ratings, investigate issues and reply within Meu Ritmo.", "Consulta valoraciones, investiga problemas y responde dentro de Meu Ritmo."],
 "Acrescentar uma mensagem":["Add a message", "Añadir un mensaje"],
