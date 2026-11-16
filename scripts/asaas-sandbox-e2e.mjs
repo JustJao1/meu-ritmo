@@ -200,6 +200,19 @@ try{
    refundResult='não homologado: cobrança classificada como '+String(check.billingType||'não informada')+' pelo Asaas Sandbox';
   else throw error;
  }
+ if(check.billingType==='BOLETO'){
+  // Boleto refunds use a separate provider workflow. It issues a link for
+  // the payer's bank details; it does not refund automatically.
+  try{
+   const response=await asaas('/payments/'+encodeURIComponent(paymentId)+'/bankSlip/refund','POST',{});
+   const link=new URL(String(response.requestUrl||''));
+   if(link.protocol!=='https:'||!/(^|\\.)asaas\\.com$/.test(link.hostname))
+    fail('Asaas não retornou endereço de solicitação de estorno válido.');
+   refundResult='solicitação de estorno por boleto aberta; conclusão depende de dados do pagador';
+  }catch(error){
+   console.warn('::warning title=Estorno de boleto pendente::A solicitação não pôde ser iniciada ou falta permissão da chave Sandbox.');
+  }
+ }
  log('Estorno da fatura recorrente',refundResult);
  // Separately validate refund of a genuine PIX charge. A recurring invoice
  // reported as BOLETO cannot be treated as a PIX refund just because the
