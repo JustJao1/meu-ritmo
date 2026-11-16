@@ -35,8 +35,18 @@ export async function POST(req:Request){
     if(payment.id!==event.payment.id||!payment.subscription)return Response.json({received:true});
     const order=await env.DB!.prepare('SELECT * FROM asaas_orders WHERE provider_subscription_id=?').bind(payment.subscription).first<any>();
     if(!order)return Response.json({error:'Assinatura ainda não registrada.'},{status:503});
-    const customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(order.user_id).first<any>();
-    if(!customer||customer.customer_id!==payment.customer)return Response.json({error:'Vínculo do pagamento inválido.'},{status:409});
+    // A card Checkout creates its payer on Asaas after the hosted form is paid.
+    // Never infer the payer from a previous Pix customer of the same account.
+    const card=await env.DB!.prepare("SELECT customer_id,status FROM asaas_card_checkouts WHERE order_id=?")
+      .bind(order.id).first<{customer_id:string;status:string}>();
+    if(card){
+      if(card.status!=='PAID'||!card.customer_id||card.customer_id!==payment.customer||
+         payment.billingType!=='CREDIT_CARD')
+        return Response.json({error:'Vínculo do pagamento por cartão inválido.'},{status:409});
+    }else{
+      const customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(order.user_id).first<any>();
+      if(!customer||customer.customer_id!==payment.customer)return Response.json({error:'Vínculo do pagamento inválido.'},{status:409});
+    }
     const previous=await env.DB!.prepare('SELECT amount_cents FROM asaas_payments WHERE payment_id=?').bind(payment.id).first<{amount_cents:number}>();
     const amount=Math.round(payment.value*100),expected=previous?.amount_cents??(order.first_paid_at?order.base_price_cents:order.first_price_cents);
     if(amount!==expected)return Response.json({error:'Valor do pagamento divergente.'},{status:409});
