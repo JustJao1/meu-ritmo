@@ -3,6 +3,8 @@ import {asaasConfig,asaasRequest,hasValidAsaasWebhookToken,type AsaasPayment} fr
 import {handleCardWebhook,bindCardSubscription} from '../../../../../lib/asaas-card-webhook';
 
 const paid=new Set(['CONFIRMED','RECEIVED']);
+const declinedEvents=new Set(['PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_CREDIT_CARD_THREE_D_SECURE_CHALLENGE_FAILED']);
+const paymentConfirmationEvents=new Set(['PAYMENT_CONFIRMED','PAYMENT_RECEIVED']);
 const reversed=new Set(['REFUNDED','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','DELETED']);
 const reviewStatuses=new Set(['PARTIALLY_REFUNDED','REFUND_IN_PROGRESS']);
 function periodEnd(due:string,cycle:string){
@@ -57,12 +59,15 @@ export async function POST(req:Request){
     const previous=await env.DB!.prepare('SELECT amount_cents FROM asaas_payments WHERE payment_id=?').bind(payment.id).first<{amount_cents:number}>();
     const amount=Math.round(payment.value*100),expected=previous?.amount_cents??(order.first_paid_at?order.base_price_cents:order.first_price_cents);
     if(amount!==expected)return Response.json({error:'Valor do pagamento divergente.'},{status:409});
-    const time=Math.floor(Date.now()/1000),confirmed=paid.has(payment.status);
+    const time=Math.floor(Date.now()/1000),confirmed=paid.has(payment.status)&&paymentConfirmationEvents.has(event.event);
     const statements=[
       env.DB!.prepare('INSERT INTO asaas_payments(payment_id,order_id,status,amount_cents,paid_at,due_date,updated_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(payment_id) DO UPDATE SET status=excluded.status,paid_at=COALESCE(excluded.paid_at,asaas_payments.paid_at),updated_at=excluded.updated_at')
         .bind(payment.id,order.id,payment.status,amount,confirmed?time:null,payment.dueDate||null,time),
       env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING').bind(event.id,event.event,time)
     ];
+    if(declinedEvents.has(event.event)){
+      statements.push(env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status='pending'").bind(order.id));
+    }
     if(confirmed){
       if(order.coupon_id&&!order.first_paid_at&&order.status!=='cancelled'){
         // A cancelled recurring subscription no longer exists at Asaas. Its paid invoice
