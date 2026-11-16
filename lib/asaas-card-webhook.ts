@@ -27,7 +27,7 @@ async function checkoutEvent(event:any){
  // The webhook is authenticated, and its ID/customer/product are bound to an
  // existing D1 checkout. Never accept a different payer or payment method.
  if((row.customer_id&&checkout.customer!==row.customer_id)||
-    (state==='PAID'&&!customerId.test(checkout.customer||''))||
+    (state==='PAID'&&checkout.customer!=null&&!customerId.test(checkout.customer||''))||
     (!row.customer_id&&state!=='PAID'&&checkout.customer!=null)||
     (checkout.externalReference&&checkout.externalReference!==row.order_id)||
     !Array.isArray(checkout.billingTypes)||
@@ -41,7 +41,7 @@ async function checkoutEvent(event:any){
  const time=now();
  const actions=[
   env.DB!.prepare('UPDATE asaas_card_checkouts SET status=?,customer_id=CASE WHEN ?=\'PAID\' THEN ? ELSE customer_id END,updated_at=? WHERE checkout_id=?')
-   .bind(state,state,state==='PAID'?checkout.customer:'',time,checkout.id),
+   .bind(state,state,state==='PAID'&&customerId.test(checkout.customer||'')?checkout.customer:'',state==='PAID'&&customerId.test(checkout.customer||'')?checkout.customer:'',time,checkout.id),
   env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING')
    .bind(event.id,event.event,time)
  ];
@@ -65,21 +65,36 @@ export async function bindCardSubscription(supplied:string):Promise<string|null>
  const candidates=await env.DB!.prepare(
   "SELECT c.order_id,c.checkout_id,c.customer_id,c.status AS checkout_status,c.created_at,o.status AS order_status,o.plan_code,o.first_price_cents,o.provider_subscription_id "+
   "FROM asaas_card_checkouts c JOIN asaas_orders o ON o.id=c.order_id "+
-  "WHERE c.customer_id=? AND c.status='PAID' AND o.status IN ('pending','review','active') AND (o.provider_subscription_id IS NULL OR o.provider_subscription_id=?)"
+  "WHERE c.status='PAID' AND (c.customer_id=? OR c.customer_id='') AND o.status IN ('pending','review','active') AND (o.provider_subscription_id IS NULL OR o.provider_subscription_id=?)"
  ).bind(actual.customer,supplied).all<CardOrder>();
  const time=now(),value=Math.round(actual.value*100);
- const matching=candidates.results.filter(c=>
-   c.customer_id===actual.customer&&
+ const plausible=candidates.results.filter(c=>
+   (!c.customer_id||c.customer_id===actual.customer)&&
    c.first_price_cents===value&&
    c.plan_code.endsWith('_year')===(actual.cycle==='YEARLY')&&
    (actual.cycle==='MONTHLY'||actual.cycle==='YEARLY')&&
    c.created_at>=time-86400&&c.created_at<=time+300&&
    (!actual.externalReference||actual.externalReference===c.order_id)
  );
+ // Asaas supports checkoutSession payment lookup: unlike matching only by
+ // payer/value/time, this proves which checkout actually generated the charge.
+ const matching:CardOrder[]=[];
+ for(const candidate of plausible.slice(0,10)){
+   const invoice=await asaasRequest<{data:Array<{id:string;customer:string;subscription?:string;value:number;billingType:string}>}>(
+     '/payments?checkoutSession='+encodeURIComponent(candidate.checkout_id)+'&limit=30'
+   );
+   if(invoice.data?.some(payment=>
+     payment.subscription===supplied&&payment.customer===actual.customer&&
+     payment.billingType==='CREDIT_CARD'&&Math.round(payment.value*100)===value))
+     matching.push(candidate);
+ }
  if(matching.length!==1)return null;
  const found=matching[0];
  await env.DB!.prepare("UPDATE asaas_orders SET provider_subscription_id=?,status=CASE WHEN status='review' THEN 'pending' ELSE status END WHERE id=? AND (provider_subscription_id IS NULL OR provider_subscription_id=?)")
   .bind(supplied,found.order_id,supplied).run();
+ if(!found.customer_id)
+  await env.DB!.prepare("UPDATE asaas_card_checkouts SET customer_id=? WHERE order_id=? AND status='PAID' AND customer_id=''")
+   .bind(actual.customer,found.order_id).run();
  return found.order_id;
 }
 async function subscriptionCreated(event:any){
