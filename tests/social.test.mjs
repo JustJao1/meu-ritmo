@@ -163,6 +163,8 @@ test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pa
   paymentStatus='RECEIVED';
   assert.equal((await notify('evt_card_declined','PAYMENT_CREDIT_CARD_CAPTURE_REFUSED',{payment:{id:paymentId}})).status,200);
   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'A refusal event must not grant Pro, even if provider reports a stale confirmed status');
+  assert.equal((await notify('evt_card_risk_refused','PAYMENT_REPROVED_BY_RISK_ANALYSIS',{payment:{id:paymentId}})).status,200);
+  assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'Risk refusal must not grant Pro, even if provider reports a stale confirmed status');
   assert.equal((await notify('evt_card_paid','PAYMENT_RECEIVED',{payment:{id:paymentId}})).status,200);
   assert.equal((await notify('evt_card_paid','PAYMENT_RECEIVED',{payment:{id:paymentId}})).status,200,'Repeat event is idempotent');
   const active=db.prepare("SELECT plan,status,valid_until FROM subscriptions WHERE user_id='alice'").get();
