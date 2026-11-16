@@ -24,6 +24,8 @@ for(let offset=0;offset<=900;offset+=100){
 const own=entries.filter(p=>p.description==='Homologacao de cartao avulso, apenas Sandbox');
 const counts={};
 let persist=0,missing=0,differentStatus=0,uncertain=0,withPaymentDate=0;
+const cards={mastercardRecusa:{count:0,confirmed:0},visaRecusa:{count:0,confirmed:0},
+  controleAprovacao:{count:0,confirmed:0},outrosOuNaoIdentificados:{count:0,confirmed:0}};
 for(const p of own){
  if(typeof p.id!=='string'||!/^pay_[a-zA-Z0-9_-]+$/.test(p.id))continue;
  const current=await get('/payments/'+encodeURIComponent(p.id));
@@ -33,11 +35,17 @@ for(const p of own){
  if(status!==p.status)differentStatus++;
  if(current.billingType!=='CREDIT_CARD')uncertain++;
  if(current.paymentDate||current.confirmedDate)withPaymentDate++;
+ const suffix=String(current.creditCard?.creditCardNumber||'').replace(/\D/g,'').slice(-4);
+ const category=suffix==='3151'?'mastercardRecusa':suffix==='0741'?'visaRecusa':
+  suffix==='4444'?'controleAprovacao':'outrosOuNaoIdentificados';
+ cards[category].count++;
+ if(status==='CONFIRMED')cards[category].confirmed++;
 }
 console.log('Janela de consulta: últimos 14 dias');
 console.log('Cobranças sintéticas do teste localizadas: '+own.length);
 console.log('Cobranças consultadas individualmente: '+persist);
 console.log('Distribuição dos status persistidos: '+JSON.stringify(counts));
+console.log('Situação por cartão de homologação (identificado somente pelos quatro dígitos finais): '+JSON.stringify(cards));
 console.log('Mudança entre lista e consulta individual: '+differentStatus);
 console.log('Forma de pagamento divergente do cartão: '+uncertain);
 console.log('Cobranças com data de pagamento/confirmação: '+withPaymentDate);
