@@ -20,11 +20,11 @@ test('daily message lives only in sidebar card, not the Hoje heading',()=>{
   assert.match(translations,/"UMA FRASE PARA HOJE":\["A THOUGHT FOR TODAY","UNA FRASE PARA HOY"\]/);
 });
 
-test('plan CTA is prominent, accessible and still opens the actual plan panel',()=>{
-  assert.match(app,/className="planpitch-cta" onClick=\{\(\) => setPanel\('Planos'\)\}/);
-  assert.match(card,/\.planpitch\.daily-pitch>\.planpitch-cta\{/);
-  assert.match(card,/background:var\(--ink\);color:var\(--paper\)!important/);
-  assert.match(card,/\.planpitch-cta:focus-visible/);
+test('plans has one sidebar entry and the daily quote has no extra CTA',()=>{
+  const daily=app.match(/<div className="planpitch daily-pitch">([\s\S]*?)<\/div>/)?.[1];
+  assert(daily);
+  assert.match(daily,/<DailyMotivation\/>/);
+  assert.doesNotMatch(daily,/planpitch-cta|<button/);
   assert.match(app,/aria-haspopup="dialog" onClick=\{\(\)=>setPanel\('Planos'\)\}/);
 });
 

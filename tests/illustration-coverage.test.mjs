@@ -18,7 +18,7 @@ test('category artwork stays decorative and never introduces controls or tab sto
    const html=renderToStaticMarkup(React.createElement(Component,{context,name:context}));
    assert.match(html,/aria-hidden="true"/);
    assert.doesNotMatch(html,/<(?:button|input|a)(?:\s|>)/);
-   assert.doesNotMatch(html,/tabindex|undefined|NaN/i);
+   assert.doesNotMatch(html,/tabindex|undefined|\bNaN\b/i);
   }
  }
 });
