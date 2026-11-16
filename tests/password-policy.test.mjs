@@ -11,8 +11,10 @@ const providerCalls=[];
 const testUserId='aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
 const testUser={id:testUserId,email:'person@example.test',email_confirmed_at:'2026-11-14'};
 globalThis.__authIdentity=null;
+globalThis.__providerAutoConfirm=false;
 globalThis.__mockProvider=async(path,body,token,method)=>{
  providerCalls.push({path,body,token,method});
+ if(path==='/settings')return Response.json({mailer_autoconfirm:globalThis.__providerAutoConfirm});
  if(path.includes('/token?grant_type=password')){
    if(body.password==='Wrong1!')return Response.json({error:'invalid_grant'},{status:400});
    return Response.json({access_token:'recent-token',user:testUser});
@@ -48,7 +50,7 @@ const e={DB:{prepare(sql){const args=[];return{bind(...values){args.push(...valu
 function request(action,data={}){
  return new Request('https://site.example/api/auth/'+action,{method:'POST',headers:{'Content-Type':'application/json','origin':'https://site.example'},body:JSON.stringify(data)});
 }
-function reset(){statements=[];providerCalls.length=0;globalThis.__authIdentity=null;}
+function reset(){statements=[];providerCalls.length=0;globalThis.__authIdentity=null;globalThis.__providerAutoConfirm=false;}
 test('eight-character policy requires upper lower digit and symbol',()=>{
  assert(passwordMeetsPolicy('Abcdef1!'));
  for(const password of ['Abcde1!','abcdefgh1!','ABCDEFGH1!','Abcdefgh!','Abcdefg12','abcdefgh1234','ABCdef1 ','Abcd1!'])assert.equal(passwordMeetsPolicy(password),false,password);
@@ -61,7 +63,17 @@ test('signup enforces new password policy on the server',async()=>{
  assert.equal(providerCalls.length,0,'never send weak passwords to provider');
  r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',accept:true,adult:true}),e);
  assert.equal(r.status,200);
- assert.equal(providerCalls[0].path,'/signup');
+ assert.equal(providerCalls[0].path,'/settings');
+ assert.equal(providerCalls[1].path,'/signup');
+});
+test('disabled provider email confirmation fails before signup, without creating an unusable account',async()=>{
+ reset();globalThis.__providerAutoConfirm=true;
+ const r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',accept:true,adult:true}),e);
+ assert.equal(r.status,503);
+ assert.equal(providerCalls.length,1);
+ assert.equal(providerCalls[0].path,'/settings');
+ assert(!providerCalls.some(call=>call.path==='/signup'));
+ reset();
 });
 test('legacy account passwords remain accepted at login',async()=>{
  reset();
