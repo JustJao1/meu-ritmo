@@ -159,6 +159,21 @@ try{
   fail('Cancelamento perdeu o período já pago.');
  log('Cancelamento e preservação do período pago','OK');
 
+ // Give the isolated Sandbox balance room for Pix fees. A full refund returns
+ // the gross amount while the payment net amount excludes non-refundable fees.
+ // This synthetic charge has no connection to user subscriptions or real money.
+ try{
+  const credit=await asaas('/payments','POST',{
+   customer:customer.id,billingType:'PIX',value:10.00,dueDate:new Date().toISOString().slice(0,10),
+   description:'Saldo ficticio para estorno de homologacao',externalReference:'mr_sandbox_balance_'+randomUUID()
+  });
+  if(!/^pay_[A-Za-z0-9_-]{1,90}$/.test(credit.id||''))fail('Cobrança de saldo fictício sem ID válido.');
+  const funded=await asaas('/sandbox/payment/'+encodeURIComponent(credit.id)+'/confirm','POST',{});
+  if(!['CONFIRMED','RECEIVED'].includes(funded.status))fail('Saldo fictício não pôde ser confirmado.');
+  log('Saldo de teste para o estorno','adicionado apenas ao Asaas Sandbox');
+ }catch(error){
+  console.warn('::warning title=Saldo fictício para teste::O reforço de saldo da conta Sandbox não foi confirmado.');
+ }
  // Refund is attempted on the isolated charge. Sandbox may reject if balance is
  // insufficient for fees; such a result is reported as pending instead of claiming success.
  try{
