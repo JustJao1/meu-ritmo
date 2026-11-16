@@ -87,7 +87,7 @@ let reachedWebhook=false;
 try{
  // Asaas documentation provides this artificial validation CPF. Never use a real user.
  const customer=await asaas('/customers','POST',{
-  name:'Meu Ritmo Homologacao Sandbox',cpfCnpj:'24971563792',
+  name:'Meu Ritmo Homologacao Sandbox',cpfCnpj:'24971563792',mobilePhone:'11999999999',
   externalReference:userId,notificationDisabled:true
  });
  if(!/^cus_[A-Za-z0-9]+$/.test(customer.id||''))fail('Cadastro do pagador fictício não retornou ID.');
