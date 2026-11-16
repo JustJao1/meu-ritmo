@@ -14,3 +14,6 @@
 .assistant-result-title{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}.assistant-result-title>small{font-size:.75rem;font-weight:400;opacity:.72}
 
 .smart-assistant select{width:100%;min-width:0;box-sizing:border-box;background:var(--paper);color:var(--ink);border:1px solid color-mix(in srgb,var(--ink) 25%,transparent);border-radius:9px;padding:10px 12px;font:inherit}.organizing-illustration{overflow:visible;flex-shrink:0}
+
+/* Quiet drawings stay inside their own space and never cover controls. */
+.organizing-illustration{width:168px;height:105px;opacity:.88;pointer-events:none;user-select:none}.features .organizing-illustration{margin:0 0 18px;width:184px;height:115px}.dayart:has(.cozy-corner){display:flex;align-items:center;justify-content:center;overflow:hidden;max-width:240px;pointer-events:none}.dayart .cozy-corner{position:static!important;inset:auto!important;transform:none!important;width:230px!important;height:144px!important;margin:0;opacity:.8}.emptycompact>.organizing-illustration{width:120px;height:75px}@media(max-width:700px){.dayart:has(.cozy-corner){display:none}.features .organizing-illustration{width:144px;height:90px;margin-bottom:12px}}
