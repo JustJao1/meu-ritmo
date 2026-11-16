@@ -48,3 +48,5 @@ test('trecho desconhecido fica explícito e impede confirmação parcial silenci
 test('período de trabalho incompleto não recebe duração inventada',()=>{const r=plan('Desde as 12:30 estou no trabalho');assert.equal(r.drafts.length,0);assert(r.questions.some(q=>q.includes('termina seu trabalho')));});
 test('lembrete pontual não ocupa um bloco de tempo nem cria conflito artificial',()=>{const taskItem=task('Estudar às 18h');const reminder=task('Me lembre de pagar internet às 18h');assert.equal(overlaps(taskItem,reminder),false);});
 test('mais de um horário sem relação clara exige esclarecimento',()=>{const r=plan('Estudar às 18h ou às 19h');assert.equal(r.drafts.length,0);assert(r.questions.length);});
+
+test('same-category expenses with different amounts remain separate',()=>{const r=plan('Gastei 10 reais com transporte hoje; gastei 20 reais com transporte hoje');assert.deepEqual(r.questions,[]);assert.deepEqual(r.drafts.map(d=>d.item.amount),[10,20]);validate(r);const repeat=plan('Gastei 10 reais com transporte hoje',[r.drafts[0].item]);assert.equal(repeat.drafts.length,0);assert(repeat.questions.length);});

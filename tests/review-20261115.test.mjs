@@ -12,7 +12,7 @@ await build({
   outdir:folder,bundle:true,format:'esm',platform:'node',
   outExtension:{'.js':'.mjs'}
 });
-const {dailyMotivation}=await import(join(folder,'daily-motivation.mjs'));
+const {dailyMotivation,capitalizeMotivation}=await import(join(folder,'daily-motivation.mjs'));
 const {parseLegalSettings}=await import(join(folder,'legal-settings.mjs'));
 const file=p=>readFileSync(p,'utf8');
 
@@ -81,3 +81,5 @@ test('billing administration is owner-only and read-only',()=>{
 });
 
 after(async()=>{await rm(folder,{recursive:true,force:true})});
+
+test('standalone daily quote starts uppercase without changing the remaining text',()=>{for(const [locale,text,expected] of [['pt-BR','você pode mudar.','Você pode mudar.'],['en','you can change.','You can change.'],['es','puedes cambiar.','Puedes cambiar.']])assert.equal(capitalizeMotivation(text,locale),expected);assert.equal(capitalizeMotivation('','pt-BR'),'');});

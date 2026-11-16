@@ -137,7 +137,7 @@ export function planAssistant(command:string,items:Item[],o:AssistantOptions):As
   }
   const occupied=[...items,...result.drafts.map(d=>d.item)];
   const conflicts=occupied.filter(x=>overlaps(item,x,o.duration));
-  const duplicate=occupied.some(x=>x.type===item.type&&norm(x.title)===norm(item.title)&&x.date===item.date&&x.time===item.time&&!x.archived);
+  const duplicate=occupied.some(x=>x.type===item.type&&norm(x.title)===norm(item.title)&&x.date===item.date&&x.time===item.time&&(item.type!=='expense'||(x.amount===item.amount&&x.category===item.category))&&!x.archived);
   if(duplicate){result.questions.push('Já existe um registro semelhante a “'+item.title+'” nessa data e horário. Confira antes de criar outro.');continue;}
   result.drafts.push({item,source:original,...(conflicts.length?{warning:'Conflito com: '+conflicts.map(x=>x.title).slice(0,3).join(', ')}:{})});
  }

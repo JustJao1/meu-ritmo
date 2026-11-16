@@ -1469,6 +1469,7 @@ const translations:Record<string,[string,string]>={
 "Promoções":["Promotions","Promociones"],
 "Histórico":["History","Historial"],
 
+"Confira os títulos, datas, horários e valores da proposta.":["Check the titles, dates, times and amounts in the proposal.","Revisa los títulos, fechas, horarios e importes de la propuesta."],
 };
 export function translate(value:string,locale:Locale){const pair=translations[value];return locale==='en'?pair?.[0]||value:locale==='es'?pair?.[1]||value:value;}
 export function readLocale():Locale{if(typeof window==='undefined')return 'pt-BR';try{const v=localStorage.getItem('mr-language');return v==='en'||v==='es'?v:'pt-BR';}catch{return 'pt-BR';}}

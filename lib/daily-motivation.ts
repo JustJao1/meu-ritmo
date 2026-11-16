@@ -98,3 +98,7 @@ export function dailyMotivation(dateKey:string,locale:Locale):string{
   // The date is part of the message, so its full text never repeats on another day.
   return `${lead} ${when}, ${starts[((day%starts.length)+starts.length)%starts.length]} ${ends[Math.floor(day/starts.length)%ends.length]}`;
 }
+
+export function capitalizeMotivation(text:string,locale:Locale):string{
+  return text.replace(/\p{L}/u,letter=>letter.toLocaleUpperCase(locale));
+}
