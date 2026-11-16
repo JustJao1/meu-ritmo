@@ -24,6 +24,7 @@ import './legal-i18n.css';
 import './download-page.css';
 import './routine-social.css';
 import './plan-footer-admin-contrast.css';
+import './theme-calendar-alarm-contrast.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';
