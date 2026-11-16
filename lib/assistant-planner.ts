@@ -60,7 +60,15 @@ export function planAssistant(command:string,items:Item[],o:AssistantOptions):As
    occupied.push(proposed);result.drafts.push({item:proposed,replaceId:original.id});
   }return result;
  }
- const rawParts=splitAssistantInstructions(command);
+ const splitParts=splitAssistantInstructions(command);
+ const rawParts:string[]=[];
+ for(let i=0;i<splitParts.length;i++){
+  const part=splitParts[i];
+  // A comma between a time and its expense does not start a separate request.
+  if(/^(?:as|pelas)\s+\d{1,2}(?::\d{2}|h\d{0,2})?$/.test(norm(part))&&/^(?:gastei|paguei)\b/.test(norm(splitParts[i+1]||''))){
+   rawParts.push(part+', '+splitParts[++i]);
+  }else rawParts.push(part);
+ }
  let weekdaysContext=false;
  const parts:string[]=[];
  for(const raw of rawParts){
@@ -71,7 +79,7 @@ export function planAssistant(command:string,items:Item[],o:AssistantOptions):As
    continue;
   }
   if(/^(?:prepare as? \d+ atividades|se nao conseguir definir o orcamento|confira os horarios e apresente|registre separadamente estes? \d+ gastos)/.test(normalized))continue;
-  if(/^(?:hoje|rotina de segunda a sexta):?$/.test(normalized))continue;
+  if(/^(?:hoje|rotina de segunda a sexta):?$/.test(normalized)||(normalized==='me avise'&&result.answer))continue;
   const prefix=part.match(/^(?:quero\s+)?organizar\s+(?:minha|a)\s+rotina\s+de segunda a sexta\s*:\s*/i);
   if(prefix){weekdaysContext=true;part=part.slice(prefix[0].length).trim();}
   if(!part)continue;
