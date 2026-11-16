@@ -21,6 +21,10 @@ try{
   const body=await response.json();
   for(const k of ['mode','legalConfigured','configured','earlyAccess','manageAvailable','cardAvailable'])
    show('Site principal: '+k,String(body[k]));
+  if(typeof body.earlyAccess==='boolean'&&body.earlyAccess!==flag('EARLY_ACCESS_ENABLED'))
+   show('ATENÇÃO: acesso antecipado', 'GitHub e site publicado divergem; reavaliar após deploy');
+  if(body.mode!==e.ASAAS_MODE)
+   show('ATENÇÃO: modo do Asaas', 'GitHub e site publicado divergem');
  }
 }catch{show('Site principal: consulta','indisponível')}
 if(activeMode&&key&& !key.startsWith('$aact_hmlg_')){
