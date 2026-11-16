@@ -1,0 +1,32 @@
+name: Auditar 22 temas em navegador (site principal)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/visual-check/**'
+      - '.github/workflows/visual-site.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Instalar navegador de auditoria
+        run: |
+          npm install --no-save --prefix scripts/visual-check playwright@1.58.2
+          scripts/visual-check/node_modules/.bin/playwright install --with-deps chromium
+      - name: Conferir 22 temas em 44 telas
+        run: node scripts/visual-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: auditoria-visual-meu-ritmo-44-telas
+          path: visual-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
