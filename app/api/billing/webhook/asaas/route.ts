@@ -62,8 +62,16 @@ export async function POST(req:Request){
         .bind(order.id).first<{payment_method:string}>();
       if(consent?.payment_method==='PIX'&&paid.has(payment.status)&&paymentConfirmationEvents.has(event.event)&&
          payment.billingType!=='PIX'&&
-         !(payment.billingType==='BOLETO'&&typeof (payment as AsaasPayment&{pixTransaction?:string}).pixTransaction==='string'))
-        return Response.json({error:'Esta assinatura aceita somente pagamento Pix.'},{status:409});
+         !(payment.billingType==='BOLETO'&&typeof (payment as AsaasPayment&{pixTransaction?:string}).pixTransaction==='string')){
+        // Acknowledge a real Asaas event to avoid blocking the sequential webhook
+        // queue. Flag the order for reconciliation, but NEVER grant paid access.
+        const time=Math.floor(Date.now()/1000);
+        await env.DB!.batch([
+          env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status!='cancelled'").bind(order.id),
+          env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING').bind(event.id,event.event,time)
+        ]);
+        return Response.json({received:true,requiresReview:true});
+      }
     }
     const previous=await env.DB!.prepare('SELECT amount_cents FROM asaas_payments WHERE payment_id=?').bind(payment.id).first<{amount_cents:number}>();
     const amount=Math.round(payment.value*100),expected=previous?.amount_cents??(order.first_paid_at?order.base_price_cents:order.first_price_cents);
