@@ -1,7 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {getUser} from '../../../session';
 import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
-import {asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
+import {asaasCardCheckoutReady,asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
 import {z} from 'zod';
 import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
@@ -43,10 +43,8 @@ export async function POST(req:Request){
   // Until that configuration is validated, do not promise a first-cycle card discount
   // that could silently renew at the promotional price or fail to grant paid access.
   if(coupon&&data.paymentMethod==='CREDIT_CARD')return Response.json({error:'Nesta etapa, cupons de desconto estão disponíveis apenas para Pix. Para pagar no cartão, remova o cupom.'},{status:400});
-  // A card flow requires a hosted checkout and new webhook correlation.
-  // It is opt-in on the isolated Sandbox only, not available to real customers.
-  if(data.paymentMethod==='CREDIT_CARD'&&
-     (asaasConfig().mode!=='sandbox'||(env as unknown as Record<string,string>).ASAAS_CARD_CHECKOUT_ENABLED!=='true'))
+  // Production requires provider homologation and a separate go-live flag.
+  if(data.paymentMethod==='CREDIT_CARD'&&!asaasCardCheckoutReady())
     return Response.json({error:'Cartão de crédito ainda está em homologação. Utilize Pix.'},{status:503});
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
   try{
@@ -80,7 +78,7 @@ export async function POST(req:Request){
       ]);
       unpersistedCardCheckout=null;
       return Response.json({orderId:id,url:'https://asaas.com/checkoutSession/show?id='+encodeURIComponent(checkout.id),
-        awaitingInvoice:false,mode:'sandbox',firstAmount:first/100,renewalAmount:base/100},
+        awaitingInvoice:false,mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100},
         {headers:{'Cache-Control':'no-store'}});
     }
     let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
