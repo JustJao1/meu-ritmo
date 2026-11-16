@@ -2,6 +2,14 @@
 
 **Durante a homologação, descontos promocionais na primeira cobrança são aceitos apenas com Pix.** A documentação do Asaas exige tokenização para alterar o valor de assinaturas com cartão; só habilite cupom em cartão depois de validar esse requisito e os testes de renovação, sem cobrar o valor errado nem bloquear um benefício pago. <https://docs.asaas.com/reference/atualizar-assinatura-existente>\n\nO checkout oferece **somente Pix ou cartão de crédito**. O cliente escolhe o método antes de prosseguir e o servidor envia exclusivamente `PIX` ou `CREDIT_CARD` ao Asaas; `BOLETO` e `UNDEFINED` são rejeitados. Plus e Pro possuem assinaturas mensais e anuais. O cupom desconta somente a primeira cobrança e a recorrência retorna ao valor normal. Isso não é Pix Automático: cada renovação Pix precisa ser paga; no cartão, a cobrança pode ser automática.
 
+### Checkout hospedado para cartão (em homologação)
+
+O fluxo de cartão usa o Checkout hospedado do Asaas (`POST /v3/checkouts`), com `CREDIT_CARD` e `RECURRENT`. O servidor grava `checkout_id` em `asaas_card_checkouts` e associa a assinatura ao pedido após um evento `SUBSCRIPTION_CREATED` validado na API. **Nem o retorno do Checkout, nem `CHECKOUT_PAID`, nem `SUBSCRIPTION_CREATED` liberam planos sozinhos**: os benefícios são liberados somente após consultar uma cobrança realmente confirmada no Asaas.
+
+A rota de cartão permanece bloqueada na produção, mesmo que uma flag seja ativada. No Sandbox isolado, requer simultaneamente `ASAAS_MODE=sandbox`, `ASAAS_BILLING_ENABLED=true`, `ASAAS_WEBHOOK_READY=true` e `ASAAS_CARD_CHECKOUT_ENABLED=true`. No GitHub, a flag de testes vem de `SANDBOX_ASAAS_CARD_CHECKOUT_ENABLED` e permanece `false` por padrão. Não habilite o cartão antes de configurar e confirmar os webhooks `CHECKOUT_CREATED`, `CHECKOUT_PAID`, `CHECKOUT_CANCELED`, `CHECKOUT_EXPIRED` e `SUBSCRIPTION_CREATED`, além dos eventos `PAYMENT_*` necessários.
+
+A criação e o cancelamento de um checkout sintético são verificados no Sandbox sem inserir cartão. Aprovação, recusa, renovação, estorno e identificação de assinatura em checkout real ainda exigem homologação própria com cartões de teste. Um erro na conciliação não autoriza ativação manual ou automática de benefícios.
+
 ## 1. Configurar ambientes separados
 
 Em **GitHub → JustJao1/meu-ritmo → Settings → Secrets and variables → Actions**, ambiente `production` usado pelo workflow `Publicar Meu Ritmo`:
