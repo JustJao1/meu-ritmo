@@ -55,7 +55,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
   db.prepare("INSERT INTO service_settings(key,value) VALUES ('legal',?)").run(JSON.stringify({name:'Operador de teste',taxId:'529.982.247-25',address:'Rua Teste, 100, SÃ£o Paulo',email:'owner@test.example'}));
   db.prepare("UPDATE discount_codes SET plan='plus' WHERE code='DESCONTO10'").run();
   const original=globalThis.fetch;
-  let subscriptionRequest;
+  let subscriptionRequest,cardCheckoutRequest;
   let customerCount=0, subscriptionCount=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
@@ -64,6 +64,10 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
     if(path.endsWith('/subscriptions')&&init?.method==='POST'){
       subscriptionRequest=JSON.parse(init.body);
       return Response.json({id:subscriptionCount++===0?'sub_0_test':'sub_0_test_2'});
+    }
+    if(path.endsWith('/checkouts')&&init?.method==='POST'){
+      cardCheckoutRequest=JSON.parse(init.body);
+      return Response.json({id:'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa'});
     }
     if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
     throw Error('Network denied in test: '+path);
@@ -93,11 +97,25 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
     assert.equal(subscriptionRequest.billingType,'PIX');
     assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,1);
     who('alice');
-    const card=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true});
-    assert.equal(card.status,200,'Credit card subscription should be supported');
-    assert.equal(subscriptionRequest.billingType,'CREDIT_CARD');
-    assert.equal(subscriptionRequest.cycle,'MONTHLY');
-  }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';}
+    const pendingCard=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true});
+    assert.equal(pendingCard.status,503,'Credit card checkout is disabled until Sandbox approval');
+    e.ASAAS_CARD_CHECKOUT_ENABLED='true';
+    // Use the actual permitted site origin. Production remains gated separately.
+    const card=await api.checkout.POST(new Request('https://meuritmo.net/api/billing/checkout',{
+      method:'POST',headers:{origin:'https://meuritmo.net','Content-Type':'application/json'},
+      body:JSON.stringify({...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true})
+    }));
+    assert.equal(card.status,200,'Hosted card checkout must be supported in isolated Sandbox');
+    const cardResult=await card.json();
+    assert.equal(cardResult.url,'https://asaas.com/checkoutSession/show?id=aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
+    assert.deepEqual(cardCheckoutRequest.billingTypes,['CREDIT_CARD']);
+    assert.deepEqual(cardCheckoutRequest.chargeTypes,['RECURRENT']);
+    assert.equal(cardCheckoutRequest.subscription.cycle,'MONTHLY');
+    assert.equal(cardCheckoutRequest.items[0].value,39.90);
+    const saved=db.prepare('SELECT * FROM asaas_card_checkouts WHERE checkout_id=?').get('aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
+    assert(saved&&saved.order_id===cardResult.orderId);
+    assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(cardResult.orderId).provider_subscription_id,null);
+  }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';e.ASAAS_CARD_CHECKOUT_ENABLED='false';}
 });
 test('Asaas webhook autenticado libera Plus uma vez e revoga cobranÃ§a estornada',async()=>{
   const e=globalThis.__socialEnv;
