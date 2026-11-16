@@ -4,7 +4,7 @@
 const e=process.env;
 const base='https://api.asaas.com/v3';
 const dest='https://meuritmo.net/api/billing/webhook/asaas';
-const required=['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED',
+const required=['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_AWAITING_RISK_ANALYSIS','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_PARTIALLY_REFUNDED','PAYMENT_REFUND_IN_PROGRESS','PAYMENT_CHARGEBACK_REQUESTED','PAYMENT_CHARGEBACK_DISPUTE',
  'CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'];
 if(e.ASAAS_MODE!=='production'||!e.ASAAS_API_KEY?.startsWith('$aact_prod_')||
  e.ASAAS_BILLING_ENABLED==='true')
@@ -39,5 +39,5 @@ const result=verified.data?.find(x=>x.id===current.id&&x.url===dest);
 if(!result||result.enabled!==true||result.interrupted===true||
  !required.every(x=>result.events?.includes(x)))
  throw Error('A lista de eventos não foi confirmada após a atualização.');
-console.log('CONFIRMADO: os nove eventos essenciais estão registrados em produção.');
+console.log('CONFIRMADO: todos os eventos financeiros monitorados estão registrados em produção.');
 console.log('Não houve alteração de tokens, endereço, habilitação de cobrança ou dados de clientes.');
