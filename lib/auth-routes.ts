@@ -42,6 +42,14 @@ if(action==='signup'){stage='signup-validation';const pw=password.parse(b.passwo
  if(used)return reply({error:'Esse nome de usuário já está em uso.'},409);
  const pending=await e.DB!.prepare('SELECT 1 FROM auth_pending_profiles WHERE username=?').bind(p.username).first();
  if(pending)return reply({error:'Esse nome está reservado por um cadastro aguardando confirmação. Se foi você, abra Confirmar e-mail e reenvie o código usando o e-mail do primeiro cadastro.',pendingVerification:true},409);
+ stage='signup-provider-settings';
+ const settingsResponse=await provider(e,'/settings');
+ if(!settingsResponse.ok)return reply({error:'Não foi possível verificar a configuração do cadastro. Tente novamente mais tarde.'},503);
+ const settings:any=await settingsResponse.json();
+ if(settings.mailer_autoconfirm!==false){
+   console.error('auth_signup_provider_confirmation_disabled');
+   return reply({error:'A confirmação por código não está ativada no provedor de autenticação. O acesso permanecerá bloqueado até essa configuração ser corrigida.'},503);
+ }
  stage='signup-provider';const r=await provider(e,'/signup',{email:mail,password:pw});if(!r.ok)return reply({error:'Não foi possível cadastrar. Confira os dados ou recupere sua senha.'},400);const v:any=await r.json(),id=v.user?.id||v.id;if(!id||!/^[0-9a-f-]{36}$/i.test(id))return reply({error:'Não foi possível registrar o cadastro. Tente novamente.'},503);if(id){stage='signup-pending-profile';const now=Math.floor(Date.now()/1000);try{
   await e.DB!.prepare('INSERT INTO auth_pending_profiles(user_id,username,name,accepted_at,created_at) VALUES (?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET username=excluded.username,name=excluded.name,accepted_at=excluded.accepted_at').bind(id,p.username,p.name,now,now).run();
 }catch(error){
