@@ -24,8 +24,8 @@ for(let offset=0;offset<=900;offset+=100){
 const own=entries.filter(p=>p.description==='Homologacao de cartao avulso, apenas Sandbox');
 const counts={};
 let persist=0,missing=0,differentStatus=0,uncertain=0,withPaymentDate=0;
-const cards={mastercardRecusa:{count:0,confirmed:0},visaRecusa:{count:0,confirmed:0},
-  controleAprovacao:{count:0,confirmed:0},outrosOuNaoIdentificados:{count:0,confirmed:0}};
+const cards={mastercardRecusa:{count:0,confirmed:0,brands:{}},visaRecusa:{count:0,confirmed:0,brands:{}},
+  controleAprovacao:{count:0,confirmed:0,brands:{}},outrosOuNaoIdentificados:{count:0,confirmed:0,brands:{}}};
 for(const p of own){
  if(typeof p.id!=='string'||!/^pay_[a-zA-Z0-9_-]+$/.test(p.id))continue;
  const current=await get('/payments/'+encodeURIComponent(p.id));
@@ -40,6 +40,9 @@ for(const p of own){
   suffix==='4444'?'controleAprovacao':'outrosOuNaoIdentificados';
  cards[category].count++;
  if(status==='CONFIRMED')cards[category].confirmed++;
+ const brand=String(current.creditCard?.creditCardBrand||'UNKNOWN');
+ const safeBrand=['VISA','MASTERCARD','UNKNOWN'].includes(brand)?brand:'OTHER';
+ cards[category].brands[safeBrand]=(cards[category].brands[safeBrand]||0)+1;
 }
 console.log('Janela de consulta: últimos 14 dias');
 console.log('Cobranças sintéticas do teste localizadas: '+own.length);
