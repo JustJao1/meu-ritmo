@@ -47,3 +47,4 @@ jobs:
           ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}
           ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY || 'false' }}
           ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED || 'false' }}
+          ASAAS_CARD_CHECKOUT_ENABLED: ${{ vars.ASAAS_CARD_CHECKOUT_ENABLED || 'false' }}
