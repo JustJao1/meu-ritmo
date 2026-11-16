@@ -9,6 +9,14 @@ async function ask(path,method='GET',body){
  const v=await r.json().catch(()=>({}));
  return {http:r.status,ok:r.ok,data:v};
 }
+const keys=await ask('/pix/addressKeys?limit=100');
+console.log('Chaves Pix cadastradas no Sandbox: '+(keys.ok?(keys.data.data?.length??'resposta inesperada'):'HTTP '+keys.http));
+if(keys.ok&&Array.isArray(keys.data.data))
+ console.log('Estados das chaves Pix: '+JSON.stringify(keys.data.data.reduce((acc,k)=>{const v=String(k.status||'UNKNOWN').replace(/[^A-Z_]/g,'');acc[v]=(acc[v]||0)+1;return acc;},{})));
+const diagnostic=(r)=>Array.isArray(r.data?.errors)?r.data.errors.slice(0,3).map(x=>({
+ code:String(x.code||'').replace(/[^a-zA-Z0-9_]/g,'').slice(0,60),
+ message:String(x.description||'').replace(/\b\d{11,14}\b/g,'[redacted]').replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,'[email]').slice(0,180)
+})):[];
 const ref='mr_pixdiag_'+randomUUID(),errors=[];
 let subId,paymentId;
 try{
@@ -36,7 +44,7 @@ try{
  console.log('Primeira fatura persistida: '+saved.data.billingType+' / '+saved.data.status);
  const before=await ask('/payments/'+encodeURIComponent(paymentId)+'/pixQrCode');
  const beforePayload=typeof before.data.payload==='string'&&before.data.payload.length>35;
- console.log('QR Code Pix disponível antes de conversão: '+before.http+' / '+beforePayload);
+ console.log('QR Code Pix disponível antes de conversão: '+before.http+' / '+beforePayload+' / '+JSON.stringify(diagnostic(before)));
  if(saved.data.billingType!=='PIX'){
   const converted=await ask('/payments/'+encodeURIComponent(paymentId),'PUT',{
    billingType:'PIX',value:saved.data.value,dueDate:saved.data.dueDate});
@@ -49,7 +57,7 @@ try{
  const isQr=qr.ok&&typeof qr.data.payload==='string'&&qr.data.payload.length>35&&
     typeof qr.data.encodedImage==='string'&&qr.data.encodedImage.length>100;
  console.log('Fatura final: '+String(final.data.billingType)+' / '+String(final.data.status));
- console.log('Pix Copia e Cola e QR válidos: '+isQr+' / HTTP '+qr.http);
+ console.log('Pix Copia e Cola e QR válidos: '+isQr+' / HTTP '+qr.http+' / '+JSON.stringify(diagnostic(qr)));
  if(!isQr)errors.push('pix_qr_not_available');
  if(final.data.billingType!=='PIX')errors.push('billing_type_not_pix');
 }finally{
