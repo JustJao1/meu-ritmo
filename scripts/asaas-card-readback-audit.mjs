@@ -1,55 +1,22 @@
-// Auditoria estritamente somente leitura de cobranças de homologação
-// já criadas pelo próprio projeto no Sandbox. Nenhuma cobrança é criada.
-// Nunca imprime IDs, dados pessoais, credenciais ou dados de cartão.
-const env=process.env;
-if(env.ASAAS_MODE!=='sandbox'||!env.ASAAS_API_KEY?.startsWith('$aact_hmlg_'))
- throw Error('Auditoria bloqueada fora do ambiente Sandbox.');
-const base='https://api-sandbox.asaas.com/v3';
-async function get(path){
- const r=await fetch(base+path,{headers:{access_token:env.ASAAS_API_KEY,Accept:'application/json','User-Agent':'MeuRitmo-Sandbox-ReadOnly/1.0'},
-  signal:AbortSignal.timeout(20000)});
- if(!r.ok)throw Error('Falha na consulta somente leitura à API: HTTP '+r.status);
- return await r.json();
+// Helen support retest: synthetic payments, sandbox only.
+import {randomUUID} from 'node:crypto';
+const e=process.env,base='https://api-sandbox.asaas.com/v3';
+if(e.ASAAS_MODE!=='sandbox'||!e.ASAAS_API_KEY?.startsWith('$aact_hmlg_'))throw Error('Sandbox required');
+async function ask(path,method='GET',body){
+ const r=await fetch(base+path,{method,headers:{access_token:e.ASAAS_API_KEY,'content-type':'application/json','User-Agent':'MeuRitmo-Helen-Retest/1.0'},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(45000)});
+ const data=await r.json().catch(()=>({}));
+ return {http:r.status,data};
 }
-const today=new Date(),from=new Date(today.getTime()-14*86400000).toISOString().slice(0,10);
-const entries=[];
-for(let offset=0;offset<=900;offset+=100){
- const path='/payments?limit=100&offset='+offset+'&billingType=CREDIT_CARD&dateCreated%5Bge%5D='+from;
- const batch=await get(path);
- if(!Array.isArray(batch.data))throw Error('Formato inesperado da listagem de pagamentos.');
- entries.push(...batch.data);
- if(!batch.hasMore)break;
- if(offset===900)throw Error('A consulta excedeu 1000 cobranças; auditoria interrompida.');
+const customer=await ask('/customers','POST',{name:'Meu Ritmo Helen Sandbox Retest',cpfCnpj:'24971563792',email:'helen-retest-'+randomUUID()+'@example.com',notificationDisabled:true});
+if(!customer.data.id)throw Error('Synthetic customer HTTP '+customer.http);
+const holder={name:'Pagador Teste Sandbox',email:'pagador@exemplo.test',cpfCnpj:'24971563792',postalCode:'01001000',addressNumber:'100',phone:'11999999999',mobilePhone:'11999999999'};
+for(const [label,number,expected] of [['approval_control','4444444444444444','approved'],['mastercard_decline','5184019740373151','declined'],['visa_decline','4916561358240741','declined']]){
+ const r=await ask('/payments','POST',{customer:customer.data.id,billingType:'CREDIT_CARD',value:7.91,dueDate:new Date().toISOString().slice(0,10),description:'Helen support Sandbox retest',externalReference:'mr_helen_'+randomUUID(),creditCard:{holderName:holder.name,number,expiryMonth:'12',expiryYear:String(new Date().getUTCFullYear()+3),ccv:'123'},creditCardHolderInfo:holder,remoteIp:'203.0.113.10'});
+ const id=r.data.id;
+ let persisted=null;
+ if(id){const check=await ask('/payments/'+encodeURIComponent(id));persisted=check.data.status;}
+ const errors=(r.data.errors||[]).map(x=>({code:String(x.code||'').slice(0,80),description:String(x.description||'').replace(/\b\d{11,19}\b/g,'[identifier]').replace(/[\w.+-]+@[\w.-]+/g,'[email]').slice(0,250)}));
+ console.log(JSON.stringify({test:label,expected,http:r.http,status:r.data.status||null,id:id||null,persisted,errors}));
+ if(id){const cleanup=await ask('/payments/'+encodeURIComponent(id)+'/refund','POST',{description:'Synthetic sandbox support retest cleanup'});console.log(JSON.stringify({test:label,cleanupHttp:cleanup.http,cleanupStatus:cleanup.data.status||null}));}
 }
-const own=entries.filter(p=>p.description==='Homologacao de cartao avulso, apenas Sandbox');
-const counts={};
-let persist=0,missing=0,differentStatus=0,uncertain=0,withPaymentDate=0;
-const cards={mastercardRecusa:{count:0,confirmed:0,brands:{}},visaRecusa:{count:0,confirmed:0,brands:{}},
-  controleAprovacao:{count:0,confirmed:0,brands:{}},outrosOuNaoIdentificados:{count:0,confirmed:0,brands:{}}};
-for(const p of own){
- if(typeof p.id!=='string'||!/^pay_[a-zA-Z0-9_-]+$/.test(p.id))continue;
- const current=await get('/payments/'+encodeURIComponent(p.id));
- persist++;
- const status=typeof current.status==='string'?current.status:'UNKNOWN';
- counts[status]=(counts[status]||0)+1;
- if(status!==p.status)differentStatus++;
- if(current.billingType!=='CREDIT_CARD')uncertain++;
- if(current.paymentDate||current.confirmedDate)withPaymentDate++;
- const suffix=String(current.creditCard?.creditCardNumber||'').replace(/\D/g,'').slice(-4);
- const category=suffix==='3151'?'mastercardRecusa':suffix==='0741'?'visaRecusa':
-  suffix==='4444'?'controleAprovacao':'outrosOuNaoIdentificados';
- cards[category].count++;
- if(status==='CONFIRMED')cards[category].confirmed++;
- const brand=String(current.creditCard?.creditCardBrand||'UNKNOWN');
- const safeBrand=['VISA','MASTERCARD','UNKNOWN'].includes(brand)?brand:'OTHER';
- cards[category].brands[safeBrand]=(cards[category].brands[safeBrand]||0)+1;
-}
-console.log('Janela de consulta: últimos 14 dias');
-console.log('Cobranças sintéticas do teste localizadas: '+own.length);
-console.log('Cobranças consultadas individualmente: '+persist);
-console.log('Distribuição dos status persistidos: '+JSON.stringify(counts));
-console.log('Situação por cartão de homologação (identificado somente pelos quatro dígitos finais): '+JSON.stringify(cards));
-console.log('Mudança entre lista e consulta individual: '+differentStatus);
-console.log('Forma de pagamento divergente do cartão: '+uncertain);
-console.log('Cobranças com data de pagamento/confirmação: '+withPaymentDate);
-console.log('Auditoria de leitura concluída, sem pagamentos, novos clientes ou alterações.');
+console.log('Completed synthetic card retest. Production not used.');
