@@ -179,7 +179,7 @@ test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago
  db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)")
   .run(order,'recurring-user','plus_year',19990,19990,'pending',now);
  db.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
-  .run(order,checkoutId,payerId,'ACTIVE',now,now);
+  .run(order,checkoutId,'','ACTIVE',now,now);
  let current='PENDING';
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
