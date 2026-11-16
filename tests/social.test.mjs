@@ -131,6 +131,7 @@ test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pa
  let paymentStatus='PENDING';
  globalThis.fetch=async url=>{
   const link=String(url);
+  if(link.includes('/payments?checkoutSession='+checkoutId))return Response.json({data:[{id:paymentId,customer:payerId,subscription,billingType:'CREDIT_CARD',value:29.9}]});
   if(link.endsWith('/subscriptions/'+subscription))return Response.json({
     id:subscription,customer:payerId,billingType:'CREDIT_CARD',
     value:29.9,cycle:'MONTHLY',externalReference:null,status:'ACTIVE',deleted:false
@@ -148,7 +149,7 @@ test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pa
  const checkout=(customer,status)=>({checkout:{id:checkoutId,customer,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}});
  try{
   assert.equal((await notify('evt_card_checkout_created','CHECKOUT_CREATED',checkout(null,'ACTIVE'))).status,200);
-  assert.equal((await notify('evt_card_checkout_unbound','CHECKOUT_PAID',checkout(null,'PAID'))).status,409);
+  assert.equal((await notify('evt_card_checkout_unbound','CHECKOUT_PAID',checkout('invalid','PAID'))).status,409);
   assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).status,'ACTIVE');
   assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout(payerId,'PAID'))).status,200);
   assert.equal(db.prepare('SELECT customer_id FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).customer_id,payerId);
@@ -183,6 +184,7 @@ test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
   const id=String(url);
+  if(id.includes('/payments?checkoutSession='+checkoutId))return Response.json({data:[{id:paymentId,customer:payerId,subscription:subscriptionId,billingType:'CREDIT_CARD',value:199.90}]});
   if(id.endsWith('/subscriptions/'+subscriptionId))
    return Response.json({id:subscriptionId,customer:payerId,billingType:'CREDIT_CARD',value:199.90,cycle:'YEARLY',status:'ACTIVE',externalReference:null});
   if(id.endsWith('/payments/'+paymentId))
@@ -193,7 +195,7 @@ test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago
   method:'POST',headers:{'asaas-access-token':'a'.repeat(48),'Content-Type':'application/json'},
   body:JSON.stringify({id,event,...detail})
  }));
- const paidCheckout={checkout:{id:checkoutId,customer:payerId,status:'PAID',billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}};
+ const paidCheckout={checkout:{id:checkoutId,customer:null,status:'PAID',billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}};
  try{
   const subscriptionEvent=await send('evt_card_early_sub','SUBSCRIPTION_CREATED',{subscription:{id:subscriptionId}});
   assert.equal(subscriptionEvent.status,200);
@@ -201,7 +203,9 @@ test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago
   assert.equal((await send('evt_card_early_payment','PAYMENT_UPDATED',{payment:{id:paymentId}})).status,503,'Do not bind an unpaid Checkout');
   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='recurring-user'").get(),undefined);
   assert.equal((await send('evt_card_real_checkout','CHECKOUT_PAID',paidCheckout)).status,200);
+  assert.equal(db.prepare('SELECT customer_id FROM asaas_card_checkouts WHERE order_id=?').get(order).customer_id,'');
   assert.equal((await send('evt_card_late_payment','PAYMENT_UPDATED',{payment:{id:paymentId}})).status,200);
+  assert.equal(db.prepare('SELECT customer_id FROM asaas_card_checkouts WHERE order_id=?').get(order).customer_id,payerId);
   assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(order).provider_subscription_id,subscriptionId);
   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='recurring-user'").get(),undefined);
   current='CONFIRMED';
