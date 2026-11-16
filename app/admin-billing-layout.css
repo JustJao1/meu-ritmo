@@ -125,7 +125,7 @@
  color:var(--ink);font-size:13px;font-weight:700;line-height:1.5;overflow-wrap:anywhere
 }
 .adminshell .adminbilling :is(.billing-order-account,.billing-order-status,.billing-order-values) small{
- color:var(--billing-muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere
+ color:var(--billing-muted);font-size:12px;line-height:1.55;overflow-wrap:anywhere
 }
 .adminshell .adminbilling .billing-order-status .accesspill{
  display:inline-block;max-width:100%;overflow-wrap:anywhere;
@@ -169,3 +169,8 @@
 @media(prefers-reduced-motion:reduce){
  .adminshell .adminbilling .billing-actions>button{transition:none}
 }
+
+/* Readable payment details and comfortably sized controls in every theme. */
+.adminshell .adminbilling .billing-order-account small{font-variant-numeric:tabular-nums;word-break:break-word}
+.adminshell .adminbilling .billing-filter select:focus-visible,.adminshell .adminbilling .billing-actions>button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@media(max-width:400px){.adminshell .adminbilling .billing-metric span{font-size:13px}.adminshell .adminbilling .billing-order{padding:17px 14px}.adminshell .adminbilling .billing-order-values strong{font-size:13px}}
