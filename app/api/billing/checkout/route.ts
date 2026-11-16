@@ -60,18 +60,12 @@ export async function POST(req:Request){
   let unpersistedCardCheckout:string|null=null;
   try{
     if(coupon)await reserveCoupon(id,user.userId,coupon.coupon);
-    let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
-    if(!customer){
-      const list=await asaasRequest<{data:{id:string}[]}>('/customers?externalReference='+encodeURIComponent(user.userId));
-      let customerId=list.data?.[0]?.id;
-      if(!customerId){const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{name:data.name,cpfCnpj,email:user.email,externalReference:user.userId}});customerId=remote.id;}
-      if(!customerId)throw Error('Cliente não localizado.');
-      await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
-      customer={customer_id:customerId};
-    }
     if(data.paymentMethod==='CREDIT_CARD'){
+      // Do not associate a pre-registered but incomplete Pix customer with this
+      // Checkout. Asaas collects the payer's complete details on its own page.
+      // customer_id is filled only from the authenticated CHECKOUT_PAID event.
       const body=hostedCardCheckoutPayload({
-        orderId:id,customerId:customer.customer_id,plan,amountCents:first,
+        orderId:id,plan,amountCents:first,
         nextDueDate:new Date(Date.now()+86400000).toISOString().slice(0,10)+' 12:00:00',
         siteOrigin:new URL(req.url).origin+'/'
       });
@@ -81,13 +75,22 @@ export async function POST(req:Request){
       unpersistedCardCheckout=checkout.id;
       await env.DB!.batch([
         env.DB!.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
-          .bind(id,checkout.id,customer.customer_id,'ACTIVE',now,now),
+          .bind(id,checkout.id,'','ACTIVE',now,now),
         env.DB!.prepare("UPDATE asaas_orders SET status='pending' WHERE id=? AND status='creating'").bind(id)
       ]);
       unpersistedCardCheckout=null;
       return Response.json({orderId:id,url:'https://asaas.com/checkoutSession/show?id='+encodeURIComponent(checkout.id),
         awaitingInvoice:false,mode:'sandbox',firstAmount:first/100,renewalAmount:base/100},
         {headers:{'Cache-Control':'no-store'}});
+    }
+    let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
+    if(!customer){
+      const list=await asaasRequest<{data:{id:string}[]}>('/customers?externalReference='+encodeURIComponent(user.userId));
+      let customerId=list.data?.[0]?.id;
+      if(!customerId){const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{name:data.name,cpfCnpj,email:user.email,externalReference:user.userId}});customerId=remote.id;}
+      if(!customerId)throw Error('Cliente não localizado.');
+      await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
+      customer={customer_id:customerId};
     }
     const sub=await asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body:{
       customer:customer.customer_id,billingType:data.paymentMethod,value:first/100,
