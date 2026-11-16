@@ -1,6 +1,6 @@
 import {env} from 'cloudflare:workers';
 import {asaasConfig,asaasRequest,hasValidAsaasWebhookToken,type AsaasPayment} from '../../../../../lib/asaas';
-import {handleCardWebhook} from '../../../../../lib/asaas-card-webhook';
+import {handleCardWebhook,bindCardSubscription} from '../../../../../lib/asaas-card-webhook';
 
 const paid=new Set(['CONFIRMED','RECEIVED']);
 const reversed=new Set(['REFUNDED','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','DELETED']);
@@ -33,7 +33,14 @@ export async function POST(req:Request){
   try{
     const payment=await asaasRequest<AsaasPayment>('/payments/'+encodeURIComponent(event.payment.id));
     if(payment.id!==event.payment.id||!payment.subscription)return Response.json({received:true});
-    const order=await env.DB!.prepare('SELECT * FROM asaas_orders WHERE provider_subscription_id=?').bind(payment.subscription).first<any>();
+    let order=await env.DB!.prepare('SELECT * FROM asaas_orders WHERE provider_subscription_id=?').bind(payment.subscription).first<any>();
+    if(!order&&payment.billingType==='CREDIT_CARD'){
+      // Hosted checkouts can send payment before SUBSCRIPTION_CREATED.
+      // Only a unique, already-paid Checkout linked to the same Asaas customer
+      // and subscription amount can be correlated; pending checkouts cannot.
+      await bindCardSubscription(payment.subscription);
+      order=await env.DB!.prepare('SELECT * FROM asaas_orders WHERE provider_subscription_id=?').bind(payment.subscription).first<any>();
+    }
     if(!order)return Response.json({error:'Assinatura ainda não registrada.'},{status:503});
     // A card Checkout creates its payer on Asaas after the hosted form is paid.
     // Never infer the payer from a previous Pix customer of the same account.
