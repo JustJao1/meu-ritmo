@@ -23,7 +23,8 @@ export function hostedCardCheckoutPayload(input:CardCheckoutOptions){
  if(!Number.isFinite(firstDate.getTime())||firstDate.toISOString().slice(0,19).replace('T',' ')!==input.nextDueDate)
   throw Error('Data de cobrança inválida.');
  const origin=new URL(input.siteOrigin);
- if(origin.protocol!=='https:'||origin.pathname!=='/'||origin.search||origin.hash||origin.username||origin.password)
+ const allowedHosts=new Set(['meuritmo.net','www.meuritmo.net','meu-ritmo-asaas-sandbox.silva-joao-232334.workers.dev']);
+ if(origin.protocol!=='https:'||!allowedHosts.has(origin.hostname)||origin.pathname!=='/'||origin.search||origin.hash||origin.username||origin.password)
   throw Error('Origem inválida.');
  const cycle=input.plan.endsWith('_year')?'YEARLY':'MONTHLY';
  const label=input.plan.startsWith('plus_')?'Plus':'Pro';
