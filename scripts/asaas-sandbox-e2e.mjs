@@ -23,7 +23,22 @@ async function asaas(path,method='GET',body){
   ...(body!==undefined?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(60000)
  });
  const data=await res.json().catch(()=>({}));
- if(!res.ok)fail('Asaas '+method+' '+path.split('?')[0]+' retornou HTTP '+res.status);
+ if(!res.ok){
+  // Print only provider validation codes and a redacted description.
+  // Never print request payloads, payer identifiers, account data or API keys.
+  if(path==='/checkouts'&&Array.isArray(data.errors)){
+   const safe=data.errors.slice(0,4).map(item=>{
+    const code=String(item.code||'').replace(/[^a-zA-Z0-9_]/g,'').slice(0,50);
+    const description=String(item.description||'').replace(/\b\d{11,14}\b/g,'[identificador]')
+     .replace(/\b(cus_|pay_|sub_)[a-zA-Z0-9_-]+/g,'[identificador]')
+     .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,'[email]')
+     .slice(0,170);
+    return {code,description};
+   });
+   console.error('Validação do checkout Asaas Sandbox:',JSON.stringify(safe));
+  }
+  fail('Asaas '+method+' '+path.split('?')[0]+' retornou HTTP '+res.status);
+ }
  return data;
 }
 async function cf(path,method='GET',body){
