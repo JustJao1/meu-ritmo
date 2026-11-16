@@ -7,6 +7,8 @@ on:
       - '.github/workflows/asaas-homologacao.yml'
       - 'scripts/asaas-sandbox-smoke.mjs'
       - 'scripts/asaas-sandbox-e2e.mjs'
+      - 'scripts/asaas-sandbox-repair-webhook.mjs'
+      - 'scripts/asaas-production-repair-webhook.mjs'
 permissions:
   contents: read
 jobs:
