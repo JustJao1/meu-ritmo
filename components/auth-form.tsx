@@ -1,4 +1,5 @@
 'use client';
+import QuietIllustration from './quiet-illustration';
 import {useEffect,useState,type FormEvent} from 'react';
 import {safeReturnPath} from '../lib/return-path';
 import {passwordMeetsPolicy,PASSWORD_GUIDANCE} from '../lib/password-policy';
@@ -133,7 +134,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
       <a className="brand" href="/" aria-label="MR: Meu Ritmo"><img className="brandmark brandmark-icon" src="/favicon-mr-v3.svg" alt="" width="34" height="34"/>MR: Meu Ritmo<span className="branddot">®</span></a>
       <LanguageSelector className="mr-language-auth"/>
     </header>
-    <section className="authsheet">
+    <section className="authsheet"><QuietIllustration kind={mode==='verify'?'community':'welcome'}/>
       <span className="eyebrow">{t('Seu dia, no seu ritmo').toUpperCase()}</span>
       <h1>{t(titles[mode])}</h1>
       {descriptions[mode]&&<p className="muted">{t(descriptions[mode]!)}</p>}

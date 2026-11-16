@@ -1,4 +1,5 @@
 'use client';
+import QuietIllustration from '../../components/quiet-illustration';
 import {useEffect,useState} from 'react';
 import {ArrowUpRight,Download,Smartphone,Share2,Check,MonitorSmartphone} from 'lucide-react';
 import {useLocale} from '../../components/language-selector';
@@ -42,7 +43,7 @@ export default function DownloadPage(){
    <a className="downloadbrand" href="/"><img src="/favicon-mr-v3.svg" width={36} height={36} alt=""/>MR: Meu Ritmo</a>
    <LanguageSelector className="mr-language-download"/>
   </header>
-  <main className="downloadmain">
+  <main className="downloadmain"><QuietIllustration kind="devices"/>
    <span className="downloadebrow">{t('MEU RITMO APP')}</span>
    <h1>{t('Seu espaço, sempre por perto.')}</h1>
    <p className="downloadlead">{t('Use a mesma conta do site para acompanhar seus compromissos, tarefas, notas e finanças no celular.')}</p>

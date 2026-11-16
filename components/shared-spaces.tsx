@@ -1,4 +1,5 @@
 'use client';
+import QuietIllustration from './quiet-illustration';
 import {useEffect,useState,type FormEvent} from 'react';
 import {ArrowLeft,Check,Copy,Plus,RefreshCw,Trash2,Users,X,CalendarDays,NotebookPen,ListChecks,Clock,MessageSquare} from 'lucide-react';
 import {useLocale} from './language-selector';
@@ -200,7 +201,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
      </div>
     </article>;
    }):<p className="muted">{t('Nenhum item compartilhado ainda. Adicione o primeiro.')}</p>}</div>
-  </div>:<div className="shared-list">
+  </div>:<div className="shared-list"><QuietIllustration kind="community"/>
    <p className="muted">{t('Seu espaço pessoal continua privado. Você pode participar de espaços por convite, mesmo no plano gratuito.')}</p>
    <button type="button" className="shared-personal" onClick={onPersonal}><span><strong>{t('Meu espaço')}</strong><small>{t('Pessoal')} · {t('Privado')}</small></span><ArrowLeft size={15}/></button>
    {spaces.map(s=><button type="button" key={s.id} className="shared-space-entry" onClick={()=>{setError('');void open(s.id).catch(e=>setError(e.message))}}><Users size={19}/><span><strong>{s.name}</strong><small>{s.owner?t('Criado por você'):t('Participante')}</small></span><ArrowLeft size={15}/></button>)}
