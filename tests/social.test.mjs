@@ -55,7 +55,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
   db.prepare("INSERT INTO service_settings(key,value) VALUES ('legal',?)").run(JSON.stringify({name:'Operador de teste',taxId:'529.982.247-25',address:'Rua Teste, 100, SÃ£o Paulo',email:'owner@test.example'}));
   db.prepare("UPDATE discount_codes SET plan='plus' WHERE code='DESCONTO10'").run();
   const original=globalThis.fetch;
-  let subscriptionRequest,cardCheckoutRequest;
+  let subscriptionRequest;
   let customerCount=0, subscriptionCount=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
@@ -65,11 +65,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
       subscriptionRequest=JSON.parse(init.body);
       return Response.json({id:subscriptionCount++===0?'sub_0_test':'sub_0_test_2'});
     }
-    if(path.endsWith('/checkouts')&&init?.method==='POST'){
-      cardCheckoutRequest=JSON.parse(init.body);
-      return Response.json({id:'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa'});
-    }
-    if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',status:'PENDING'}]});
+    if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',billingType:'PIX',status:'PENDING'}]});
     throw Error('Network denied in test: '+path);
   };
   const payer={name:'Bob Teste',cpfCnpj:'52998224725'};
@@ -79,15 +75,12 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
     assert.equal((await request('checkout',{...payer,price:'plus_month'})).status,400);
     assert.equal((await request('checkout',{...payer,cpfCnpj:'00000000000',price:'plus_month',acceptTerms:true})).status,400);
     assert.equal((await request('checkout',{...payer,price:'pro_month',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'})).status,400);
-    for(const paymentMethod of ['BOLETO','UNDEFINED','bolet','']) {
+    for(const paymentMethod of ['BOLETO','CREDIT_CARD','UNDEFINED','bolet','']) {
       const invalid=await request('checkout',{...payer,price:'plus_month',acceptTerms:true,acceptRefundPolicy:true,paymentMethod});
       assert.equal(invalid.status,400,'Banned checkout method '+paymentMethod);
     }
     assert.equal((await request('checkout',{...payer,price:'plus_month',acceptTerms:true,acceptRefundPolicy:true})).status,400,'Payment method must be explicitly selected');
     assert.equal((await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,discountCode:'DESCONTO10'})).status,400,'Refund policy must be accepted explicitly');
-    const cardWithDiscount=await request('checkout',{...payer,price:'plus_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'});
-    assert.equal(cardWithDiscount.status,400,'Card coupons remain blocked until Asaas recurring-value updates have been validated');
-    assert.match((await cardWithDiscount.json()).error,/Pix/);
     const response=await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'});
     assert.equal(response.status,200);
     const body=await response.json();
@@ -97,29 +90,9 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrataÃ
     assert.equal(subscriptionRequest.billingType,'PIX');
     assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,1);
     who('alice');
-    const pendingCard=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true});
-    assert.equal(pendingCard.status,503,'Credit card checkout is disabled until Sandbox approval');
     e.ASAAS_CARD_CHECKOUT_ENABLED='true';
-    // Use the actual permitted site origin. Production remains gated separately.
-    const card=await api.checkout.POST(new Request('https://meuritmo.net/api/billing/checkout',{
-      method:'POST',headers:{origin:'https://meuritmo.net','Content-Type':'application/json'},
-      body:JSON.stringify({...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true})
-    }));
-    assert.equal(card.status,200,'Hosted card checkout must be supported in isolated Sandbox');
-    const cardResult=await card.json();
-    assert.equal(cardResult.url,'https://asaas.com/checkoutSession/show?id=aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
-    assert.deepEqual(cardCheckoutRequest.billingTypes,['CREDIT_CARD']);
-    assert.deepEqual(cardCheckoutRequest.chargeTypes,['RECURRENT']);
-    assert.equal(cardCheckoutRequest.customer,undefined,'Asaas deve solicitar dados completos no Checkout');
-    assert.equal(cardCheckoutRequest.subscription.cycle,'MONTHLY');
-    assert.equal(cardCheckoutRequest.items[0].value,29.90);
-    const saved=db.prepare('SELECT * FROM asaas_card_checkouts WHERE checkout_id=?').get('aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
-    assert(saved&&saved.order_id===cardResult.orderId);
-    const resume=await request('portal',{});
-    assert.equal(resume.status,200,'ProprietÃ¡rio do checkout pode retomar pagamento pendente');
-    assert.equal((await resume.json()).url,cardResult.url);
-
-    assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(cardResult.orderId).provider_subscription_id,null);
+    const blockedCard=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true});
+    assert.equal(blockedCard.status,400,'CartÃ£o deve ser recusado mesmo se a flag estiver ativada');
   }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';e.ASAAS_CARD_CHECKOUT_ENABLED='false';}
 });
 test('Checkout de cartÃ£o vincula assinatura ao pedido e sÃ³ libera Pro apÃ³s pagamento confirmado',async()=>{
