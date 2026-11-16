@@ -241,6 +241,26 @@ test('cancelar checkout hospedado pendente não gera cobrança nem libera acesso
   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='no-charge'").get(),undefined);
  }finally{globalThis.fetch=original;}
 });
+test('checkout expirado pelo Asaas não libera plano nem aceita confirmação tardia de criação',async()=>{
+ const now=Math.floor(Date.now()/1000),order='45454545-4545-4454-8454-454545454545';
+ const checkoutId='67676767-6767-4676-8676-676767676767';
+ db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)")
+  .run(order,'expired-card-user','pro_month',2990,2990,'pending',now);
+ db.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
+  .run(order,checkoutId,'','ACTIVE',now,now);
+ const event=(id,type,status)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{
+  method:'POST',headers:{'asaas-access-token':'a'.repeat(48),'Content-Type':'application/json'},
+  body:JSON.stringify({id,event:type,checkout:{id:checkoutId,status,customer:null,
+   billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}})
+ }));
+ assert.equal((await event('evt_card_expired_1','CHECKOUT_EXPIRED','EXPIRED')).status,200);
+ assert.equal(db.prepare("SELECT status FROM asaas_card_checkouts WHERE order_id=?").get(order).status,'EXPIRED');
+ assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id=?").get(order).status,'cancelled');
+ assert.equal((await event('evt_card_expired_2','CHECKOUT_CREATED','ACTIVE')).status,200);
+ assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='expired-card-user'").get(),undefined);
+ assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id=?").get(order).status,'cancelled');
+});
+
 test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada',async()=>{
   const e=globalThis.__socialEnv;
   e.ASAAS_BILLING_ENABLED='true';
