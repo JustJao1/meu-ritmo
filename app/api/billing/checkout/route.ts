@@ -1,16 +1,15 @@
 import {env} from 'cloudflare:workers';
 import {getUser} from '../../../session';
 import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
-import {asaasCardCheckoutReady,asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
+import {asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
 import {z} from 'zod';
 import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
 import {parseLegalSettings} from '../../../../lib/legal-settings';
-import {hostedCardCheckoutPayload} from '../../../../lib/asaas-hosted-card';
 
 const inputSchema=z.object({
   price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
-  paymentMethod:z.enum(['PIX','CREDIT_CARD']),
+  paymentMethod:z.literal('PIX'),
   name:z.string().trim().min(3).max(120),
   cpfCnpj:z.string().trim().min(11).max(18),
   discountCode:z.string().trim().max(32).optional(),
@@ -39,13 +38,6 @@ export async function POST(req:Request){
   const plan=data.price as AsaasPlanCode;
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
-  // Asaas requires card tokenization to change a card subscription's recurring value.
-  // Until that configuration is validated, do not promise a first-cycle card discount
-  // that could silently renew at the promotional price or fail to grant paid access.
-  if(coupon&&data.paymentMethod==='CREDIT_CARD')return Response.json({error:'Nesta etapa, cupons de desconto estão disponíveis apenas para Pix. Para pagar no cartão, remova o cupom.'},{status:400});
-  // Production requires provider homologation and a separate go-live flag.
-  if(data.paymentMethod==='CREDIT_CARD'&&!asaasCardCheckoutReady())
-    return Response.json({error:'Cartão de crédito ainda está em homologação. Utilize Pix.'},{status:503});
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
   try{
     await env.DB!.batch([
@@ -55,32 +47,8 @@ export async function POST(req:Request){
         .bind(id,user.userId,'2026-11-15',data.paymentMethod,first,base,now)
     ]);
   }catch{return Response.json({error:'Já existe uma contratação em andamento ou o registro de consentimento está indisponível. Consulte sua assinatura.'},{status:409});}
-  let unpersistedCardCheckout:string|null=null;
   try{
     if(coupon)await reserveCoupon(id,user.userId,coupon.coupon);
-    if(data.paymentMethod==='CREDIT_CARD'){
-      // Do not associate a pre-registered but incomplete Pix customer with this
-      // Checkout. Asaas collects the payer's complete details on its own page.
-      // customer_id is filled only from the authenticated CHECKOUT_PAID event.
-      const body=hostedCardCheckoutPayload({
-        orderId:id,plan,amountCents:first,
-        nextDueDate:new Date(Date.now()+86400000).toISOString().slice(0,10)+' 12:00:00',
-        siteOrigin:new URL(req.url).origin+'/'
-      });
-      const checkout=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body});
-      if(!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(checkout.id||''))
-        throw Error('Asaas não retornou ID válido de checkout.');
-      unpersistedCardCheckout=checkout.id;
-      await env.DB!.batch([
-        env.DB!.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
-          .bind(id,checkout.id,'','ACTIVE',now,now),
-        env.DB!.prepare("UPDATE asaas_orders SET status='pending' WHERE id=? AND status='creating'").bind(id)
-      ]);
-      unpersistedCardCheckout=null;
-      return Response.json({orderId:id,url:'https://asaas.com/checkoutSession/show?id='+encodeURIComponent(checkout.id),
-        awaitingInvoice:false,mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100},
-        {headers:{'Cache-Control':'no-store'}});
-    }
     let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
     if(!customer){
       const list=await asaasRequest<{data:{id:string}[]}>('/customers?externalReference='+encodeURIComponent(user.userId));
@@ -100,13 +68,17 @@ export async function POST(req:Request){
     if(!sub.id)throw Error('O Asaas não confirmou a assinatura.');
     await env.DB!.prepare("UPDATE asaas_orders SET provider_subscription_id=?,status='pending' WHERE id=?").bind(sub.id,id).run();
     const list=await asaasRequest<{data:AsaasPayment[]}>('/subscriptions/'+encodeURIComponent(sub.id)+'/payments?limit=10');
-    const url=verifiedInvoice(list.data?.[0]?.invoiceUrl);
+    // Never expose a boleto when the customer selected Pix. Some Asaas
+    // Sandbox subscriptions unexpectedly return a BOLETO first invoice.
+    const invoice=list.data?.[0];
+    if(invoice&&invoice.billingType!=='PIX'){
+      await asaasRequest('/subscriptions/'+encodeURIComponent(sub.id),{method:'DELETE'}).catch(()=>{});
+      await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=?").bind(id).run();
+      return Response.json({error:'O Asaas não disponibilizou uma cobrança Pix para esta assinatura. Nenhum boleto foi oferecido e o plano não foi liberado.',orderId:id},{status:503});
+    }
+    const url=verifiedInvoice(invoice?.invoiceUrl);
     return Response.json({orderId:id,url,awaitingInvoice:!url,mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100});
   }catch{
-    // If Asaas created a Checkout but D1 could not persist its link, cancel it.
-    // Never create a replacement subscription automatically after an uncertain write.
-    if(unpersistedCardCheckout)
-      await asaasRequest('/checkouts/'+encodeURIComponent(unpersistedCardCheckout)+'/cancel',{method:'POST'}).catch(()=>{});
     await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status='creating'").bind(id).run();
     return Response.json({error:'A contratação precisa de conferência antes de uma nova tentativa. Nenhum plano foi liberado.',orderId:id},{status:503});
   }
