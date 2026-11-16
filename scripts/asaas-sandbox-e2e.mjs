@@ -206,7 +206,7 @@ try{
   try{
    const response=await asaas('/payments/'+encodeURIComponent(paymentId)+'/bankSlip/refund','POST',{});
    const link=new URL(String(response.requestUrl||''));
-   if(link.protocol!=='https:'||!/(^|\\.)asaas\\.com$/.test(link.hostname))
+   if(link.protocol!=='https:'||!/(^|\.)asaas\.com$/.test(link.hostname))
     fail('Asaas não retornou endereço de solicitação de estorno válido.');
    refundResult='solicitação de estorno por boleto aberta; conclusão depende de dados do pagador';
   }catch(error){
