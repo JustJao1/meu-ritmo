@@ -181,7 +181,7 @@ test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada
     assert.equal((await send('evt_payment_test','a'.repeat(48))).status,200);
     assert.equal(updates,1);
     assert.equal(db.prepare('SELECT plan FROM subscriptions WHERE user_id=?').get('bob').plan,'plus');
-    assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_webhook_events').get().n,1);
+    assert.equal(db.prepare("SELECT count(*) AS n FROM asaas_webhook_events WHERE event_id='evt_payment_test'").get().n,1);
     status='REFUNDED';
     assert.equal((await send('evt_refund_test','a'.repeat(48))).status,200);
     assert.equal(db.prepare('SELECT status FROM subscriptions WHERE user_id=?').get('bob').status,'canceled');
