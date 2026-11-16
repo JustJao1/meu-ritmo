@@ -60,7 +60,8 @@ export async function POST(req:Request){
       // actually settled via Pix; pixTransaction proves that settlement method.
       const consent=await env.DB!.prepare('SELECT payment_method FROM asaas_order_consents WHERE order_id=?')
         .bind(order.id).first<{payment_method:string}>();
-      if(consent?.payment_method==='PIX'&&payment.billingType!=='PIX'&&
+      if(consent?.payment_method==='PIX'&&paid.has(payment.status)&&paymentConfirmationEvents.has(event.event)&&
+         payment.billingType!=='PIX'&&
          !(payment.billingType==='BOLETO'&&typeof (payment as AsaasPayment&{pixTransaction?:string}).pixTransaction==='string'))
         return Response.json({error:'Esta assinatura aceita somente pagamento Pix.'},{status:409});
     }
