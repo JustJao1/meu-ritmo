@@ -40,7 +40,7 @@ async function checkoutEvent(event:any){
  }
  const time=now();
  const actions=[
-  env.DB!.prepare('UPDATE asaas_card_checkouts SET status=?,customer_id=CASE WHEN ?=\'PAID\' THEN ? ELSE customer_id END,updated_at=? WHERE checkout_id=?')
+  env.DB!.prepare('UPDATE asaas_card_checkouts SET status=?,customer_id=CASE WHEN ?=\'PAID\' AND ?<>\'\' THEN ? ELSE customer_id END,updated_at=? WHERE checkout_id=?')
    .bind(state,state,state==='PAID'&&customerId.test(checkout.customer||'')?checkout.customer:'',state==='PAID'&&customerId.test(checkout.customer||'')?checkout.customer:'',time,checkout.id),
   env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING')
    .bind(event.id,event.event,time)
