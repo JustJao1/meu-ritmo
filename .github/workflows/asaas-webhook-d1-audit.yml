@@ -1,0 +1,28 @@
+name: Auditar entrega de webhooks no D1 Sandbox
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-webhook-d1-readonly-audit.mjs'
+      - '.github/workflows/asaas-webhook-d1-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: sandbox
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Contar eventos gravados por tipo e origem
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SANDBOX_D1_DATABASE_ID: ${{ vars.SANDBOX_D1_DATABASE_ID }}
+          PRODUCTION_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+        run: node scripts/asaas-webhook-d1-readonly-audit.mjs
