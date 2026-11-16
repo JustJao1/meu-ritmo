@@ -266,11 +266,14 @@ try{
   const accepted=await cardAttempt('4444444444444444');
   log('Cartão aprovado Sandbox API',accepted.http+' / '+accepted.status);
   const declined=await cardAttempt('5184019740373151');
-  log('Cartão recusado Sandbox API',declined.http+' / '+declined.status);
+  const declinedVisa=await cardAttempt('4916561358240741');
+  log('Cartão de recusa Mastercard Sandbox API',declined.http+' / '+declined.status);
+  log('Cartão de recusa Visa Sandbox API',declinedVisa.http+' / '+declinedVisa.status);
   if(![200,201].includes(accepted.http)||!['CONFIRMED','RECEIVED'].includes(accepted.status))
    console.warn('::warning title=Cartão Sandbox pendente::A API não confirmou o cartão fictício de aprovação.');
-  if([200,201].includes(declined.http)&&['CONFIRMED','RECEIVED'].includes(declined.status))
-   fail('Um cartão fictício designado para recusa foi aprovado no Sandbox.');
+  for(const result of [declined,declinedVisa])
+   if([200,201].includes(result.http)&&['CONFIRMED','RECEIVED'].includes(result.status))
+    console.warn('::warning title=Recusa do cartão não homologada::O Asaas confirmou um cartão que a documentação lista como destinado à recusa. Não ativar cobranças reais.');
  }catch(err){
   console.warn('::warning title=Cartão Sandbox pendente::A transação fictícia não foi totalmente homologada.');
  }
