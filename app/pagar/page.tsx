@@ -1,4 +1,5 @@
 'use client';
+import ContextIllustration from '../../components/context-illustration';
 import {useCallback,useEffect,useState} from 'react';
 import LanguageSelector,{useLocale} from '../../components/language-selector';
 import './pix.css';
@@ -41,7 +42,7 @@ export default function PixPaymentPage(){
      <LanguageSelector/>
    </div>
    <section className="mr-pix-card" aria-live="polite">
-     <div className="mr-pix-tag">{t('Pagamento com Pix')}</div>
+     <ContextIllustration context="Pix"/><div className="mr-pix-tag">{t('Pagamento com Pix')}</div>
      <h1>{t('Concluir assinatura')}</h1>
      <p className="mr-pix-intro">{t('O pagamento é feito exclusivamente por Pix. A assinatura será ativada após a confirmação do Asaas.')}</p>
      {loading&&!data&&!error?<p role="status">{t('Consultando sua cobrança Pix…')}</p>:null}

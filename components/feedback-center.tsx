@@ -1,4 +1,5 @@
 'use client';
+import CategoryIllustration from './category-illustration';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {MessageSquare,Star,ArrowRight} from 'lucide-react';
 import {useLocale} from './language-selector';
@@ -9,7 +10,7 @@ export function FeedbackLauncher({demo,onOpen}:{demo:boolean;onOpen:()=>void}){
  const {t}=useLocale();const [unread,setUnread]=useState(0);
  useEffect(()=>{if(demo)return;let alive=true;async function load(){try{const r=await fetch('/api/feedback?summary=1',{cache:'no-store'});if(r.ok){const v:any=await r.json();if(alive)setUnread(Number(v.unread)||0);}}catch{}}
  void load();const timer=setInterval(()=>{if(document.visibilityState==='visible')void load();},60000);const refresh=()=>void load();window.addEventListener('mr-feedback-read',refresh);return()=>{alive=false;clearInterval(timer);window.removeEventListener('mr-feedback-read',refresh);};},[demo]);
- return <button className="sideutility feedback-launcher" onClick={onOpen}><MessageSquare size={18}/>{t('Opiniões e respostas')}{unread>0&&<span className="feedback-unread" aria-label={t('Novas respostas')}>{unread}</span>}</button>;
+ return <button className="sideutility feedback-launcher" onClick={onOpen}><CategoryIllustration name="Opiniões e respostas"/>{t('Opiniões e respostas')}{unread>0&&<span className="feedback-unread" aria-label={t('Novas respostas')}>{unread}</span>}</button>;
 }
 export default function FeedbackCenter({demo=false}:{demo?:boolean}){
  const {t,locale}=useLocale();const [entries,setEntries]=useState<FeedbackEntry[]>([]),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[kind,setKind]=useState('suggestion'),[rating,setRating]=useState(0),[body,setBody]=useState(''),[selected,setSelected]=useState(''),[reply,setReply]=useState('');const requestId=useRef(''),replyId=useRef('');

@@ -20,3 +20,27 @@
 
 /* One quiet object per introduction; dense working areas stay clear. */
 .quiet-illustration{display:block;width:108px;height:65px;color:var(--ink,#30362e);opacity:.72;flex:0 0 108px;pointer-events:none;user-select:none}.quiet-illustration svg{display:block;width:100%;height:100%;overflow:visible}.pageheading>.quiet-illustration{margin-left:auto;margin-right:20px}.pageheading>.quiet-illustration+button{flex-shrink:0}.authsheet>.quiet-illustration,.downloadmain>.quiet-illustration,.settingspanel>.quiet-illustration,.alertcenter>.quiet-illustration,.shared-list>.quiet-illustration,.createhubintro>.quiet-illustration{float:right;margin:0 0 12px 18px}.authsheet,.downloadmain,.settingspanel,.alertcenter,.shared-list,.createhubintro{display:flow-root}.studiointro>.quiet-illustration{width:90px;flex-basis:90px;margin-top:8px}.studiointro>div{min-width:0;flex:1}.empty>.quiet-illustration{margin:0 auto 14px;width:144px;height:86px}.routine-empty-art{padding-top:4px}.routine-empty-art .organizing-illustration{width:136px;height:85px;margin:0 auto 14px}.quiet-plan-section>.quiet-illustration{float:right;width:140px;height:84px;margin:10px 0 0 24px}.quiet-plan-section>.plangrid,.quiet-plan-section>.earlyaccessnotice{clear:both}@media(max-width:700px){.pageheading>.quiet-illustration{display:none}.authsheet>.quiet-illustration,.downloadmain>.quiet-illustration,.settingspanel>.quiet-illustration,.alertcenter>.quiet-illustration,.shared-list>.quiet-illustration,.createhubintro>.quiet-illustration{width:76px;height:46px;margin-left:10px}.studiointro>.quiet-illustration{display:none}.quiet-plan-section>.quiet-illustration{width:80px;height:48px;margin-left:12px}}@media(max-width:380px){.authsheet>.quiet-illustration,.quiet-plan-section>.quiet-illustration{display:none}}
+
+/* Decorative category drawings remain outside reading and editing surfaces. */
+.category-illustration{display:inline-block;flex-shrink:0;vertical-align:middle;overflow:visible;pointer-events:none}
+.sidebar nav>button .category-illustration,.sideutility .category-illustration{width:24px;height:24px;min-width:24px}
+.sidebar nav>button.active .category-illustration rect{opacity:.19}
+.context-illustration{display:block;flex:0 0 auto;width:108px;height:65px;pointer-events:none;user-select:none}
+.context-illustration>.quiet-illustration{width:100%;height:100%;margin:0;float:none;opacity:.8}
+.dialog>header>.context-illustration{width:78px;height:47px;margin:0 18px 0 auto;flex:0 0 78px}
+.dialog>header>h2{min-width:0;flex:1}
+.dialog>header>div:first-child{min-width:0}
+.authsheet>.context-illustration,.legalpage>.context-illustration,.mr-pix-card>.context-illustration{float:right;margin:0 0 14px 20px}
+.authsheet>form,.mr-pix-card>.mr-pix-intro{clear:both}
+.adminheading>.context-illustration{margin-left:auto;margin-right:22px}
+.adminheading>.adminidentity{flex-shrink:0}
+.legalpage>.context-illustration{width:116px;height:70px}
+.adminblocked>.context-illustration{margin:0 auto 16px}
+.daily-pitch .daily-motivation{margin-bottom:0}
+@media(max-width:700px){
+ .dialog>header>.context-illustration{width:58px;height:36px;flex-basis:58px;margin-inline:8px}
+ .authsheet>.context-illustration,.legalpage>.context-illustration,.mr-pix-card>.context-illustration{width:72px;height:44px;margin-left:12px}
+ .adminheading>.context-illustration{width:66px;height:40px;margin:0 0 10px auto}
+ .adminheading{flex-wrap:wrap}
+ .sidebar nav>button .category-illustration,.sideutility .category-illustration{width:22px;height:22px;min-width:22px}
+}
