@@ -196,7 +196,6 @@ try{
   const checkout=await asaas('/checkouts','POST',{
    billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT'],
    minutesToExpire:10,externalReference:cardOrderId,
-   customer:customer.id,
    callback:{
     successUrl:worker+'/app?billing=awaiting_webhook',
     cancelUrl:worker+'/app?billing=canceled',
@@ -211,14 +210,14 @@ try{
   await query("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)",
    [cardOrderId,userId,'pro_month',2990,2990,'pending',cardNow]);
   await query("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)",
-   [cardOrderId,hostedCheckoutId,customer.id,'ACTIVE',cardNow,cardNow]);
+   [cardOrderId,hostedCheckoutId,'','ACTIVE',cardNow,cardNow]);
   log('Checkout recorrente hospedado de cartão','criado no Asaas Sandbox sem dados de cartão');
   const sendCardEvent=async(eventName,status)=>{
    const response=await fetch(worker+'/api/billing/webhook/asaas',{
     method:'POST',
     headers:{'asaas-access-token':e.SANDBOX_ASAAS_WEBHOOK_TOKEN,'Content-Type':'application/json'},
     body:JSON.stringify({id:'evt_mr_card_'+randomUUID(),event:eventName,
-     checkout:{id:hostedCheckoutId,customer:customer.id,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}}),
+     checkout:{id:hostedCheckoutId,customer:null,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}}),
     signal:AbortSignal.timeout(20000)
    });
    if(!response.ok)fail('Webhook de checkout '+eventName+' retornou HTTP '+response.status);
