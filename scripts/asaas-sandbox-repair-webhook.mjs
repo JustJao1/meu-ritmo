@@ -3,7 +3,7 @@
 const env=process.env;
 const host='https://api-sandbox.asaas.com/v3';
 const target='https://meu-ritmo-asaas-sandbox.silva-joao-232334.workers.dev/api/billing/webhook/asaas';
-const required=['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED',
+const required=['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_AWAITING_RISK_ANALYSIS','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_PARTIALLY_REFUNDED','PAYMENT_REFUND_IN_PROGRESS','PAYMENT_CHARGEBACK_REQUESTED','PAYMENT_CHARGEBACK_DISPUTE',
  'CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'];
 if(env.ASAAS_MODE!=='sandbox'||!env.ASAAS_API_KEY?.startsWith('$aact_hmlg_'))
  throw Error('Ambiente Sandbox ou chave de homologação inválidos; sem alterações.');
