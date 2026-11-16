@@ -44,7 +44,7 @@ if(action==='signup'){stage='signup-validation';const pw=password.parse(b.passwo
  if(pending)return reply({error:'Esse nome está reservado por um cadastro aguardando confirmação. Se foi você, abra Confirmar e-mail e reenvie o código usando o e-mail do primeiro cadastro.',pendingVerification:true},409);
  stage='signup-provider-settings';
  const settingsResponse=await provider(e,'/settings');
- if(!settingsResponse.ok)return reply({error:'Não foi possível verificar a configuração do cadastro. Tente novamente mais tarde.'},503);
+ if(!settingsResponse.ok)return reply({error:'Não foi possível acessar sua conta agora. Tente novamente em instantes.'},503);
  const settings:any=await settingsResponse.json();
  if(settings.mailer_autoconfirm!==false){
    console.error('auth_signup_provider_confirmation_disabled');
