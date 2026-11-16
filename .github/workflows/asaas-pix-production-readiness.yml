@@ -1,0 +1,25 @@
+name: Verificar chaves Pix de produção sem cobranças
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-pix-production-readiness.mjs'
+      - '.github/workflows/asaas-pix-production-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pix_readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Checar chaves Pix sem criar cobranças
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: node scripts/asaas-pix-production-readiness.mjs
