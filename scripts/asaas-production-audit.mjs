@@ -51,6 +51,7 @@ if(activeMode&&key&& !key.startsWith('$aact_hmlg_')){
    const wh=matches[0];
    show('Asaas produção: webhook ativo',wh.enabled===true);
    show('Asaas produção: fila interrompida',wh.interrupted===true);
+   show('Asaas produção: versão API do webhook',String(wh.apiVersion??'não informada'));
    show('Asaas produção: envio sequencial',wh.sendType==='SEQUENTIALLY');
    show('Asaas produção: eventos ausentes',needed.filter(x=>!wh.events?.includes(x)).join(', ')||'nenhum');
   }else show('Asaas produção: situação do webhook','ausente ou duplicado');
