@@ -55,6 +55,14 @@ export async function POST(req:Request){
     }else{
       const customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(order.user_id).first<any>();
       if(!customer||customer.customer_id!==payment.customer)return Response.json({error:'Vínculo do pagamento inválido.'},{status:409});
+      // A Pix-only consent must never grant a plan for a paid bank slip or
+      // credit-card transaction. Some Asaas receipts retain BOLETO even when
+      // actually settled via Pix; pixTransaction proves that settlement method.
+      const consent=await env.DB!.prepare('SELECT payment_method FROM asaas_order_consents WHERE order_id=?')
+        .bind(order.id).first<{payment_method:string}>();
+      if(consent?.payment_method==='PIX'&&payment.billingType!=='PIX'&&
+         !(payment.billingType==='BOLETO'&&typeof (payment as AsaasPayment&{pixTransaction?:string}).pixTransaction==='string'))
+        return Response.json({error:'Esta assinatura aceita somente pagamento Pix.'},{status:409});
     }
     const previous=await env.DB!.prepare('SELECT amount_cents FROM asaas_payments WHERE payment_id=?').bind(payment.id).first<{amount_cents:number}>();
     const amount=Math.round(payment.value*100),expected=previous?.amount_cents??(order.first_paid_at?order.base_price_cents:order.first_price_cents);
