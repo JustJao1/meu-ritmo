@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Pix ou boleto":["Pix or bank slip","Pix o boleto"],
+"A cada período, o Asaas gera uma fatura com opção de Pix quando disponível. O pagamento é manual.":["For each billing period, Asaas issues an invoice with a Pix option when available. Payment is manual.","En cada período, Asaas emite una factura con opción de Pix cuando esté disponible. El pago es manual."],
+"O pagamento será feito na página segura do Asaas. No Pix/boleto, cada renovação exige um novo pagamento; o QR Code depende da disponibilidade do Asaas. No cartão, a renovação pode ser cobrada automaticamente.":["Payment takes place on Asaas's secure page. With Pix or bank slip, each renewal requires a new payment and the Pix QR code depends on Asaas availability. Credit card renewals may be charged automatically.","El pago se realiza en la página segura de Asaas. Con Pix o boleto, cada renovación requiere un nuevo pago y el código QR depende de la disponibilidad de Asaas. La tarjeta puede cobrarse automáticamente."],
+
 "Pedidos registrados":["Registered orders","Pedidos registrados"],
 "Ativos":["Active","Activos"],
 "Em conferência":["Under review","En revisión"],
