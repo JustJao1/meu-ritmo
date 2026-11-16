@@ -16,10 +16,6 @@ const inputSchema=z.object({
   acceptTerms:z.literal(true),
   acceptRefundPolicy:z.literal(true)
 });
-function verifiedInvoice(link:unknown){
-  if(typeof link!=='string')return null;
-  try{const url=new URL(link);return url.protocol==='https:'&&/(^|\.)asaas\.com$/.test(url.hostname)?url.toString():null;}catch{return null;}
-}
 export async function POST(req:Request){
   if(EARLY_ACCESS_ACTIVE)return Response.json({error:'Assinaturas indisponíveis durante o acesso antecipado.'},{status:503});
   const user=await getUser();
@@ -68,16 +64,34 @@ export async function POST(req:Request){
     if(!sub.id)throw Error('O Asaas não confirmou a assinatura.');
     await env.DB!.prepare("UPDATE asaas_orders SET provider_subscription_id=?,status='pending' WHERE id=?").bind(sub.id,id).run();
     const list=await asaasRequest<{data:AsaasPayment[]}>('/subscriptions/'+encodeURIComponent(sub.id)+'/payments?limit=10');
-    // Never expose a boleto when the customer selected Pix. Some Asaas
-    // Sandbox subscriptions unexpectedly return a BOLETO first invoice.
     const invoice=list.data?.[0];
-    if(invoice&&invoice.billingType!=='PIX'){
-      await asaasRequest('/subscriptions/'+encodeURIComponent(sub.id),{method:'DELETE'}).catch(()=>{});
-      await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=?").bind(id).run();
-      return Response.json({error:'O Asaas não disponibilizou uma cobrança Pix para esta assinatura. Nenhum boleto foi oferecido e o plano não foi liberado.',orderId:id},{status:503});
+    // No hosted invoice URL is ever offered: the site displays only a verified
+    // Pix QR Code and copy/paste code, even if Asaas defaults to boleto.
+    if(invoice?.id){
+      if(!/^pay_[a-zA-Z0-9_-]{1,90}$/.test(invoice.id)||Math.round(invoice.value*100)!==first||
+        invoice.customer!==customer.customer_id||invoice.subscription!==sub.id)
+        throw Error('Dados inconsistentes na fatura do Asaas.');
+      if(invoice.billingType!=='PIX'){
+        const converted=await asaasRequest<AsaasPayment>('/payments/'+encodeURIComponent(invoice.id),{
+          method:'PUT',body:{billingType:'PIX',value:invoice.value,dueDate:invoice.dueDate}
+        });
+        if(converted.billingType!=='PIX'||converted.id!==invoice.id)
+          throw Error('Asaas não confirmou Pix.');
+      }
+      try{
+        const qr=await asaasRequest<{payload?:string;encodedImage?:string}>('/payments/'+encodeURIComponent(invoice.id)+'/pixQrCode');
+        if(typeof qr.payload!=='string'||qr.payload.length<40||
+          typeof qr.encodedImage!=='string'||qr.encodedImage.length<100)
+          throw Error('QR Pix inválido.');
+      }catch{
+        return Response.json({error:'O recebimento via Pix não está habilitado para cobranças nesta conta Asaas. A assinatura ficou pendente, mas nenhuma forma alternativa de pagamento será oferecida.',orderId:id},
+          {status:503,headers:{'Cache-Control':'no-store'}});
+      }
     }
-    const url=verifiedInvoice(invoice?.invoiceUrl);
-    return Response.json({orderId:id,url,awaitingInvoice:!url,mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100});
+    const url='/pagar?pedido='+encodeURIComponent(id);
+    return Response.json({orderId:id,url,awaitingInvoice:!invoice,mode:asaasConfig().mode,
+      firstAmount:first/100,renewalAmount:base/100},{headers:{'Cache-Control':'no-store'}});
+
   }catch{
     await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status='creating'").bind(id).run();
     return Response.json({error:'A contratação precisa de conferência antes de uma nova tentativa. Nenhum plano foi liberado.',orderId:id},{status:503});
