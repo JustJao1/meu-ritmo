@@ -296,7 +296,7 @@ test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada
   let status='RECEIVED',updates=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
-    if(path.includes('/payments/pay_0_test'))return Response.json({id:'pay_0_test',customer:'cus_test',subscription:'sub_0_test',billingType:'UNDEFINED',value:17.91,dueDate:new Date().toISOString().slice(0,10),status});
+    if(path.includes('/payments/pay_0_test'))return Response.json({id:'pay_0_test',customer:'cus_test',subscription:'sub_0_test',billingType:'PIX',value:17.91,dueDate:new Date().toISOString().slice(0,10),status});
     if(path.includes('/subscriptions/sub_0_test')&&init?.method==='PUT'){updates++;return Response.json({id:'sub_0_test'});}
     throw Error('Unexpected Asaas request '+path);
   };
