@@ -279,8 +279,10 @@ test('cobrança Pix aceita somente pagamento Pix, nunca boleto pago nem cartão'
    assert.equal((await send('evt_pix_boleto_created','PAYMENT_CREATED')).status,200,
      'A criação de boleto de origem deve ser aceita sem bloquear a fila do webhook');
    paymentStatus='RECEIVED';
-   assert.equal((await send('evt_pix_boleto_paid','PAYMENT_RECEIVED')).status,409,
-     'Boleto pago não pode liberar assinatura contratada exclusivamente por Pix');
+   assert.equal((await send('evt_pix_boleto_paid','PAYMENT_RECEIVED')).status,200,
+     'Webhook de boleto deve ser reconhecido sem interromper a fila sequencial');
+   assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id=?").get(order).status,'review',
+     'Boleto pago deve ser encaminhado para revisão, sem liberar o plano');
    assert.equal(db.prepare('SELECT * FROM subscriptions WHERE user_id=?').get(user),undefined);
    method='PIX';
    assert.equal((await send('evt_pix_confirmed','PAYMENT_RECEIVED')).status,200);
