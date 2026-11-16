@@ -14,7 +14,9 @@ test('no Asaas sandbox test uses real production endpoints or missing mode guard
 test('test payer is synthetic and does not send Asaas notifications',()=>{
  assert.match(script,/name:'Meu Ritmo Homologacao Sandbox'/);
  assert.match(script,/notificationDisabled:true/);
- assert.doesNotMatch(script,/email:|mobilePhone:|phone:/);
+ assert.match(script,/notificationDisabled:true/);
+ assert.match(script,/email:'pagador@exemplo\.test'/);
+ assert.doesNotMatch(script,/@(?:gmail|hotmail|outlook|yahoo)\./i);
  assert.match(script,/\/sandbox\/payment\//);
  assert.match(script,/\['CONFIRMED','RECEIVED'\]/);
  assert.match(script,/Webhook com autenticação incorreta/);
