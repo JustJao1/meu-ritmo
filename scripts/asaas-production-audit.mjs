@@ -13,7 +13,7 @@ show('Produção: API Key registrada no GitHub',Boolean(key));
 show('Produção: formato de chave',!key?'ausente':key.startsWith('$aact_prod_')?'produção':key.startsWith('$aact_hmlg_')?'sandbox (incompatível)':'legado ou não identificado');
 show('Produção: token de webhook registrado',token.length>=32&&token.length<=255&&!/\s/.test(token));
 for(const k of ['ASAAS_WEBHOOK_READY','ASAAS_BILLING_ENABLED','ASAAS_CARD_CHECKOUT_ENABLED','ASAAS_PRODUCTION_CARD_APPROVED','EARLY_ACCESS_ENABLED'])
- show('Produção: '+k,flag(k));
+ show('Produção: '+k,e[k]==null||e[k]===''?'NÃO CADASTRADA':e[k]==='true'?'true':e[k]==='false'?'false':'valor não reconhecido');
 try{
  const response=await fetch('https://meuritmo.net/api/billing/status',{signal:AbortSignal.timeout(18000)});
  show('Site principal: conexão HTTP',response.status);
@@ -21,8 +21,10 @@ try{
   const body=await response.json();
   for(const k of ['mode','legalConfigured','configured','earlyAccess','manageAvailable','cardAvailable'])
    show('Site principal: '+k,String(body[k]));
-  if(typeof body.earlyAccess==='boolean'&&body.earlyAccess!==flag('EARLY_ACCESS_ENABLED'))
+  if(e.EARLY_ACCESS_ENABLED!==undefined&&e.EARLY_ACCESS_ENABLED!==''&&typeof body.earlyAccess==='boolean'&&body.earlyAccess!==flag('EARLY_ACCESS_ENABLED'))
    show('ATENÇÃO: acesso antecipado', 'GitHub e site publicado divergem; reavaliar após deploy');
+  if(!e.EARLY_ACCESS_ENABLED)
+   show('ACESSO ANTECIPADO', 'variável não cadastrada; o deploy usa true como padrão');
   if(body.mode!==e.ASAAS_MODE)
    show('ATENÇÃO: modo do Asaas', 'GitHub e site publicado divergem');
  }
