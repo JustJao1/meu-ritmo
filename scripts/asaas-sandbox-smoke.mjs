@@ -33,12 +33,12 @@ if(mode!=='sandbox'||!key.startsWith('$aact_hmlg_')){
    show('Webhook ativo',String(w.enabled===true));
    show('Fila interrompida',String(w.interrupted===true));
    const events=Array.isArray(w.events)?w.events:[];
-   const required=['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'];
+   const required=['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_AWAITING_RISK_ANALYSIS','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_PARTIALLY_REFUNDED','PAYMENT_REFUND_IN_PROGRESS','PAYMENT_CHARGEBACK_REQUESTED','PAYMENT_CHARGEBACK_DISPUTE','CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'];
    const missing=required.filter(e=>!events.includes(e));
    show('Eventos essenciais presentes',String(missing.length===0));
    show('Eventos ausentes no webhook',missing.length?missing.join(', '):'nenhum');
    show('Tipo de envio',w.sendType==='SEQUENTIALLY'?'sequencial':w.sendType==='NON_SEQUENTIALLY'?'paralelo':'não informado');
-   if(!w.enabled||w.interrupted||!['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'].every(e=>events.includes(e)))caution('Webhook precisa estar ativo e receber eventos de pagamento e reembolso.');
+   if(!w.enabled||w.interrupted||!['PAYMENT_CONFIRMED','PAYMENT_RECEIVED','PAYMENT_REFUNDED','PAYMENT_UPDATED','PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_AWAITING_RISK_ANALYSIS','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_PARTIALLY_REFUNDED','PAYMENT_REFUND_IN_PROGRESS','PAYMENT_CHARGEBACK_REQUESTED','PAYMENT_CHARGEBACK_DISPUTE','CHECKOUT_CREATED','CHECKOUT_PAID','CHECKOUT_CANCELED','CHECKOUT_EXPIRED','SUBSCRIPTION_CREATED'].every(e=>events.includes(e)))caution('Webhook precisa estar ativo e receber eventos de pagamento e reembolso.');
   }
  }catch(e){issue(e.message)}
  try{
