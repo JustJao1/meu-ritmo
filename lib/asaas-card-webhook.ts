@@ -73,7 +73,9 @@ export async function bindCardSubscription(supplied:string):Promise<string|null>
    c.first_price_cents===value&&
    c.plan_code.endsWith('_year')===(actual.cycle==='YEARLY')&&
    (actual.cycle==='MONTHLY'||actual.cycle==='YEARLY')&&
-   c.created_at>=time-86400&&c.created_at<=time+300&&
+   // Webhook delivery and replay may take longer than 24 hours. The API-side
+   // checkoutSession payment lookup below proves identity independently of age.
+   c.created_at<=time+300&&
    (!actual.externalReference||actual.externalReference===c.order_id)
  );
  // Asaas supports checkoutSession payment lookup: unlike matching only by
