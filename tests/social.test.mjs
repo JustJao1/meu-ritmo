@@ -210,6 +210,31 @@ test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago
   assert.equal(active.plan,'plus');assert.equal(active.status,'active');assert(active.valid_until>now+330*86400);
  }finally{globalThis.fetch=original;}
 });
+test('cancelar checkout hospedado pendente não gera cobrança nem libera acesso',async()=>{
+ const now=Math.floor(Date.now()/1000),order='99999999-9999-4999-8999-999999999999',checkoutId='10101010-1010-4010-8010-101010101010';
+ db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)")
+  .run(order,'no-charge','plus_month',1990,1990,'pending',now);
+ db.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
+  .run(order,checkoutId,'','ACTIVE',now,now);
+ const original=globalThis.fetch;
+ let cancellation=0;
+ globalThis.fetch=async(url,init)=>{
+  if(String(url).endsWith('/checkouts/'+checkoutId+'/cancel')&&init?.method==='POST'){
+   cancellation++;return Response.json({id:checkoutId,status:'CANCELED'});
+  }
+  throw Error('Unexpected Asaas request: '+url);
+ };
+ try{
+  who('no-charge');
+  const result=await request('cancel',{});
+  assert.equal(result.status,200);
+  assert.match((await result.json()).message,/cancelado/);
+  assert.equal(cancellation,1);
+  assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE order_id=?').get(order).status,'CANCELED');
+  assert.equal(db.prepare('SELECT status FROM asaas_orders WHERE id=?').get(order).status,'cancelled');
+  assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='no-charge'").get(),undefined);
+ }finally{globalThis.fetch=original;}
+});
 test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada',async()=>{
   const e=globalThis.__socialEnv;
   e.ASAAS_BILLING_ENABLED='true';
