@@ -22,7 +22,7 @@ A execução real do Sandbox registrou:
 2. A primeira fatura pendente também retornou `BOLETO`.
 3. A conversão da fatura com `PUT /payments/{id}` foi aceita: HTTP 200, fatura passou a `PIX`.
 4. A consulta de `GET /payments/{id}/pixQrCode`, **antes e após a conversão**, retornou HTTP 400 `invalid_action`: a conta não tem uma chave habilitada **para recebimentos de cobranças via Pix**.
-5. O Sandbox lista **duas chaves Pix em estado ACTIVE**, mas elas não estão habilitadas para este tipo de recebimento na conta. A criação de QR continua bloqueada.
+5. Na consulta original, o Sandbox listou duas chaves `ACTIVE`. A conferência posterior comparou os valores com o painel e confirmou as mesmas três chaves. No teste ampliado às 13h30 (Brasília), a API já listou quatro chaves `ACTIVE`. A existência e o estado das chaves estão comprovados; não está comprovada a razão interna da recusa do QR dinâmico.
 6. A conta **de produção lista zero chaves Pix** por `GET /pix/addressKeys`. Isso impede declarar a integração pronta para cobranças reais.
 
 Evidências:
@@ -31,9 +31,21 @@ Evidências:
 - [Documentação Asaas: QR Code Pix](https://docs.asaas.com/reference/obter-qr-code-para-pagamentos-via-pix)
 - [Ajuda Asaas: habilitar/desabilitar Pix por cobrança](https://central.ajuda.asaas.com/hc/pt-br/articles/54589020383643-Como-desabilitar-o-recebimento-por-Pix-nas-cobran%C3%A7as-do-Asaas)
 
-## Pendência no painel Asaas (titular da conta)
+## Diagnóstico ampliado de QR Pix (16/11/2026, 13h30 Brasília)
 
-Verificar em **Minha conta → Configurações → Configurações do sistema** se **Disponibilizar recebimento por Pix** está **Habilitado**, em ambos os ambientes. Esta configuração não tem endpoint público de alteração documentado; não tentar reproduzir chamadas privadas do painel.
+- A conta Sandbox aberta no painel corresponde às chaves retornadas pela credencial do ambiente de testes do GitHub.
+- O controle **Disponibilizar recebimento de cobranças por Pix** já estava habilitado. Foi desabilitado e reabilitado somente no Sandbox; o erro persistiu no teste seguinte. Não atribuir a falha a esse controle estar desligado.
+- Uma cobrança avulsa solicitada e persistida como `PIX` também recebeu HTTP 400 no QR dinâmico. Portanto, a falha não é exclusiva da assinatura nem da conversão de boleto.
+- O endpoint de QR estático retornou HTTP 200, payload e imagem para cada uma das quatro chaves ativas. Os QRs de teste foram removidos e as cobranças de teste canceladas.
+- A assinatura voltou como `BOLETO`; sua conversão para `PIX` foi aceita, porém o QR dinâmico continuou recusado.
+- A causa interna da inconsistência permanece sem comprovação. Não afirmar que todas as chaves estão desabilitadas ou que a integração foi homologada.
+- QR estático tem conciliação diferente: o pagamento cria uma cobrança nova, associada a `pixQrCodeId`, sem vínculo prévio ao pagador e à assinatura. Não substituir o QR dinâmico no aplicativo sem implementar e homologar esse vínculo e os eventos de pagamento/estorno. Exibir um QR isolado não conclui a integração.
+
+Evidência do teste ampliado: https://github.com/JustJao1/meu-ritmo/actions/runs/43908142130
+
+## Pendências de ativação
+
+No Sandbox, **Minha conta → Configurações → Configurações do sistema → Disponibilizar recebimento de cobranças por Pix** foi conferido habilitado. Em produção, conferir separadamente esse controle. Esta configuração não tem endpoint público de alteração documentado; não tentar reproduzir chamadas privadas do painel.
 
 Na conta **de produção**, cadastrar e ativar uma chave Pix legítima em **Pix → Minhas chaves**. A API indica zero chaves atualmente. Não inventar CPF/CNPJ, telefone, e-mail ou chave do titular. Uma EVP aleatória pode ser criada pelo titular se desejado, observando as regras e requisitos cadastrais da conta.
 
