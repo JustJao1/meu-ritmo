@@ -1,0 +1,25 @@
+name: Homologar Pix recorrente no Asaas Sandbox
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-pix-sandbox-e2e.mjs'
+      - '.github/workflows/asaas-pix-sandbox.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pix_sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    environment: sandbox
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Homologar Pix e converter cobrança sintética com API Sandbox
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: node scripts/asaas-pix-sandbox-e2e.mjs
