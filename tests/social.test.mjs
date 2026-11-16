@@ -255,6 +255,40 @@ test('checkout expirado pelo Asaas não libera plano nem aceita confirmação ta
  assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id=?").get(order).status,'cancelled');
 });
 
+test('cobrança Pix aceita somente pagamento Pix, nunca boleto pago nem cartão',async()=>{
+ const now=Math.floor(Date.now()/1000),order='45454545-4545-4454-8454-111111111111';
+ const sub='sub_pix_only_order',paymentId='pay_pix_only_order',customer='cus_pix_only_order',user='pix-only-user';
+ db.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?)').run(user,customer,now);
+ db.prepare("INSERT INTO asaas_orders(id,user_id,provider_subscription_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?,?)")
+   .run(order,user,sub,'plus_month',1990,1990,'pending',now);
+ db.prepare('INSERT INTO asaas_order_consents(order_id,user_id,policy_version,payment_method,first_price_cents,renewal_price_cents,accepted_at) VALUES (?,?,?,?,?,?,?)')
+   .run(order,user,'2026-11-15','PIX',1990,1990,now);
+ const old=globalThis.fetch;
+ let method='BOLETO',paymentStatus='PENDING';
+ globalThis.fetch=async url=>{
+   if(String(url).endsWith('/payments/'+paymentId))return Response.json({
+     id:paymentId,customer,subscription:sub,billingType:method,value:19.9,
+     dueDate:new Date().toISOString().slice(0,10),status:paymentStatus});
+   throw Error('Unexpected provider request '+url);
+ };
+ const send=(id,event)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{
+   method:'POST',headers:{'asaas-access-token':'a'.repeat(48),'Content-Type':'application/json'},
+   body:JSON.stringify({id,event,payment:{id:paymentId}})
+ }));
+ try{
+   assert.equal((await send('evt_pix_boleto_created','PAYMENT_CREATED')).status,200,
+     'A criação de boleto de origem deve ser aceita sem bloquear a fila do webhook');
+   paymentStatus='RECEIVED';
+   assert.equal((await send('evt_pix_boleto_paid','PAYMENT_RECEIVED')).status,409,
+     'Boleto pago não pode liberar assinatura contratada exclusivamente por Pix');
+   assert.equal(db.prepare('SELECT * FROM subscriptions WHERE user_id=?').get(user),undefined);
+   method='PIX';
+   assert.equal((await send('evt_pix_confirmed','PAYMENT_RECEIVED')).status,200);
+   const active=db.prepare('SELECT plan,status FROM subscriptions WHERE user_id=?').get(user);
+   assert.equal(active.plan,'plus');assert.equal(active.status,'active');
+ }finally{globalThis.fetch=old;}
+});
+
 test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada',async()=>{
   const e=globalThis.__socialEnv;
   e.ASAAS_BILLING_ENABLED='true';
