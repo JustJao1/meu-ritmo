@@ -1,0 +1,31 @@
+name: Auditar cadastros e chaves Asaas de produção
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-production-audit.mjs'
+      - '.github/workflows/asaas-production-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit_prod:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validar registro dos segredos e configurações sem realizar cobranças
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+          ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}
+          ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY }}
+          ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED }}
+          ASAAS_CARD_CHECKOUT_ENABLED: ${{ vars.ASAAS_CARD_CHECKOUT_ENABLED }}
+          ASAAS_PRODUCTION_CARD_APPROVED: ${{ vars.ASAAS_PRODUCTION_CARD_APPROVED }}
+          EARLY_ACCESS_ENABLED: ${{ vars.EARLY_ACCESS_ENABLED }}
+        run: node scripts/asaas-production-audit.mjs
