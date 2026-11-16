@@ -98,8 +98,15 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
 test('Checkout de cart찾o vincula assinatura ao pedido e s처 libera Pro ap처s pagamento confirmado',async()=>{
  const e=globalThis.__socialEnv,prevFetch=globalThis.fetch;
  const checkoutId='aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
+ // Historical card checkouts must still process refunds and late webhooks,
+ // even though new card purchases are disabled.
+ const historicalOrder='12121212-1212-4212-8212-121212121212',now=Math.floor(Date.now()/1000);
+ db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)")
+  .run(historicalOrder,'alice','pro_month',2990,2990,'pending',now);
+ db.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
+  .run(historicalOrder,checkoutId,'','ACTIVE',now,now);
  const card=db.prepare('SELECT c.order_id,c.customer_id FROM asaas_card_checkouts c WHERE c.checkout_id=?').get(checkoutId);
- assert(card&&card.customer_id==='','Checkout novo n찾o deve cadastrar pagador antes da compra');
+ assert(card&&card.customer_id==='','Checkout hist처rico sem pagador permanece seguro');
  const subscription='sub_card_alice',paymentId='pay_card_alice',payerId='cus_test_2';
  let paymentStatus='PENDING';
  globalThis.fetch=async url=>{
