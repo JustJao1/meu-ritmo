@@ -241,6 +241,39 @@ try{
   console.warn('::warning title=Estorno do Asaas Sandbox pendente::O teste do estorno não concluiu. Não habilite cobranças reais antes de validar reembolso integral, parcial e conciliação.');
  log('RESULTADO',refundResult==='reconciliado no Worker'?'Assinatura, webhook, cancelamento e estorno homologados':'Assinatura simulada, webhook e cancelamento homologados; cobrança inicial é boleto e estorno recorrente requer conferência');
  
+ // Separate API-side card test with official Sandbox-only test numbers.
+ // Hosted recurring Checkout still requires a browser journey to validate.
+ try{
+  const sampleYear=String(new Date().getUTCFullYear()+3);
+  const holder={name:'Pagador Teste Sandbox',email:'pagador@exemplo.test',
+   cpfCnpj:'24971563792',postalCode:'01001000',addressNumber:'100',
+   addressComplement:'Teste',phone:'11999999999',mobilePhone:'11999999999'};
+  async function cardAttempt(number){
+   const resp=await fetch(base+'/payments',{
+    method:'POST',headers:{access_token:e.ASAAS_API_KEY,Accept:'application/json',
+      'Content-Type':'application/json','User-Agent':'MeuRitmo-Sandbox-E2E/1.0'},
+    body:JSON.stringify({customer:customer.id,billingType:'CREDIT_CARD',value:7.91,
+      dueDate:new Date().toISOString().slice(0,10),
+      description:'Homologacao de cartao avulso, apenas Sandbox',
+      creditCard:{holderName:'Pagador Teste Sandbox',number,expiryMonth:'12',expiryYear:sampleYear,ccv:'123'},
+      creditCardHolderInfo:holder
+    }),signal:AbortSignal.timeout(45000)
+   });
+   const result=await resp.json().catch(()=>({}));
+   return {http:resp.status,status:typeof result.status==='string'?result.status:'não informado',
+     id:typeof result.id==='string'?result.id:null};
+  }
+  const accepted=await cardAttempt('4444444444444444');
+  log('Cartão aprovado Sandbox API',accepted.http+' / '+accepted.status);
+  const declined=await cardAttempt('5184019740373151');
+  log('Cartão recusado Sandbox API',declined.http+' / '+declined.status);
+  if(![200,201].includes(accepted.http)||!['CONFIRMED','RECEIVED'].includes(accepted.status))
+   console.warn('::warning title=Cartão Sandbox pendente::A API não confirmou o cartão fictício de aprovação.');
+  if([200,201].includes(declined.http)&&['CONFIRMED','RECEIVED'].includes(declined.status))
+   fail('Um cartão fictício designado para recusa foi aprovado no Sandbox.');
+ }catch(err){
+  console.warn('::warning title=Cartão Sandbox pendente::A transação fictícia não foi totalmente homologada.');
+ }
  // Test the hosted recurring card Checkout with a synthetic payer, without
  // providing a card number or completing a card payment. Only Sandbox.
  const cardOrderId=randomUUID();
