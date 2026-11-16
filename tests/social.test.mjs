@@ -325,7 +325,7 @@ test('estorno da renovação não retira o período anterior pago, e estorno tot
   throw Error('Unexpected provider call '+url);
  };
  let eventCount=0;
- const webhook=(paymentId)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json','asaas-access-token':'a'.repeat(48)},body:JSON.stringify({id:'evt_cora_'+(++eventCount),event:'PAYMENT_UPDATED',payment:{id:paymentId}})}));
+ const webhook=(paymentId)=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{method:'POST',headers:{'Content-Type':'application/json','asaas-access-token':'a'.repeat(48)},body:JSON.stringify({id:'evt_cora_'+(++eventCount),event:paymentStatuses.get(paymentId)==='RECEIVED'?'PAYMENT_RECEIVED':paymentStatuses.get(paymentId)==='PARTIALLY_REFUNDED'?'PAYMENT_PARTIALLY_REFUNDED':'PAYMENT_REFUNDED',payment:{id:paymentId}})}));
  try{
   assert.equal((await webhook('pay_corafirst')).status,200);
   const firstUntil=db.prepare("SELECT valid_until FROM subscriptions WHERE user_id='cora'").get().valid_until;
