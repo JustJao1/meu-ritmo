@@ -1,82 +1,63 @@
-# Integração Asaas: ativação controlada do Meu Ritmo
+# Pagamentos do MR: Meu Ritmo — somente Pix
 
-**Durante a homologação, descontos promocionais na primeira cobrança são aceitos apenas com Pix.** A documentação do Asaas exige tokenização para alterar o valor de assinaturas com cartão; só habilite cupom em cartão depois de validar esse requisito e os testes de renovação, sem cobrar o valor errado nem bloquear um benefício pago. <https://docs.asaas.com/reference/atualizar-assinatura-existente>\n\nO checkout oferece **somente Pix ou cartão de crédito**. O cliente escolhe o método antes de prosseguir e o servidor envia exclusivamente `PIX` ou `CREDIT_CARD` ao Asaas; `BOLETO` e `UNDEFINED` são rejeitados. Plus e Pro possuem assinaturas mensais e anuais. O cupom desconta somente a primeira cobrança e a recorrência retorna ao valor normal. Isso não é Pix Automático: cada renovação Pix precisa ser paga; no cartão, a cobrança pode ser automática.
+Atualizado em 16/11/2026. Este documento descreve a configuração vigente do site principal e do Sandbox isolado. **Não habilitar cobranças reais até obter um QR Code Pix válido e testar o recebimento por webhook.**
 
-### Checkout hospedado para cartão (em homologação)
+## Funcionamento implementado
 
-O fluxo de cartão usa o Checkout hospedado do Asaas (`POST /v3/checkouts`), com `CREDIT_CARD` e `RECURRENT`. O servidor grava `checkout_id` em `asaas_card_checkouts` e associa a assinatura ao pedido após um evento `SUBSCRIPTION_CREATED` validado na API. **Nem o retorno do Checkout, nem `CHECKOUT_PAID`, nem `SUBSCRIPTION_CREATED` liberam planos sozinhos**: os benefícios são liberados somente após consultar uma cobrança realmente confirmada no Asaas.
+- O usuário pode solicitar apenas `paymentMethod=PIX`. A API rejeita `CREDIT_CARD`, `BOLETO`, `UNDEFINED` ou um método ausente. A opção de cartão foi removida da interface.
+- Plus e Pro mantêm planos mensais e anuais. Pix convencional **não é Pix Automático**: cada renovação precisa ser paga novamente.
+- O servidor solicita uma assinatura `PIX` ao Asaas. O Sandbox, no entanto, a devolveu como `BOLETO`. O servidor converte a cobrança individual para `PIX` via `PUT /payments/{id}` e só permite prosseguir quando o provedor retorna um QR Code Pix verificável.
+- A URL da fatura hospedada pelo Asaas não é oferecida ao usuário, pois ela poderia mostrar boleto. O Meu Ritmo utiliza a página própria `/pagar?pedido=<uuid>`, com QR Code e código Pix Copia e Cola obtidos diretamente pela API Asaas.
+- O endpoint `POST /api/billing/pix` exige autenticação, mesma origem, pedido pertencente ao usuário, assinatura/cliente associados no Asaas e valor esperado. Ele nunca retorna dados de pagamento de outros usuários. Se o QR falhar, responde sem oferecer boleto ou cartão.
+- O botão Consultar fatura/assinatura abre essa mesma página Pix, inclusive para renovações. Checkouts de cartão históricos continuam conciliáveis para tratamento de eventos e estornos, mas não podem ser reabertos para novas compras.
+- O webhook só libera o plano depois de consultar a cobrança confirmada e vinculada à assinatura, ao valor e ao pagador corretos. Para contratos com consentimento Pix, boleto pago sem evidência de liquidação Pix **não ativa o plano** e é marcado para revisão, sem interromper a fila sequencial.
+- O cancelamento impede novas renovações, preservando o acesso já pago conforme a política vigente.
+- A interface da compra e a página Pix oferecem suporte a português (Brasil), inglês e espanhol.
 
-A rota de cartão permanece bloqueada na produção por padrão. Para uma futura ativação após homologação, exige **duas autorizações explícitas e independentes**: `ASAAS_CARD_CHECKOUT_ENABLED=true` e `ASAAS_PRODUCTION_CARD_APPROVED=true`, além de credenciais, webhook, termos e autorização geral de cobrança. No Sandbox isolado, requer simultaneamente `ASAAS_MODE=sandbox`, `ASAAS_BILLING_ENABLED=true`, `ASAAS_WEBHOOK_READY=true` e `ASAAS_CARD_CHECKOUT_ENABLED=true`. No GitHub, a flag de testes vem de `SANDBOX_ASAAS_CARD_CHECKOUT_ENABLED` e permanece `false` por padrão. Não habilite o cartão antes de configurar e confirmar os webhooks `CHECKOUT_CREATED`, `CHECKOUT_PAID`, `CHECKOUT_CANCELED`, `CHECKOUT_EXPIRED` e `SUBSCRIPTION_CREATED`, além dos eventos `PAYMENT_*` necessários.
+## Resultado da homologação real
 
-**Ressalva identificada em homologação:** apesar de uma assinatura ser solicitada com `billingType=PIX`, o Asaas Sandbox retornou `billingType=BOLETO` na fatura recorrente. A cobrança simulada foi confirmada pelo endpoint de homologação, mas isso **não comprova uma operação Pix autêntica**; o Asaas recusou o estorno com a justificativa de que somente Pix e cartão são estornáveis por essa API. A produção deve permanecer bloqueada até conferir o meio real de pagamento, como será efetuado o reembolso dessa fatura e como funciona a renovação. O plano não pode ser liberado por mera criação de boleto ou checkout. A homologação de cobrança Pix avulsa e seu reembolso é distinta da assinatura recorrente.
+A execução real do Sandbox registrou:
 
-**Auditoria de 16/11/2026:** o Asaas Sandbox confirmou e persistiu 19 pagamentos feitos com os dois cartões que sua própria documentação designa como **recusados** (10 Mastercard, 9 Visa), além de 10 pagamentos com o cartão de aprovação. Os 29 registros foram confirmados por consulta individual `GET /payments/{id}`, com número mascarado e bandeira correspondentes aos dados enviados. Os webhooks financeiros também foram encontrados no D1. Isso é uma divergência reproduzida **no provedor**, não um status apenas exibido pelo Meu Ritmo. **O fluxo completo de cartão no Checkout hospedado ainda não foi testado com cartão recusado.** Consulte [o diagnóstico com evidências](./asaas-cartao-diagnostico-2026-11-16.md). O cartão de produção não deve ser liberado por esta homologação incompleta.
+1. A assinatura solicitada como `PIX` retornou `billingType=BOLETO`.
+2. A primeira fatura pendente também retornou `BOLETO`.
+3. A conversão da fatura com `PUT /payments/{id}` foi aceita: HTTP 200, fatura passou a `PIX`.
+4. A consulta de `GET /payments/{id}/pixQrCode`, **antes e após a conversão**, retornou HTTP 400 `invalid_action`: a conta não tem uma chave habilitada **para recebimentos de cobranças via Pix**.
+5. O Sandbox lista **duas chaves Pix em estado ACTIVE**, mas elas não estão habilitadas para este tipo de recebimento na conta. A criação de QR continua bloqueada.
+6. A conta **de produção lista zero chaves Pix** por `GET /pix/addressKeys`. Isso impede declarar a integração pronta para cobranças reais.
 
-A criação e o cancelamento de um checkout sintético são verificados no Sandbox sem inserir cartão. Aprovação, recusa, renovação, estorno e identificação de assinatura em checkout real ainda exigem homologação própria com cartões de teste. Um erro na conciliação não autoriza ativação manual ou automática de benefícios.
+Evidências:
+- [Teste Pix Sandbox e erro detalhado](https://github.com/JustJao1/meu-ritmo/actions/runs/43875879401)
+- [Chaves Pix de produção — auditoria somente leitura](https://github.com/JustJao1/meu-ritmo/actions/runs/43877687864)
+- [Documentação Asaas: QR Code Pix](https://docs.asaas.com/reference/obter-qr-code-para-pagamentos-via-pix)
+- [Ajuda Asaas: habilitar/desabilitar Pix por cobrança](https://central.ajuda.asaas.com/hc/pt-br/articles/54589020383643-Como-desabilitar-o-recebimento-por-Pix-nas-cobran%C3%A7as-do-Asaas)
 
-## 1. Configurar ambientes separados
+## Pendência no painel Asaas (titular da conta)
 
-Em **GitHub → JustJao1/meu-ritmo → Settings → Secrets and variables → Actions**, ambiente `production` usado pelo workflow `Publicar Meu Ritmo`:
+Verificar em **Minha conta → Configurações → Configurações do sistema** se **Disponibilizar recebimento por Pix** está **Habilitado**, em ambos os ambientes. Esta configuração não tem endpoint público de alteração documentado; não tentar reproduzir chamadas privadas do painel.
 
-| Tipo | Nome | Valor |
-|---|---|---|
-| Secret | `ASAAS_API_KEY` | Chave real do ambiente (nunca adicionar ao repositório) |
-| Secret | `ASAAS_WEBHOOK_TOKEN` | Mesmo token de autenticação configurado no webhook Asaas (32–255 caracteres, sem espaços) |
-| Variable | `ASAAS_MODE` | `sandbox` para homologação ou `production` para vendas reais |
-| Variable | `ASAAS_WEBHOOK_READY` | `true` somente quando houver entregas autenticadas e válidas |
-| Variable | `ASAAS_BILLING_ENABLED` | `false` até finalizar os testes; `true` para habilitar novas contratações |
-| Variable | `EARLY_ACCESS_ENABLED` | `true` enquanto houver acesso antecipado; `false` no lançamento das vendas |
+Na conta **de produção**, cadastrar e ativar uma chave Pix legítima em **Pix → Minhas chaves**. A API indica zero chaves atualmente. Não inventar CPF/CNPJ, telefone, e-mail ou chave do titular. Uma EVP aleatória pode ser criada pelo titular se desejado, observando as regras e requisitos cadastrais da conta.
 
-As chaves do Sandbox e Produção são diferentes e não devem ser reutilizadas entre ambientes. Em novas chaves, o prefixo de produção é `$aact_prod_` e o de Sandbox é `$aact_hmlg_`. A aplicação bloqueia chaves novas com prefixo incompatível.
+Após a ativação, repetir o teste Sandbox e confirmar `pixQrCode` HTTP 200, `payload` e `encodedImage` válidos. Confirmar também o funcionamento real em produção, preferencialmente com cobrança de valor conhecido autorizada pelo titular, e a liquidação/conciliação webhook.
 
-A interface mostra as pendências em **Administração → Lançamento**, incluindo o botão **Testar conexão Asaas (sem cobrança)**. Esse teste realiza um `GET` de leitura, sem cadastrar clientes ou gerar faturas.
+## Variáveis de produção
 
-## 2. Configurar o webhook no Asaas
+Estas configurações já foram auditadas:
+- Chave da API de produção: presente e autenticando corretamente.
+- Webhook de produção: registrado, ativo, endereço `https://meuritmo.net/api/billing/webhook/asaas`, versão 3 e eventos de pagamento, checkout, recusa e estorno configurados.
+- Identificação comercial na produção: completa.
+- `ASAAS_MODE=production`.
+- `ASAAS_BILLING_ENABLED=false` — manter até provar geração, pagamento e liberação de Pix.
+- `EARLY_ACCESS_ENABLED` ausente no GitHub: deploy assume `true`, portanto o acesso antecipado continua liberando Pro e bloqueando novas assinaturas.
+- `ASAAS_CARD_CHECKOUT_ENABLED` e `ASAAS_PRODUCTION_CARD_APPROVED`: não habilitar; o endpoint de contratação aceita exclusivamente Pix, independentemente destas flags.
 
-No ambiente correspondente, acesse **Integrações → Webhooks**.
+A alteração da campanha `EARLY_ACCESS_ENABLED` afeta os usuários com Pro gratuito. Não desativá-la só para testar cobrança.
 
-- URL final: `https://meuritmo.net/api/billing/webhook/asaas`
-- Método recebido: `POST`
-- Token de autenticação: exatamente o valor salvo em `ASAAS_WEBHOOK_TOKEN` (não use a API Key como token)
-- Envio: preferencialmente `SEQUENTIALLY` para preservar a ordem
-- Eventos essenciais: `PAYMENT_CREATED`, `PAYMENT_UPDATED`, `PAYMENT_CONFIRMED`, `PAYMENT_RECEIVED`, `PAYMENT_OVERDUE`, `PAYMENT_REFUNDED` e eventos de chargeback disponíveis
-- Configure um e-mail para avisos e acompanhe os **Logs de Webhooks**.
+## Quando estiver pronto para lançamento
 
-O servidor verifica o header `asaas-access-token` e consulta o pagamento diretamente pela API antes de liberar qualquer benefício. Eventos repetidos são ignorados. Uma cobrança criada não equivale a pagamento confirmado.
+1. Habilitar recebimento Pix e ativar uma chave Pix na conta real do Asaas.
+2. Homologar com QR válido e evento real de confirmação na conta Sandbox; validar cancelamento, renovação e acesso.
+3. Confirmar dados comerciais, preços, política de cancelamento e suporte ao consumidor.
+4. Encerrar acesso antecipado quando autorizado pelo titular (`EARLY_ACCESS_ENABLED=false`) e habilitar cobrança geral (`ASAAS_BILLING_ENABLED=true`); redeploy e monitoramento.
+5. Não habilitar cartões nem boletos.
 
-## 3. Homologar antes de vender
-
-Teste com dados e chave exclusivamente do Sandbox:
-
-1. Criar um cliente de teste e contratar Plus mensal sem cupom.
-2. Escolher Pix e criar uma assinatura com `billingType=PIX`; abrir a fatura do Asaas. Repetir com cartão de crédito usando `billingType=CREDIT_CARD`.
-3. Confirmar Pix ou cartão no Sandbox e verificar entrega do webhook, atualização de `subscriptions` e liberação do benefício.
-4. Tentar enviar `BOLETO`, `UNDEFINED` ou omitir o meio de pagamento diretamente na API do Meu Ritmo: todas as tentativas devem ser rejeitadas antes de chamar o Asaas. Cobranças Pix pendentes não podem liberar uma assinatura.
-5. Contratar usando cupom válido; confirmar desconto apenas na primeira cobrança e preço padrão na renovação seguinte.
-6. Validar cupons vencidos, limite de usos, código inválido e tentativas simultâneas.
-7. Cancelar a renovação; confirmar ausência de novas cobranças e preservação do período já pago.
-8. Simular reenvio de eventos, estorno e chargeback; confirmar que não há duplicação e o benefício é revisto conforme o pagamento. Testar também estorno parcial, estorno de renovação mantendo o período anterior pago, fatura paga após o cancelamento e evento atrasado de assinatura antiga.
-9. Testar um código inválido e um token de webhook incorreto: ambos devem ser rejeitados.
-10. Conferir resultados em dois usuários para garantir que faturas e planos não se misturam.
-
-A integração atual não cria novas cobranças por boleto. Uma cobrança antiga já criada diretamente no Asaas, se existir, deve ser tratada conforme seu histórico, sem bloquear conciliação ou reembolso.
-
-## 4. Habilitar produção
-
-Somente depois dos testes reais, da revisão de termos, privacidade, política de cancelamento/reembolso e da configuração correta dos dados comerciais:
-
-1. Instale a **chave de produção** e um **novo token de produção** em Secrets.
-2. Configure o webhook na conta Asaas de produção e verifique entregas autenticadas.
-3. Ajuste `ASAAS_MODE=production` e `ASAAS_WEBHOOK_READY=true`.
-4. Mantenha `ASAAS_BILLING_ENABLED=false` até concluir a conferência.
-5. Ajuste `EARLY_ACCESS_ENABLED=false` somente quando for encerrar a campanha gratuita.
-6. Por último, ajuste `ASAAS_BILLING_ENABLED=true` e execute **Publicar Meu Ritmo** no GitHub Actions.
-7. Teste uma contratação legítima de valor conhecido e monitore conciliação, fatura e acesso do usuário.
-
-O workflow deixa novas cobranças **desativadas por padrão**. Não coloque chaves, CPF/CNPJ de pagadores ou dados de cartão nos logs, no frontend, no APK ou em mensagens.
-
-## 5. Se uma cobrança ficar presa em revisão
-
-Não gere novamente uma cobrança sem conferir seu pedido no Asaas. Um timeout pode ocorrer depois que o provedor já criou uma assinatura. Consulte o pedido e o identificador de assinatura, os logs do webhook e o painel Asaas antes de resolver a pendência.
-
-Referências: https://docs.asaas.com/reference/criar-nova-assinatura ; https://docs.asaas.com/docs/receba-eventos-do-asaas-no-seu-endpoint-de-webhook ; https://docs.asaas.com/docs/diferen%C3%A7a-entre-pix-autom%C3%A1tico-e-assinaturas-1
+**Importante:** não compartilhar chaves de API, tokens de webhook, chaves privadas ou dados completos de pagadores por chat, log ou repositório.
