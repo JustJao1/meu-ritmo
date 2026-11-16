@@ -30,6 +30,14 @@ test('hosted card checkout requests recurring billing without ever handling card
  assert(!JSON.stringify(p).includes('creditCardHolderInfo'));
  assert(!JSON.stringify(p).includes('ccv'));
 });
+test('hosted Checkout lets Asaas collect a new payer without sending an incomplete customer',()=>{
+ const {customerId,...data}=defaults;
+ const p=hostedCardCheckoutPayload(data);
+ assert.equal(Object.hasOwn(p,'customer'),false);
+ assert.equal(Object.hasOwn(p,'customerData'),false);
+ assert.equal(p.externalReference,data.orderId);
+ assert.equal(p.callback.cancelUrl,'https://meuritmo.net/app?billing=canceled');
+});
 test('yearly Pro uses yearly billing without weakening payment verification',()=>{
  const p=hostedCardCheckoutPayload({...defaults,plan:'pro_year',amountCents:19900});
  assert.equal(p.subscription.cycle,'YEARLY');
