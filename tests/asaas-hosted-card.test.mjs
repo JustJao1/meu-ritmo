@@ -40,7 +40,8 @@ test('reject invalid order, amount, customer, date and callback origin',()=>{
   {orderId:'invalid'}, {customerId:'cus_'},{amountCents:0},
   {amountCents:19.5},{nextDueDate:'2026-02-30 12:00:00'},
   {siteOrigin:'http://meuritmo.net/'},
-  {siteOrigin:'https://evil.example.com/path'}
+  {siteOrigin:'https://evil.example.com/path'},
+  {siteOrigin:'https://evil.example.com/'}
  ])assert.throws(()=>hostedCardCheckoutPayload({...defaults,...override}),JSON.stringify(override));
 });
 after(async()=>rm(folder,{recursive:true,force:true}));
