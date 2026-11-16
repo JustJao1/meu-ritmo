@@ -30,7 +30,8 @@ async function checkoutEvent(event:any){
     (state==='PAID'&&!customerId.test(checkout.customer||''))||
     (!row.customer_id&&state!=='PAID'&&checkout.customer!=null)||
     (checkout.externalReference&&checkout.externalReference!==row.order_id)||
-    !Array.isArray(checkout.billingTypes)||!checkout.billingTypes.includes('CREDIT_CARD')||
+    !Array.isArray(checkout.billingTypes)||
+    !checkout.billingTypes.some((type:unknown)=>type==='CREDIT_CARD'||type==='MUNDIPAGG_CIELO')||
     !Array.isArray(checkout.chargeTypes)||!checkout.chargeTypes.includes('RECURRENT')||
     checkout.status!==state)return Response.json({error:'Checkout divergente.'},{status:409});
  // Never roll a confirmed paid checkout back to ACTIVE/EXPIRED via delayed events.
