@@ -48,3 +48,4 @@ jobs:
           ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY || 'false' }}
           ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED || 'false' }}
           ASAAS_CARD_CHECKOUT_ENABLED: ${{ vars.ASAAS_CARD_CHECKOUT_ENABLED || 'false' }}
+          ASAAS_PRODUCTION_CARD_APPROVED: ${{ vars.ASAAS_PRODUCTION_CARD_APPROVED || 'false' }}
