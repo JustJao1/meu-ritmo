@@ -169,6 +169,61 @@ try{
  if(refundResult!=='reconciliado no Worker')
   console.warn('::warning title=Estorno do Asaas Sandbox pendente::O teste do estorno não concluiu. Não habilite cobranças reais antes de validar reembolso integral, parcial e conciliação.');
  log('RESULTADO',refundResult==='reconciliado no Worker'?'Pix, webhook, cancelamento e estorno homologados':'Pix, webhook e cancelamento homologados; estorno requer conferência');
+ 
+ // Test the hosted recurring card Checkout with a synthetic payer, without
+ // providing a card number or completing a card payment. Only Sandbox.
+ const cardOrderId=randomUUID();
+ const currentPlan=await query('SELECT plan,status,valid_until FROM subscriptions WHERE user_id=?',[userId]);
+ const beforeCard=JSON.stringify(currentPlan);
+ let hostedCheckoutId=null;
+ try{
+  const date=new Date(Date.now()+86400000).toISOString().slice(0,10)+' 12:00:00';
+  const checkout=await asaas('/checkouts','POST',{
+   billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT'],
+   minutesToExpire:10,externalReference:cardOrderId,
+   customer:customer.id,
+   callback:{
+    successUrl:worker+'/app?billing=awaiting_webhook',
+    cancelUrl:worker+'/app?billing=canceled',
+    expiredUrl:worker+'/app?billing=expired'
+   },
+   items:[{name:'MR: Meu Ritmo Pro',description:'Teste de assinatura mensal no Sandbox',quantity:1,value:29.90}],
+   subscription:{cycle:'MONTHLY',nextDueDate:date}
+  });
+  if(!uuid.test(checkout?.id||''))fail('Checkout de cartão não retornou ID válido.');
+  hostedCheckoutId=checkout.id;
+  const cardNow=Math.floor(Date.now()/1000);
+  await query("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)",
+   [cardOrderId,userId,'pro_month',2990,2990,'pending',cardNow]);
+  await query("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)",
+   [cardOrderId,hostedCheckoutId,customer.id,'ACTIVE',cardNow,cardNow]);
+  log('Checkout recorrente hospedado de cartão','criado no Asaas Sandbox sem dados de cartão');
+  const sendCardEvent=async(eventName,status)=>{
+   const response=await fetch(worker+'/api/billing/webhook/asaas',{
+    method:'POST',
+    headers:{'asaas-access-token':e.SANDBOX_ASAAS_WEBHOOK_TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({id:'evt_mr_card_'+randomUUID(),event:eventName,
+     checkout:{id:hostedCheckoutId,customer:customer.id,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}}),
+    signal:AbortSignal.timeout(20000)
+   });
+   if(!response.ok)fail('Webhook de checkout '+eventName+' retornou HTTP '+response.status);
+  };
+  await sendCardEvent('CHECKOUT_CREATED','ACTIVE');
+  await asaas('/checkouts/'+encodeURIComponent(hostedCheckoutId)+'/cancel','POST');
+  await sendCardEvent('CHECKOUT_CANCELED','CANCELED');
+  const states=await query('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?',[hostedCheckoutId]);
+  const orderState=await query('SELECT status,provider_subscription_id FROM asaas_orders WHERE id=?',[cardOrderId]);
+  if(states[0]?.status!=='CANCELED'||orderState[0]?.status!=='cancelled'||orderState[0]?.provider_subscription_id)
+   fail('Cancelamento do checkout de cartão não conciliou D1 corretamente.');
+  const afterCard=await query('SELECT plan,status,valid_until FROM subscriptions WHERE user_id=?',[userId]);
+  if(JSON.stringify(afterCard)!==beforeCard)fail('Checkout sem pagamento alterou indevidamente o plano do usuário.');
+  log('Checkout de cartão e cancelamento','homologados sem cobrança, plano preservado');
+ }finally{
+  if(hostedCheckoutId){
+   try{await asaas('/checkouts/'+encodeURIComponent(hostedCheckoutId)+'/cancel','POST')}catch{}
+  }
+ }
+
 }finally{
  // These records intentionally remain labelled in the isolated Sandbox D1:
  // later Asaas webhook redeliveries need the original order mapping to return 200.
