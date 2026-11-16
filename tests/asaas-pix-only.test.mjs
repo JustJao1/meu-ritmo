@@ -20,7 +20,7 @@ const state={
 globalThis.__testPix={
  state,getUser:async()=>state.user,
  env:{DB:{prepare(sql){return {bind(...values){return {async first(){if(sql.includes('FROM asaas_orders'))
-    return values[1]===state.user?.userId&&values[0]===orderId?state.order:null;
+    return values[1]==='pix-user'&&values[0]===orderId?state.order:null;
     if(sql.includes('FROM asaas_customers'))return state.customer;return null;}};}}}}},
  config:()=>({apiReady:true}),
  request:async(path,opts={})=>{
