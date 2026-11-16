@@ -117,6 +117,52 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
     assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(cardResult.orderId).provider_subscription_id,null);
   }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';e.ASAAS_CARD_CHECKOUT_ENABLED='false';}
 });
+test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pagamento confirmado',async()=>{
+ const e=globalThis.__socialEnv,prevFetch=globalThis.fetch;
+ const checkoutId='aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
+ const card=db.prepare('SELECT c.order_id,c.customer_id FROM asaas_card_checkouts c WHERE c.checkout_id=?').get(checkoutId);
+ assert(card&&card.customer_id==='cus_test_2','Checkout hospedado do teste anterior precisa estar armazenado');
+ const subscription='sub_card_alice',paymentId='pay_card_alice';
+ let paymentStatus='PENDING';
+ globalThis.fetch=async url=>{
+  const link=String(url);
+  if(link.endsWith('/subscriptions/'+subscription))return Response.json({
+    id:subscription,customer:card.customer_id,billingType:'CREDIT_CARD',
+    value:29.9,cycle:'MONTHLY',externalReference:null,status:'ACTIVE',deleted:false
+  });
+  if(link.endsWith('/payments/'+paymentId))return Response.json({
+    id:paymentId,customer:card.customer_id,subscription,billingType:'CREDIT_CARD',
+    value:29.9,dueDate:new Date(Date.now()+86400000).toISOString().slice(0,10),status:paymentStatus
+  });
+  throw Error('Unexpected card provider call: '+link);
+ };
+ const notify=(id,event,payload={})=>api.webhook.POST(new Request('https://test.example/api/billing/webhook/asaas',{
+  method:'POST',headers:{'asaas-access-token':'a'.repeat(48),'Content-Type':'application/json'},
+  body:JSON.stringify({id,event,...payload})
+ }));
+ const checkout=(customer,status)=>({checkout:{id:checkoutId,customer,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}});
+ try{
+  // A forged event must not mutate an order belonging to another Asaas customer.
+  assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout('cus_other','PAID'))).status,409);
+  assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).status,'ACTIVE');
+  assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout(card.customer_id,'PAID'))).status,200);
+  assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).status,'PAID');
+  assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'Checkout redirect/event must not grant Pro');
+  assert.equal((await notify('evt_card_subscription','SUBSCRIPTION_CREATED',{subscription:{id:subscription}})).status,200);
+  assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(card.order_id).provider_subscription_id,subscription);
+  assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'Subscription creation must not grant Pro');
+  assert.equal((await notify('evt_card_pending','PAYMENT_UPDATED',{payment:{id:paymentId}})).status,200);
+  assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'Pending card invoice must not grant Pro');
+  paymentStatus='RECEIVED';
+  assert.equal((await notify('evt_card_paid','PAYMENT_RECEIVED',{payment:{id:paymentId}})).status,200);
+  assert.equal((await notify('evt_card_paid','PAYMENT_RECEIVED',{payment:{id:paymentId}})).status,200,'Repeat event is idempotent');
+  const active=db.prepare("SELECT plan,status,valid_until FROM subscriptions WHERE user_id='alice'").get();
+  assert.equal(active.plan,'pro');assert.equal(active.status,'active');assert(active.valid_until>Math.floor(Date.now()/1000));
+  paymentStatus='REFUNDED';
+  assert.equal((await notify('evt_card_refund','PAYMENT_REFUNDED',{payment:{id:paymentId}})).status,200);
+  assert.equal(db.prepare("SELECT status FROM subscriptions WHERE user_id='alice'").get().status,'canceled');
+ }finally{globalThis.fetch=prevFetch;e.ASAAS_BILLING_ENABLED='false';}
+});
 test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada',async()=>{
   const e=globalThis.__socialEnv;
   e.ASAAS_BILLING_ENABLED='true';
