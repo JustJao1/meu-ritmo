@@ -54,6 +54,16 @@ export function asaasConfig() {
   return {mode,baseUrl,enabled,apiReady,webhookReady,keyMatchesMode,key,webhookToken:token};
 }
 
+/** Card checkout is disabled by default, including in production.
+ * Production requires a separate explicit go-live approval after the provider
+ * has been validated. An ordinary billing flag never authorizes cards.
+ */
+export function asaasCardCheckoutReady(){
+  const c=asaasConfig(),e=environment();
+  return c.enabled&&e.ASAAS_CARD_CHECKOUT_ENABLED==='true'&&
+    (c.mode==='sandbox'||e.ASAAS_PRODUCTION_CARD_APPROVED==='true');
+}
+
 function endpoint(path:string) {
   if (!/^\/[a-zA-Z0-9/_-]+(?:\?[a-zA-Z0-9_=&%-]+)?$/.test(path) || path.includes('..')) {
     throw new Error('Endpoint Asaas inválido.');
