@@ -1,8 +1,8 @@
 {
   "available": true,
-  "version": "0.1.1-dev",
+  "version": "1.0.1",
   "minAndroid": "8.0",
-  "url": "https://github.com/JustJao1/meu-ritmo-lite/releases/download/v0.1.1-dev/meu-ritmo-lite-0.1.1-dev.apk",
-  "sha256": "d14aad4f48aeebce05cd82e4fd46988c73808f53694041eafa004229801dc12d",
-  "size": 440070
+  "url": "https://github.com/JustJao1/meu-ritmo-app/releases/download/v1.0.1/Meu-Ritmo-1.0.1.apk",
+  "sha256": "7c2ac22c23a35ca451dc8ca1389cf0a1e6a0a6cc504d4ff8d294080a97d0e6e3",
+  "size": 438545
 }
