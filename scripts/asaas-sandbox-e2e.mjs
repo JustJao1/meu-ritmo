@@ -166,6 +166,8 @@ try{
   else throw error;
  }
  log('Estorno Pix Sandbox',refundResult);
+ if(refundResult!=='reconciliado no Worker')
+  console.warn('::warning title=Estorno do Asaas Sandbox pendente::O teste do estorno não concluiu. Não habilite cobranças reais antes de validar reembolso integral, parcial e conciliação.');
  log('RESULTADO',refundResult==='reconciliado no Worker'?'Pix, webhook, cancelamento e estorno homologados':'Pix, webhook e cancelamento homologados; estorno requer conferência');
 }finally{
  // These records intentionally remain labelled in the isolated Sandbox D1:
