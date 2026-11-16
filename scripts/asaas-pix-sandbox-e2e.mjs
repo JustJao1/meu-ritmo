@@ -24,6 +24,19 @@ try{
   cpfCnpj:'24971563792',email:'teste.pix.'+randomUUID().slice(0,10)+'@example.com',
   mobilePhone:'11987654321',externalReference:ref,notificationDisabled:true});
  if(!customer.ok||!/^cus_/.test(customer.data.id||''))throw Error('Cliente fictício rejeitado: HTTP '+customer.http);
+ const direct=await ask('/payments','POST',{customer:customer.data.id,billingType:'PIX',value:19.90,dueDate:today,externalReference:ref+'_direct',description:'Teste isolado QR Pix avulso'});
+ console.log('Cobrança avulsa Pix: HTTP '+direct.http+' / '+String(direct.data.billingType)+' / '+JSON.stringify(diagnostic(direct)));
+ if(direct.ok&&direct.data.id){
+  try{
+   const q=await ask('/payments/'+encodeURIComponent(direct.data.id)+'/pixQrCode');
+   console.log('QR avulso: HTTP '+q.http+' / payload '+Boolean(q.data.payload)+' / imagem '+Boolean(q.data.encodedImage)+' / '+JSON.stringify(diagnostic(q)));
+  }finally{const c=await ask('/payments/'+encodeURIComponent(direct.data.id),'DELETE'); console.log('Avulsa teste cancelada: HTTP '+c.http);}
+ }
+ for(const key of keys.data.data||[]){
+  const q=await ask('/pix/qrCodes/static','POST',{addressKey:key.key,value:19.90,format:'ALL',expirationSeconds:60,allowsMultiplePayments:false,description:'Teste QR Sandbox',externalReference:ref+'_static'});
+  console.log('QR estático por chave ACTIVE: HTTP '+q.http+' / payload '+Boolean(q.data.payload)+' / imagem '+Boolean(q.data.encodedImage)+' / '+JSON.stringify(diagnostic(q)));
+  if(q.ok&&q.data.id){const c=await ask('/pix/qrCodes/static/'+encodeURIComponent(q.data.id),'DELETE');console.log('QR estático teste removido: HTTP '+c.http);}
+ }
  const subscription=await ask('/subscriptions','POST',{customer:customer.data.id,billingType:'PIX',
    cycle:'MONTHLY',value:19.90,nextDueDate:today,externalReference:ref,
    description:'Auditoria Pix exclusivo Meu Ritmo - Sandbox'});
