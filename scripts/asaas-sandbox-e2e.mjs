@@ -82,6 +82,7 @@ const now=Math.floor(Date.now()/1000);
 let subscriptionId=null;
 let paymentId=null;
 let refundResult='não iniciado';
+let standalonePixId=null;
 let reachedWebhook=false;
 try{
  // Asaas documentation provides this artificial validation CPF. Never use a real user.
@@ -171,6 +172,9 @@ try{
   if(!/^pay_[A-Za-z0-9_-]{1,90}$/.test(credit.id||''))fail('Cobrança de saldo fictício sem ID válido.');
   const funded=await asaas('/sandbox/payment/'+encodeURIComponent(credit.id)+'/confirm','POST',{});
   if(!['CONFIRMED','RECEIVED'].includes(funded.status))fail('Saldo fictício não pôde ser confirmado.');
+  standalonePixId=credit.id;
+  const creditState=await asaas('/payments/'+encodeURIComponent(credit.id));
+  log('Forma da cobrança Pix avulsa',String(creditState.billingType||'não informada'));
   log('Saldo de teste para o estorno','adicionado apenas ao Asaas Sandbox');
  }catch(error){
   console.warn('::warning title=Saldo fictício para teste::O reforço de saldo da conta Sandbox não foi confirmado.');
@@ -196,10 +200,27 @@ try{
    refundResult='não homologado: cobrança classificada como '+String(check.billingType||'não informada')+' pelo Asaas Sandbox';
   else throw error;
  }
- log('Estorno Pix Sandbox',refundResult);
+ log('Estorno da fatura recorrente',refundResult);
+ // Separately validate refund of a genuine PIX charge. A recurring invoice
+ // reported as BOLETO cannot be treated as a PIX refund just because the
+ // underlying subscription was originally requested with billingType PIX.
+ if(standalonePixId){
+  const separate=await asaas('/payments/'+encodeURIComponent(standalonePixId));
+  if(separate.billingType==='PIX'){
+   try{
+    await asaas('/payments/'+encodeURIComponent(standalonePixId)+'/refund','POST',{description:'Estorno Pix avulso apenas para homologacao'});
+    const result=await asaas('/payments/'+encodeURIComponent(standalonePixId));
+    log('Estorno Pix avulso Sandbox',String(result.status));
+   }catch(error){
+    log('Estorno Pix avulso Sandbox','recusado pela API; requer conferência');
+   }
+  }else{
+   log('Estorno Pix avulso Sandbox','não homologado: cobrança retornou '+String(separate.billingType||'sem tipo'));
+  }
+ }
  if(refundResult!=='reconciliado no Worker')
   console.warn('::warning title=Estorno do Asaas Sandbox pendente::O teste do estorno não concluiu. Não habilite cobranças reais antes de validar reembolso integral, parcial e conciliação.');
- log('RESULTADO',refundResult==='reconciliado no Worker'?'Pix, webhook, cancelamento e estorno homologados':'Pix, webhook e cancelamento homologados; estorno requer conferência');
+ log('RESULTADO',refundResult==='reconciliado no Worker'?'Assinatura, webhook, cancelamento e estorno homologados':'Assinatura simulada, webhook e cancelamento homologados; cobrança inicial é boleto e estorno recorrente requer conferência');
  
  // Test the hosted recurring card Checkout with a synthetic payer, without
  // providing a card number or completing a card payment. Only Sandbox.
