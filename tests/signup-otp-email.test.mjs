@@ -63,3 +63,12 @@ test('new user-facing strings have translations for English and Spanish',()=>{
    assert.ok(translations.includes(JSON.stringify(key)),key);
  }
 });
+
+test('signup checks Supabase public confirmation policy before creating an account',()=>{
+ const settings=route.indexOf("const settingsResponse=await provider(e,'/settings')");
+ const signup=route.indexOf("const r=await provider(e,'/signup'");
+ assert.ok(settings>0&&signup>settings,'Provider settings must be checked before signup');
+ assert.match(route,/settings\.mailer_autoconfirm!==false/);
+ assert.match(route,/auth_signup_provider_confirmation_disabled/);
+ assert.match(route,/if\(!settingsResponse\.ok\)return reply/);
+});
