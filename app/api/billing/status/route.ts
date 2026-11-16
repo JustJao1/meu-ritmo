@@ -8,7 +8,7 @@ export async function GET(req:Request){
   const c=asaasConfig();
   const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first();
   const legalConfigured=!!parseLegalSettings(legal?.value);
-  const result:Record<string,unknown>={configured:!EARLY_ACCESS_ACTIVE&&c.enabled&&legalConfigured,earlyAccess:EARLY_ACCESS_ACTIVE,mode:c.mode,legalConfigured,provider:'asaas',manageAvailable:c.apiReady};
+  const result:Record<string,unknown>={configured:!EARLY_ACCESS_ACTIVE&&c.enabled&&legalConfigured,cardAvailable:!EARLY_ACCESS_ACTIVE&&c.enabled&&legalConfigured&&c.mode==='sandbox'&&(env as unknown as Record<string,string>).ASAAS_CARD_CHECKOUT_ENABLED==='true',earlyAccess:EARLY_ACCESS_ACTIVE,mode:c.mode,legalConfigured,provider:'asaas',manageAvailable:c.apiReady};
   if(new URL(req.url).searchParams.get('diagnostic')==='1'){
     const user=await getUser();
     if(!user||await appRole(user)!=='owner')return Response.json({error:'Somente o proprietário.'},{status:403});
