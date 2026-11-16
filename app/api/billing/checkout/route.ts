@@ -6,6 +6,7 @@ import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupon
 import {z} from 'zod';
 import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
 import {parseLegalSettings} from '../../../../lib/legal-settings';
+import {hostedCardCheckoutPayload} from '../../../../lib/asaas-hosted-card';
 
 const inputSchema=z.object({
   price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
@@ -42,6 +43,11 @@ export async function POST(req:Request){
   // Until that configuration is validated, do not promise a first-cycle card discount
   // that could silently renew at the promotional price or fail to grant paid access.
   if(coupon&&data.paymentMethod==='CREDIT_CARD')return Response.json({error:'Nesta etapa, cupons de desconto estão disponíveis apenas para Pix. Para pagar no cartão, remova o cupom.'},{status:400});
+  // A card flow requires a hosted checkout and new webhook correlation.
+  // It is opt-in on the isolated Sandbox only, not available to real customers.
+  if(data.paymentMethod==='CREDIT_CARD'&&
+     (asaasConfig().mode!=='sandbox'||(env as unknown as Record<string,string>).ASAAS_CARD_CHECKOUT_ENABLED!=='true'))
+    return Response.json({error:'Cartão de crédito ainda está em homologação. Utilize Pix.'},{status:503});
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
   try{
     await env.DB!.batch([
@@ -51,6 +57,7 @@ export async function POST(req:Request){
         .bind(id,user.userId,'2026-11-15',data.paymentMethod,first,base,now)
     ]);
   }catch{return Response.json({error:'Já existe uma contratação em andamento ou o registro de consentimento está indisponível. Consulte sua assinatura.'},{status:409});}
+  let unpersistedCardCheckout:string|null=null;
   try{
     if(coupon)await reserveCoupon(id,user.userId,coupon.coupon);
     let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
@@ -61,6 +68,26 @@ export async function POST(req:Request){
       if(!customerId)throw Error('Cliente não localizado.');
       await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
       customer={customer_id:customerId};
+    }
+    if(data.paymentMethod==='CREDIT_CARD'){
+      const body=hostedCardCheckoutPayload({
+        orderId:id,customerId:customer.customer_id,plan,amountCents:first,
+        nextDueDate:new Date(Date.now()+86400000).toISOString().slice(0,10)+' 12:00:00',
+        siteOrigin:new URL(req.url).origin+'/'
+      });
+      const checkout=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body});
+      if(!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(checkout.id||''))
+        throw Error('Asaas não retornou ID válido de checkout.');
+      unpersistedCardCheckout=checkout.id;
+      await env.DB!.batch([
+        env.DB!.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
+          .bind(id,checkout.id,customer.customer_id,'ACTIVE',now,now),
+        env.DB!.prepare("UPDATE asaas_orders SET status='pending' WHERE id=? AND status='creating'").bind(id)
+      ]);
+      unpersistedCardCheckout=null;
+      return Response.json({orderId:id,url:'https://asaas.com/checkoutSession/show?id='+encodeURIComponent(checkout.id),
+        awaitingInvoice:false,mode:'sandbox',firstAmount:first/100,renewalAmount:base/100},
+        {headers:{'Cache-Control':'no-store'}});
     }
     const sub=await asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body:{
       customer:customer.customer_id,billingType:data.paymentMethod,value:first/100,
@@ -75,6 +102,10 @@ export async function POST(req:Request){
     const url=verifiedInvoice(list.data?.[0]?.invoiceUrl);
     return Response.json({orderId:id,url,awaitingInvoice:!url,mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100});
   }catch{
+    // If Asaas created a Checkout but D1 could not persist its link, cancel it.
+    // Never create a replacement subscription automatically after an uncertain write.
+    if(unpersistedCardCheckout)
+      await asaasRequest('/checkouts/'+encodeURIComponent(unpersistedCardCheckout)+'/cancel',{method:'POST'}).catch(()=>{});
     await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status='creating'").bind(id).run();
     return Response.json({error:'A contratação precisa de conferência antes de uma nova tentativa. Nenhum plano foi liberado.',orderId:id},{status:503});
   }
