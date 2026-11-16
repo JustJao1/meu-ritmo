@@ -65,7 +65,17 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata√
       subscriptionRequest=JSON.parse(init.body);
       return Response.json({id:subscriptionCount++===0?'sub_0_test':'sub_0_test_2'});
     }
-    if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))return Response.json({data:[{invoiceUrl:'https://sandbox.asaas.com/i/test',billingType:'PIX',status:'PENDING'}]});
+    if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))
+      return Response.json({data:[{id:'pay_pix_test',customer:'cus_test',subscription:'sub_0_test',
+        billingType:'BOLETO',value:17.91,dueDate:new Date().toISOString().slice(0,10),status:'PENDING'}]});
+    if(path.endsWith('/payments/pay_pix_test')&&init?.method==='PUT'){
+      const request=JSON.parse(init.body);
+      assert.equal(request.billingType,'PIX');
+      return Response.json({id:'pay_pix_test',billingType:'PIX'});
+    }
+    if(path.endsWith('/payments/pay_pix_test/pixQrCode'))
+      return Response.json({payload:'000201010212BR.GOV.BCB.PIX.PAYLOAD.EXEMPLO',encodedImage:'a'.repeat(140)});
+
     throw Error('Network denied in test: '+path);
   };
   const payer={name:'Bob Teste',cpfCnpj:'52998224725'};
@@ -84,7 +94,9 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata√
     const response=await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'});
     assert.equal(response.status,200);
     const body=await response.json();
-    assert.equal(body.url,'https://sandbox.asaas.com/i/test');
+    assert.equal(body.url,'/pagar?pedido='+body.orderId);
+    assert.equal(body.awaitingInvoice,false);
+    assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id=?").get(body.orderId).status,'pending');
     assert.equal(subscriptionRequest.value,17.91);
     assert.equal(subscriptionRequest.cycle,'MONTHLY');
     assert.equal(subscriptionRequest.billingType,'PIX');
