@@ -240,3 +240,46 @@
 .adminshell .adminextras .extracreate button:disabled{opacity:.55}
 .adminshell .adminextras :is(.adminerror,.adminnotice,.warning){color:var(--ink);background:var(--admin-surface);border:1px solid var(--admin-border);padding:14px 17px;border-radius:8px}
 @media(max-width:700px){.adminshell .promolist{grid-template-columns:1fr}.adminshell .adminextras .extracreate{padding:18px}.adminshell .adminextras .launchchecklist{padding:18px}}
+
+
+/* Admin back link: legacy light-only hover was white on white-text dark themes.
+   Keep the link and its arrow legible across all 22 user palettes. */
+.adminshell > .adminnav > a:last-child{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+ min-height:44px;
+ padding:10px 14px;
+ min-width:0;
+ border:1px solid transparent;
+ border-radius:8px;
+ background:transparent;
+ color:var(--ink)!important;
+ font-size:13px;
+ font-weight:650;
+ line-height:1.35;
+ text-decoration:none;
+ white-space:nowrap;
+}
+.adminshell > .adminnav > a:last-child :is(svg,span){
+ color:inherit!important;
+ opacity:1;
+ flex-shrink:0;
+}
+.adminshell > .adminnav > a:last-child:is(:hover,:focus-visible){
+ background:color-mix(in srgb,var(--ink) 9%,var(--paper));
+ color:var(--ink)!important;
+ border-color:color-mix(in srgb,var(--ink) 23%,transparent);
+}
+.adminshell > .adminnav > a:last-child:focus-visible{
+ outline:2px solid var(--theme-accent-readable,var(--ink));
+ outline-offset:3px;
+}
+@media(max-width:700px){
+ .adminshell > .adminnav > a:last-child{
+  margin-left:0;
+  min-height:44px;
+  font-size:12px;
+ }
+}
