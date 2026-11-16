@@ -6,7 +6,7 @@
 export type CardPlan='plus_month'|'plus_year'|'pro_month'|'pro_year';
 type CardCheckoutOptions={
  orderId:string;
- customerId:string;
+ customerId?:string;
  plan:CardPlan;
  amountCents:number;
  nextDueDate:string;
@@ -16,7 +16,7 @@ const orderPattern=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
 const customerPattern=/^cus_[A-Za-z0-9_-]{5,90}$/;
 export function hostedCardCheckoutPayload(input:CardCheckoutOptions){
  if(!orderPattern.test(input.orderId))throw Error('Pedido inválido.');
- if(!customerPattern.test(input.customerId))throw Error('Cliente Asaas inválido.');
+ if(input.customerId!==undefined&&!customerPattern.test(input.customerId))throw Error('Cliente Asaas inválido.');
  if(!Number.isSafeInteger(input.amountCents)||input.amountCents<=0)throw Error('Preço inválido.');
  if(!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(input.nextDueDate))throw Error('Data de cobrança inválida.');
  const firstDate=new Date(input.nextDueDate.replace(' ','T')+'Z');
@@ -38,7 +38,7 @@ export function hostedCardCheckoutPayload(input:CardCheckoutOptions){
   chargeTypes:['RECURRENT'] as const,
   minutesToExpire:60,
   externalReference:input.orderId,
-  customer:input.customerId,
+  ...(input.customerId?{customer:input.customerId}:{}),
   callback,
   items:[{name:'MR: Meu Ritmo '+label,description:'Assinatura '+(cycle==='YEARLY'?'anual':'mensal'),quantity:1,value:input.amountCents/100}],
   subscription:{cycle,nextDueDate:input.nextDueDate}
