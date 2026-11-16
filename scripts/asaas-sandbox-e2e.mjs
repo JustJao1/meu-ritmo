@@ -128,6 +128,12 @@ try{
   fail('Sandbox não confirmou o pagamento simulado.');
  const check=await asaas('/payments/'+encodeURIComponent(paymentId));
  log('Forma da cobrança simulada no Asaas',String(check.billingType||'não informada'));
+ if(check.billingType==='BOLETO'||check.billingType==='PIX'){
+  try{
+   const pix=await asaas('/payments/'+encodeURIComponent(paymentId)+'/pixQrCode');
+   log('QR Pix da fatura recorrente',pix?.payload?'disponível':'não informado');
+  }catch{log('QR Pix da fatura recorrente','indisponível nesta conta de testes');}
+ }
  if(!['CONFIRMED','RECEIVED'].includes(check.status))
   fail('Consulta de pagamento não refletiu a confirmação simulada.');
  log('Pagamento simulado confirmado','OK; nenhum dinheiro real');
