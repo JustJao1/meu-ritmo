@@ -4,6 +4,7 @@ import {asaasRequest,type AsaasSubscription} from './asaas';
 type CardOrder={order_id:string;checkout_id:string;customer_id:string;checkout_status:string;order_status:string;plan_code:string;first_price_cents:number;provider_subscription_id:string|null;created_at:number};
 const uuid=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
 const subscriptionId=/^sub_[A-Za-z0-9_-]{1,90}$/;
+const customerId=/^cus_[A-Za-z0-9_-]{5,90}$/;
 const ok=()=>Response.json({received:true});
 const now=()=>Math.floor(Date.now()/1000);
 type RemoteSubscription=AsaasSubscription & {deleted?:boolean;externalReference?:string|null};
@@ -17,15 +18,18 @@ async function storeEvent(event:any){
 async function checkoutEvent(event:any){
  const checkout=event.checkout;
  if(!uuid.test(checkout?.id||''))return Response.json({error:'Checkout inválido.'},{status:400});
- const row=await env.DB!.prepare('SELECT c.order_id,c.customer_id,c.status AS checkout_status FROM asaas_card_checkouts c WHERE c.checkout_id=?')
-  .bind(checkout.id).first<{order_id:string;customer_id:string;checkout_status:string}>();
+ const row=await env.DB!.prepare('SELECT c.order_id,c.customer_id,c.status AS checkout_status,o.plan_code,o.first_price_cents FROM asaas_card_checkouts c JOIN asaas_orders o ON o.id=c.order_id WHERE c.checkout_id=?')
+  .bind(checkout.id).first<{order_id:string;customer_id:string;checkout_status:string;plan_code:string;first_price_cents:number}>();
  if(!row)return ok(); // Asaas may send events for unrelated checkouts.
  const states:{[key:string]:string}={CHECKOUT_CREATED:'ACTIVE',CHECKOUT_PAID:'PAID',CHECKOUT_CANCELED:'CANCELED',CHECKOUT_EXPIRED:'EXPIRED'};
  const state=states[event.event];
  if(!state)return ok();
  // The webhook is authenticated, and its ID/customer/product are bound to an
  // existing D1 checkout. Never accept a different payer or payment method.
- if(checkout.customer!==row.customer_id||
+ if((row.customer_id&&checkout.customer!==row.customer_id)||
+    (state==='PAID'&&!customerId.test(checkout.customer||''))||
+    (!row.customer_id&&state!=='PAID'&&checkout.customer!=null)||
+    (checkout.externalReference&&checkout.externalReference!==row.order_id)||
     !Array.isArray(checkout.billingTypes)||!checkout.billingTypes.includes('CREDIT_CARD')||
     !Array.isArray(checkout.chargeTypes)||!checkout.chargeTypes.includes('RECURRENT')||
     checkout.status!==state)return Response.json({error:'Checkout divergente.'},{status:409});
@@ -35,8 +39,8 @@ async function checkoutEvent(event:any){
  }
  const time=now();
  const actions=[
-  env.DB!.prepare('UPDATE asaas_card_checkouts SET status=?,updated_at=? WHERE checkout_id=?')
-   .bind(state,time,checkout.id),
+  env.DB!.prepare('UPDATE asaas_card_checkouts SET status=?,customer_id=CASE WHEN ?=\'PAID\' THEN ? ELSE customer_id END,updated_at=? WHERE checkout_id=?')
+   .bind(state,state,state==='PAID'?checkout.customer:'',time,checkout.id),
   env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING')
    .bind(event.id,event.event,time)
  ];
@@ -68,7 +72,7 @@ async function subscriptionCreated(event:any){
    c.plan_code.endsWith('_year')===(actual.cycle==='YEARLY')&&
    (actual.cycle==='MONTHLY'||actual.cycle==='YEARLY')&&
    c.created_at>=time-86400&&c.created_at<=time+300&&
-   c.checkout_status!=='CANCELED'&&c.checkout_status!=='EXPIRED'&&
+   c.checkout_status==='PAID'&&
    (!actual.externalReference||actual.externalReference===c.order_id)
  );
  // If the provider supplies no external reference, correlate only when there
