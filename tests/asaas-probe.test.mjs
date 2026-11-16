@@ -17,7 +17,7 @@ const mocks={name:'mock-probe-dependencies',setup(api){
  api.onLoad({filter:/.*/,namespace:'probe'},args=>{
   if(args.path==='cloudflare:workers')return {loader:'js',contents:'export const env=globalThis.__probeTest.env;'};
   if(args.path.endsWith('lib/asaas'))return {loader:'js',contents:
-   'export const asaasConfig=()=>globalThis.__probeTest.config; export const asaasRequest=async()=>{globalThis.__probeTest.requested=true; if(globalThis.__probeTest.error)throw globalThis.__probeTest.error;return {data:[]};};'
+   'export const asaasConfig=()=>globalThis.__probeTest.config; export const asaasCardCheckoutReady=()=>false; export const asaasRequest=async()=>{globalThis.__probeTest.requested=true; if(globalThis.__probeTest.error)throw globalThis.__probeTest.error;return {data:[]};};'
   };
   if(args.path.endsWith('lib/entitlements'))return {loader:'js',contents:'export const EARLY_ACCESS_ACTIVE=true;'};
   if(args.path.endsWith('lib/admin-access'))return {loader:'js',contents:"export const appRole=async()=> 'owner';"};
