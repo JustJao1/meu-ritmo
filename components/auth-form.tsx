@@ -57,7 +57,18 @@ export default function AuthForm({mode}:{mode:AuthMode}){
     const fragment=new URLSearchParams(location.hash.slice(1));
     const access=fragment.get('access_token'),refresh=fragment.get('refresh_token'),type=fragment.get('type');
     if(!access||!refresh||type!=='recovery'){
-      setError(t('Abra o link de recuperação recebido por e-mail para definir uma nova senha.'));
+      // Recovery by six-digit email code sets a short-lived HttpOnly session.
+      // The password page must accept it without requiring a link fragment.
+      void (async()=>{
+        try{
+          const r=await fetch('/api/auth/session',{cache:'no-store'});
+          const v=await r.json() as {recovery?:boolean;email?:string};
+          if(!r.ok||!v.recovery||!v.email)throw Error('recovery_session_missing');
+          setRecoveryEmail(v.email);setRecoveryReady(true);setError('');
+        }catch{
+          setError(t('Abra o link de recuperação recebido por e-mail para definir uma nova senha.'));
+        }
+      })();
       return;
     }
     history.replaceState(null,'',location.pathname);
