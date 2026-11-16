@@ -1,0 +1,65 @@
+/* Theme-safe interaction states for calendars and alarm actions.
+   The 22 palettes already provide --paper and --ink as a high-contrast pair.
+   This layer deliberately leaves users' selected palette values unchanged. */
+
+/* Legacy globals.css still paints some non-button calendar days pale green;
+   include disabled/out-of-month <div> cells as well as interactive days. */
+.appframe .calendarcolumns header.istoday,
+.appframe .calendarcolumns .istoday header,
+.appframe .monthgrid > button.istoday,
+.appframe .monthgrid > div.istoday {
+  background:var(--theme-raised,var(--theme-banner,var(--paper)))!important;
+  color:var(--ink)!important;
+  border-color:var(--theme-accent-readable,var(--ink))!important;
+  box-shadow:inset 0 0 0 1px var(--theme-divider)!important;
+}
+.appframe .calendarcolumns header.istoday :is(span,strong,.calendaradd),
+.appframe .calendarcolumns .istoday header :is(span,strong,.calendaradd),
+.appframe .monthgrid > button.istoday > span,
+.appframe .monthgrid > div.istoday > span {
+  color:var(--ink)!important;
+  opacity:1;
+  text-shadow:none;
+}
+.appframe .calendarcolumns header.istoday:is(:hover,:focus-within),
+.appframe .calendarcolumns .istoday header:is(:hover,:focus-within),
+.appframe .monthgrid > button.istoday:is(:hover,:focus-visible) {
+  background:var(--theme-raised,var(--theme-banner,var(--paper)))!important;
+  color:var(--ink)!important;
+}
+.appframe .calendarcolumns header.istoday:is(:hover,:focus-within) :is(span,strong,.calendaradd),
+.appframe .calendarcolumns .istoday header:is(:hover,:focus-within) :is(span,strong,.calendaradd),
+.appframe .monthgrid > button.istoday:is(:hover,:focus-visible) > span {
+  color:var(--ink)!important;
+}
+
+/* In themes with darker accent colors, fixed #11161b-on-accent CTA text
+   could be illegible. Use each theme's validated foreground/background pair. */
+:root .alarmnotice .alarmnotice-stop,
+:root .soundnotice .soundnotice-action {
+  background:var(--ink);
+  color:var(--paper);
+  border:1px solid var(--ink);
+}
+:root .alarmnotice .alarmnotice-stop :is(svg,span,strong),
+:root .soundnotice .soundnotice-action :is(svg,span,strong) {
+  color:inherit;
+}
+:root .alarmnotice .alarmnotice-stop:hover,
+:root .soundnotice .soundnotice-action:hover {
+  background:color-mix(in srgb,var(--ink) 91%,var(--accent) 9%);
+  color:var(--paper);
+  filter:none;
+}
+:root .alarmnotice .alarmnotice-stop:focus-visible,
+:root .soundnotice .soundnotice-action:focus-visible {
+  outline:2px solid var(--theme-accent-readable,var(--ink));
+  outline-offset:3px;
+}
+:root .alarmerror {
+  color:color-mix(in srgb,var(--ink) 78%,#b52d2d 22%);
+}
+@media(prefers-reduced-motion:reduce){
+  :root .alarmnotice .alarmnotice-stop,
+  :root .soundnotice .soundnotice-action {transition:none}
+}
