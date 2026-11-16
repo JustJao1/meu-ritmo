@@ -50,3 +50,24 @@ test('lembrete pontual não ocupa um bloco de tempo nem cria conflito artificial
 test('mais de um horário sem relação clara exige esclarecimento',()=>{const r=plan('Estudar às 18h ou às 19h');assert.equal(r.drafts.length,0);assert(r.questions.length);});
 
 test('same-category expenses with different amounts remain separate',()=>{const r=plan('Gastei 10 reais com transporte hoje; gastei 20 reais com transporte hoje');assert.deepEqual(r.questions,[]);assert.deepEqual(r.drafts.map(d=>d.item.amount),[10,20]);validate(r);const repeat=plan('Gastei 10 reais com transporte hoje',[r.drafts[0].item]);assert.equal(repeat.drafts.length,0);assert(repeat.questions.length);});
+
+test('complete narrative produces eight weekday activities and twelve independent expenses',()=>{
+ const r=plan("Meu orçamento para este mês é de R$ 2.500,00. Quero organizar minha rotina de segunda a sexta: acordar às 06h30; tomar café da manhã às 07h; estudar programação das 07h30 às 09h; trabalhar das 09h30 às 12h; almoçar das 12h às 13h; trabalhar das 13h às 17h; ir à academia das 18h às 19h; ler um livro das 21h às 21h30. Hoje, às 07h10, gastei R$ 12,50 na padaria; às 09h, gastei R$ 18,00 com Uber; às 10h30, gastei R$ 6,00 com café; às 12h15, gastei R$ 32,90 no restaurante; às 13h, gastei R$ 24,90 em um livro; às 15h, gastei R$ 8,50 com um lanche; às 17h10, gastei R$ 80,00 com gasolina; às 17h30, gastei R$ 146,70 no mercado; às 19h15, gastei R$ 35,80 na farmácia; às 19h40, gastei R$ 22,00 com produtos de limpeza para casa; às 20h, gastei R$ 29,90 com um jogo; às 20h30, gastei R$ 45,00 em um curso de programação. Prepare as 8 atividades recorrentes e os 12 gastos separadamente para eu revisar antes de salvar. Se não conseguir definir o orçamento mensal pelo assistente, me avise.");
+ assert.deepEqual(r.questions,[]);
+ assert.equal(r.drafts.length,20);
+ const activities=r.drafts.filter(d=>d.item.type!=='expense').map(d=>d.item);
+ const expenses=r.drafts.filter(d=>d.item.type==='expense').map(d=>d.item);
+ assert.equal(activities.length,8);
+ assert.equal(expenses.length,12);
+ for(const item of activities)assert.deepEqual(item.days,['1','2','3','4','5']);
+ assert.deepEqual(activities.map(x=>x.time),['06:30','07:00','07:30','09:30','12:00','13:00','18:00','21:00']);
+ assert.deepEqual(expenses.map(x=>x.amount),[12.5,18,6,32.9,24.9,8.5,80,146.7,35.8,22,29.9,45]);
+ assert(expenses.every(x=>x.repeat==='none'&&x.days.length===0));
+ assert.match(r.answer,/Gastos → Ajustar orçamento/);
+ validate(r);
+});
+test('batch limit accepts fifty instructions and refuses fifty-one without partial output',()=>{
+ const command=Array.from({length:50},(_,i)=>'Gastei '+(i+1)+' reais com transporte hoje').join('; ');
+ const accepted=plan(command);assert.equal(accepted.drafts.length,50);assert.deepEqual(accepted.questions,[]);
+ const refused=plan(command+'; Gastei 51 reais com transporte hoje');assert.equal(refused.drafts.length,0);assert.match(refused.questions[0],/50 pedidos/);
+});

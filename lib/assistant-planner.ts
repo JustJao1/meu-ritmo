@@ -60,10 +60,28 @@ export function planAssistant(command:string,items:Item[],o:AssistantOptions):As
    occupied.push(proposed);result.drafts.push({item:proposed,replaceId:original.id});
   }return result;
  }
- const parts=splitAssistantInstructions(command);
+ const rawParts=splitAssistantInstructions(command);
+ let weekdaysContext=false;
+ const parts:string[]=[];
+ for(const raw of rawParts){
+  let part=raw;
+  const normalized=norm(part);
+  if(/^(?:meu |o |defina (?:meu |o )?)orcamento\b/.test(normalized)){
+   result.answer='O orçamento mensal ainda precisa ser definido em Gastos → Ajustar orçamento. Os demais registros podem ser conferidos abaixo.';
+   continue;
+  }
+  if(/^(?:prepare as? \d+ atividades|se nao conseguir definir o orcamento|confira os horarios e apresente|registre separadamente estes? \d+ gastos)/.test(normalized))continue;
+  if(/^(?:hoje|rotina de segunda a sexta):?$/.test(normalized))continue;
+  const prefix=part.match(/^(?:quero\s+)?organizar\s+(?:minha|a)\s+rotina\s+de segunda a sexta\s*:\s*/i);
+  if(prefix){weekdaysContext=true;part=part.slice(prefix[0].length).trim();}
+  if(!part)continue;
+  if(/\b(?:gastei|paguei|gasto|despesa)\b/.test(norm(part)))weekdaysContext=false;
+  if(weekdaysContext)part+=' de segunda a sexta';
+  parts.push(part);
+ }
  const arrivals:{date:string;time:string;source:string}[]=[];
  const departures=parts.map(p=>({text:norm(p),times:mentionedTimes(norm(p))})).filter(p=>/sair (?:daqui|do trabalho)/.test(p.text)&&p.times.length);
- if(parts.length>12){result.questions.push('Organize até 12 pedidos por vez.');return result;}
+ if(parts.length>50){result.questions.push('Organize até 50 pedidos por vez.');return result;}
  for(const original of parts){
   const s=norm(original);
   const expenseText=s.match(/\b(?:gastei|paguei|registrar gasto|registre gasto|gasto|despesa)\b[\s\S]*/)?.[0];
@@ -73,7 +91,7 @@ export function planAssistant(command:string,items:Item[],o:AssistantOptions):As
    result.questions.push('Para “'+original.slice(0,90)+'”, use a edição manual. O assistente não exclui registros, realiza pagamentos nem envia mensagens.');continue;
   }
   let type:Item['type']=expenseText?'expense':/^\s*(anote|anotar|nota:|crie uma nota)/.test(s)?'note':(atWork||/\b(reuniao|consulta|dentista|medico|compromisso|aula|trabalho das)\b/.test(s))?'event':/\b(lembre|lembrete|lembrar)\b/.test(s)?'reminder':'task';
-  if(type==='task'&&!/^(?:preciso|quero|tenho que|tarefa|crie|criar|adicione|adicionar|coloque|agende|marque|estudar|estudo|treinar|treino|ler|leitura|fazer|caminhar|caminhada|pagar|comprar|organizar|trabalhar|trabalho|revisar|terminar|concluir|ligar|buscar|levar|limpar|lavar|tomar|beber|preparar|cozinhar|dormir|acordar)\b/.test(s)){
+  if(type==='task'&&!/^(?:preciso|quero|tenho que|tarefa|crie|criar|adicione|adicionar|coloque|agende|marque|estudar|estudo|treinar|treino|ler|leitura|fazer|caminhar|caminhada|pagar|comprar|organizar|trabalhar|trabalho|revisar|terminar|concluir|ligar|buscar|levar|limpar|lavar|tomar|beber|preparar|cozinhar|dormir|acordar|almocar|ir)\b/.test(s)){
    result.questions.push('Não consegui identificar a ação em “'+original.slice(0,100)+'”. Comece com “criar tarefa”, “gastei”, “reunião”, “me lembre” ou “anote”.');continue;
   }
   const item=initial(type,original,o);item.body=original;
