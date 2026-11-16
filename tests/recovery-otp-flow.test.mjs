@@ -22,3 +22,7 @@ test('a recovery cookie cannot be used for normal authenticated app access',()=>
  assert.match(route,/authenticated:s\?\.purpose==='login'/);
  assert.match(route,/s\.purpose!=='recovery'/);
 });
+
+test('authentication responses are never cached by browsers or intermediaries',()=>{
+ assert.match(route,/headers:\{'Cache-Control':'no-store'/);
+});
