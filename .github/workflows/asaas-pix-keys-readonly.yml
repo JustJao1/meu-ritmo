@@ -1,0 +1,33 @@
+name: Conferir chaves Pix Sandbox somente leitura
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/asaas-pix-keys-readonly.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  keys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    environment: sandbox
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Consultar cadastro Pix sem criar ou alterar dados
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: |
+          node --input-type=module <<'NODE'
+          if(process.env.ASAAS_MODE!=='sandbox'||!process.env.ASAAS_API_KEY?.startsWith('$aact_hmlg_')) throw Error('Sandbox required');
+          const r=await fetch('https://api-sandbox.asaas.com/v3/pix/addressKeys?limit=100',{headers:{access_token:process.env.ASAAS_API_KEY,accept:'application/json','user-agent':'MeuRitmo-ReadOnly-Pix-Check/1.0'},signal:AbortSignal.timeout(25000)});
+          console.log('HTTP:',r.status);
+          const d=await r.json();
+          if(!r.ok||!Array.isArray(d.data)) throw Error('Unable to list Pix keys');
+          const expected=['1ad620ae-9987-4d40-856d-3799875e4df3','fb317e90-352d-4331-a606-964ecb858c66','9f8b4b05-b774-42d7-951c-d05e23975e43'];
+          console.log('Total:',d.totalCount,'returned:',d.data.length);
+          for(const k of d.data)console.log(JSON.stringify({status:k.status,type:k.type,created:k.dateCreated,screenMatch:expected.indexOf(k.key)+1}));
+          console.log('All screen keys matched:',expected.every(key=>d.data.some(k=>k.key===key)));
+          NODE
