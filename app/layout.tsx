@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './assistant-feedback.css';
 import './public-theme-audit.css';
 import './landing-refinement.css';
 import './app-visual-consistency.css';

@@ -22,3 +22,6 @@ export const serviceSettings=sqliteTable('service_settings',{key:text('key').pri
 export const codeRegistry=sqliteTable('code_registry',{code:text('code').primaryKey(),kind:text('kind').notNull(),referenceId:text('reference_id').notNull()});
 
 export const closedAccounts=sqliteTable('closed_accounts',{userId:text('user_id').primaryKey(),closedAt:integer('closed_at').notNull()});
+
+export const userFeedback=sqliteTable('user_feedback',{id:text('id').primaryKey(),userId:text('user_id').notNull(),kind:text('kind').notNull(),rating:integer('rating').notNull(),body:text('body').notNull(),page:text('page').notNull(),version:text('version').notNull(),status:text('status').notNull().default('received'),unread:integer('unread').notNull().default(0),createdAt:integer('created_at').notNull(),updatedAt:integer('updated_at').notNull()},t=>[index('user_feedback_user').on(t.userId,t.createdAt),index('user_feedback_status').on(t.status,t.createdAt)]);
+export const feedbackMessages=sqliteTable('feedback_messages',{id:text('id').primaryKey(),feedbackId:text('feedback_id').notNull().references(()=>userFeedback.id,{onDelete:'cascade'}),authorRole:text('author_role').notNull(),body:text('body').notNull(),createdAt:integer('created_at').notNull()},t=>[index('feedback_messages_thread').on(t.feedbackId,t.createdAt)]);

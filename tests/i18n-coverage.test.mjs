@@ -13,6 +13,7 @@ test('UI locale references in major modules all have English and Spanish transla
   'app/ritmo.tsx','components/community.tsx','components/admin-panel.tsx',
   'components/admin-extras.tsx','components/premium-studio.tsx',
   'components/alert-center.tsx','components/auth-form.tsx',
+  'components/smart-assistant.tsx','components/feedback-center.tsx','components/admin-feedback.tsx',
   'components/profile-editor.tsx','components/plan-comparison.tsx'
  ]){
   const contents=src(file);

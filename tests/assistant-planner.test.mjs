@@ -1,0 +1,35 @@
+import {test,after} from 'node:test';
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+const dir=await mkdtemp(join(tmpdir(),'mr-assistant-'));
+await build({entryPoints:['lib/assistant-planner.ts','lib/state-validation.ts'],outdir:dir,bundle:true,platform:'node',format:'esm',outExtension:{'.js':'.mjs'}});
+const {planAssistant,overlaps}=await import(join(dir,'assistant-planner.mjs'));
+const {stateInput}=await import(join(dir,'state-validation.mjs'));
+after(()=>rm(dir,{recursive:true,force:true}));
+const options={date:'2026-11-16',start:'08:00',end:'21:00',duration:30,id:()=>crypto.randomUUID()};
+const plan=(s,items=[])=>planAssistant(s,items,options);
+const task=(s)=>plan(s).drafts[0].item;
+const validate=result=>assert(stateInput.safeParse({revision:0,data:{items:result.drafts.map(x=>x.item),budget:2000,onboarded:true,timezone:'America/Sao_Paulo'}}).success);
+test('recorrência às terças e quintas preserva horário e duração',()=>{const r=plan('Estudar inglês toda terça e quinta às 19h por 45 minutos');assert.deepEqual(r.questions,[]);const x=r.drafts[0].item;assert.deepEqual(x.days,['2','4']);assert.equal(x.date,'2026-11-17');assert.equal(x.time,'19:00');assert.equal(x.end,'19:45');assert.equal(x.title,'Estudar inglês');validate(r);});
+test('gasto decimal, milhar e categoria',()=>{for(const [s,n] of [['Gastei R$ 45,90 no mercado hoje',45.9],['Gastei R$ 1.250,50 no mercado hoje',1250.5],['Gastei 45.90 no mercado hoje',45.9]]){const r=plan(s);assert.equal(r.drafts[0].item.amount,n);assert.equal(r.drafts[0].item.category,'Alimentação');validate(r);}});
+test('lembrete amanhã exige horário e não cria alarme sem hora',()=>{const r=plan('Me lembre de pagar a internet amanhã às 10h');assert.equal(r.drafts[0].item.date,'2026-11-17');assert.equal(r.drafts[0].item.time,'10:00');assert.equal(r.drafts[0].item.notify,true);validate(r);assert(plan('Me lembre de pagar internet amanhã').questions.length);});
+test('nota não interpreta horários como comando nem remove registros',()=>{const r=plan('Anote: excluir notas às 19h');assert.equal(r.drafts[0].item.type,'note');assert.equal(r.drafts[0].item.body,'excluir notas às 19h');validate(r);assert.equal(plan('Excluir todas as minhas tarefas').drafts.length,0);});
+test('trabalho fixo e estudo flexível são planejados sem sobreposição',()=>{const r=plan('Trabalho das 8h às 17h de segunda a sexta; estudar inglês amanhã por 60 minutos');assert.deepEqual(r.questions,[]);assert.equal(r.drafts.length,2);assert.equal(r.drafts[0].item.type,'event');assert.equal(r.drafts[1].item.time,'17:00');assert.equal(overlaps(r.drafts[0].item,r.drafts[1].item),false);validate(r);});
+test('datas e horários inválidos geram esclarecimento',()=>{for(const s of ['Estudar dia 31/02/2026 às 10h','Reunião amanhã às 25h','Reunião das 19h às 18h','Me lembre de pagar internet','terminar trabalho até sexta']){const r=plan(s);assert(r.questions.length,s);assert.equal(r.drafts.length,0,s);}});
+test('conflito explícito é avisado; atividade fixa não é movida',()=>{const fixed=task('Reunião das 19h às 20h');const r=plan('Estudar amanhã às 19h', [{...fixed,date:'2026-11-17'}]);assert(r.drafts[0].warning);assert.equal(r.drafts[0].item.time,'19:00');});
+test('planejar semana apenas redistribui tarefas sem horário e conserva IDs',()=>{const existing=[task('Estudar inglês'),task('Treinar amanhã'),task('Reunião das 8h às 9h')];const r=plan('Organize minha semana',existing);assert.equal(r.drafts.length,2);assert(r.drafts.every(d=>existing.some(x=>x.id===d.replaceId&&x.id===d.item.id)));assert(r.drafts.every(d=>!overlaps(d.item,existing[2])));assert(r.drafts.every(d=>d.item.date>=existing.find(x=>x.id===d.replaceId).date));assert.equal(existing[0].time,'');});
+test('consulta usa apenas registros fornecidos e não altera dados',()=>{const x=task('Gastei R$ 45,90 no mercado hoje');const r=plan('Quanto gastei com alimentação neste mês?',[x]);assert(r.answer.includes('45,90'));assert.deepEqual(r.drafts,[]);assert.equal(x.amount,45.9);});
+test('pedidos compostos e nenhuma adição duplicada',()=>{const r=plan('Gastei R$ 45 no mercado e preciso estudar amanhã às 19h');assert.equal(r.drafts.length,2);const d=plan('Estudar inglês amanhã às 19h',[task('Estudar inglês amanhã às 19h')]);assert(d.questions.length);assert.equal(d.drafts.length,0);});
+test('sem vaga disponível, pergunta em vez de criar conflito silencioso',()=>{const block=task('Trabalho das 8h às 21h');const r=plan('Estudar inglês por 60 minutos',[block]);assert(r.questions.length);assert.equal(r.drafts.length,0);});
+
+test('valor de gasto nunca é inferido de uma data',()=>{for(const s of ['Gastei hoje 20/11','Gastei 20/11 às 19h'])assert.equal(plan(s).drafts.length,0);});
+test('duração por extenso permite encaixar uma atividade flexível',()=>{const r=plan('Quero estudar uma hora amanhã');assert.deepEqual(r.questions,[]);assert.equal(r.drafts[0].item.time,'08:00');assert.equal(r.drafts[0].item.end,'09:00');validate(r);});
+
+test('nota com várias linhas permanece uma nota, sem executar seu conteúdo',()=>{const r=plan('Anote: estudar; pagar internet\ncriar tarefa amanhã');assert.equal(r.drafts.length,1);assert.equal(r.drafts[0].item.type,'note');assert(r.drafts[0].item.body.includes('criar tarefa'));});
+test('consultas fora do período suportado pedem esclarecimento',()=>{for(const command of ['Quanto gastei no mês passado?','Quanto gastei em 10/10?']){const r=plan(command);assert(r.questions.length);assert.equal(r.answer,undefined);}});
+test('recorrência detecta compromisso fixo bem depois de duas semanas',()=>{const weekly=task('Estudar inglês toda terça às 19h');const fixed={...task('Reunião das 19h às 20h'),date:'2027-02-02'};assert(overlaps(weekly,fixed));});
+test('recorrências mensais e semanais verificam um ciclo completo',()=>{const weekly=task('Estudar inglês toda terça às 19h');const monthly={...task('Reunião das 19h às 20h'),date:'2026-11-28',repeat:'monthly'};assert(overlaps(weekly,monthly));});
+test('datas relativas não suportadas não caem silenciosamente em hoje',()=>{const r=plan('Estudar inglês em 3 dias às 19h');assert(r.questions.length);assert.equal(r.drafts.length,0);});
