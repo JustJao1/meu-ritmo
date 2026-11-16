@@ -12,7 +12,8 @@ const mock={name:'cloudflare-env',setup(bundle){
  bundle.onLoad({filter:/.*/,namespace:'asaas-test'},()=>({contents:'export const env=globalThis.__asaasTestEnv;',loader:'js'}));
 }};
 await build({entryPoints:['lib/asaas.ts','lib/brazil-tax-id.ts'],outdir:dir,bundle:true,platform:'node',format:'esm',plugins:[mock],outExtension:{'.js':'.mjs'}});
-const {asaasConfig}=await import(join(dir,'asaas.mjs'));
+const {asaasConfig,asaasCardCheckoutReady}=await import(join(dir,'asaas.mjs'));
+
 const {validBrazilTaxId}=await import(join(dir,'brazil-tax-id.mjs'));
 const e=globalThis.__asaasTestEnv;
 
@@ -27,6 +28,25 @@ test('Asaas key environment mismatch prevents use of live credentials in Sandbox
  assert.equal(asaasConfig().apiReady,true);
  assert.equal(asaasConfig().enabled,true);
 });
+test('produção exige autorização separada para cartão, independentemente da cobrança geral',()=>{
+ Object.assign(e,{ASAAS_MODE:'production',ASAAS_API_KEY:'$aact_prod_fake',
+  ASAAS_WEBHOOK_TOKEN:'a'.repeat(48),ASAAS_WEBHOOK_READY:'true',
+  ASAAS_BILLING_ENABLED:'true',ASAAS_CARD_CHECKOUT_ENABLED:'false',
+  ASAAS_PRODUCTION_CARD_APPROVED:'false'});
+ assert.equal(asaasCardCheckoutReady(),false);
+ e.ASAAS_CARD_CHECKOUT_ENABLED='true';
+ assert.equal(asaasCardCheckoutReady(),false);
+ e.ASAAS_PRODUCTION_CARD_APPROVED='true';
+ assert.equal(asaasCardCheckoutReady(),true);
+ e.ASAAS_BILLING_ENABLED='false';
+ assert.equal(asaasCardCheckoutReady(),false);
+ e.ASAAS_MODE='sandbox';
+ e.ASAAS_API_KEY='$aact_hmlg_fake';
+ e.ASAAS_BILLING_ENABLED='true';
+ e.ASAAS_PRODUCTION_CARD_APPROVED='false';
+ assert.equal(asaasCardCheckoutReady(),true,'sandbox isolado não exige sinalizador de produção');
+});
+
 test('Webhooks remain available when new subscriptions are suspended',()=>{
  Object.assign(e,{ASAAS_MODE:'sandbox',ASAAS_API_KEY:'$aact_hmlg_fake',ASAAS_WEBHOOK_TOKEN:'a'.repeat(48),ASAAS_WEBHOOK_READY:'true',ASAAS_BILLING_ENABLED:'false'});
  assert.equal(asaasConfig().webhookReady,true);
