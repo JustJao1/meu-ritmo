@@ -110,6 +110,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
     assert.equal(cardResult.url,'https://asaas.com/checkoutSession/show?id=aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
     assert.deepEqual(cardCheckoutRequest.billingTypes,['CREDIT_CARD']);
     assert.deepEqual(cardCheckoutRequest.chargeTypes,['RECURRENT']);
+    assert.equal(cardCheckoutRequest.customer,undefined,'Asaas deve solicitar dados completos no Checkout');
     assert.equal(cardCheckoutRequest.subscription.cycle,'MONTHLY');
     assert.equal(cardCheckoutRequest.items[0].value,29.90);
     const saved=db.prepare('SELECT * FROM asaas_card_checkouts WHERE checkout_id=?').get('aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
@@ -121,17 +122,17 @@ test('Checkout de cart찾o vincula assinatura ao pedido e s처 libera Pro ap처s pa
  const e=globalThis.__socialEnv,prevFetch=globalThis.fetch;
  const checkoutId='aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
  const card=db.prepare('SELECT c.order_id,c.customer_id FROM asaas_card_checkouts c WHERE c.checkout_id=?').get(checkoutId);
- assert(card&&card.customer_id==='cus_test_2','Checkout hospedado do teste anterior precisa estar armazenado');
- const subscription='sub_card_alice',paymentId='pay_card_alice';
+ assert(card&&card.customer_id==='','Checkout novo n찾o deve cadastrar pagador antes da compra');
+ const subscription='sub_card_alice',paymentId='pay_card_alice',payerId='cus_test_2';
  let paymentStatus='PENDING';
  globalThis.fetch=async url=>{
   const link=String(url);
   if(link.endsWith('/subscriptions/'+subscription))return Response.json({
-    id:subscription,customer:card.customer_id,billingType:'CREDIT_CARD',
+    id:subscription,customer:payerId,billingType:'CREDIT_CARD',
     value:29.9,cycle:'MONTHLY',externalReference:null,status:'ACTIVE',deleted:false
   });
   if(link.endsWith('/payments/'+paymentId))return Response.json({
-    id:paymentId,customer:card.customer_id,subscription,billingType:'CREDIT_CARD',
+    id:paymentId,customer:payerId,subscription,billingType:'CREDIT_CARD',
     value:29.9,dueDate:new Date(Date.now()+86400000).toISOString().slice(0,10),status:paymentStatus
   });
   throw Error('Unexpected card provider call: '+link);
@@ -142,10 +143,11 @@ test('Checkout de cart찾o vincula assinatura ao pedido e s처 libera Pro ap처s pa
  }));
  const checkout=(customer,status)=>({checkout:{id:checkoutId,customer,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}});
  try{
-  // A forged event must not mutate an order belonging to another Asaas customer.
-  assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout('cus_other','PAID'))).status,409);
+  assert.equal((await notify('evt_card_checkout_created','CHECKOUT_CREATED',checkout(null,'ACTIVE'))).status,200);
+  assert.equal((await notify('evt_card_checkout_unbound','CHECKOUT_PAID',checkout(null,'PAID'))).status,409);
   assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).status,'ACTIVE');
-  assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout(card.customer_id,'PAID'))).status,200);
+  assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout(payerId,'PAID'))).status,200);
+  assert.equal(db.prepare('SELECT customer_id FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).customer_id,payerId);
   assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).status,'PAID');
   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'Checkout redirect/event must not grant Pro');
   assert.equal((await notify('evt_card_subscription','SUBSCRIPTION_CREATED',{subscription:{id:subscription}})).status,200);
