@@ -111,7 +111,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata√
     assert.deepEqual(cardCheckoutRequest.billingTypes,['CREDIT_CARD']);
     assert.deepEqual(cardCheckoutRequest.chargeTypes,['RECURRENT']);
     assert.equal(cardCheckoutRequest.subscription.cycle,'MONTHLY');
-    assert.equal(cardCheckoutRequest.items[0].value,39.90);
+    assert.equal(cardCheckoutRequest.items[0].value,29.90);
     const saved=db.prepare('SELECT * FROM asaas_card_checkouts WHERE checkout_id=?').get('aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa');
     assert(saved&&saved.order_id===cardResult.orderId);
     assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(cardResult.orderId).provider_subscription_id,null);
