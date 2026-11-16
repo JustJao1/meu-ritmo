@@ -256,7 +256,7 @@ try{
       dueDate:new Date().toISOString().slice(0,10),
       description:'Homologacao de cartao avulso, apenas Sandbox',
       creditCard:{holderName:'Pagador Teste Sandbox',number,expiryMonth:'12',expiryYear:sampleYear,ccv:'123'},
-      creditCardHolderInfo:holder
+      creditCardHolderInfo:holder,remoteIp:'203.0.113.10'
     }),signal:AbortSignal.timeout(45000)
    });
    const result=await resp.json().catch(()=>({}));
