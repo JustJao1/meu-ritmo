@@ -27,6 +27,7 @@ try{
  const direct=await ask('/payments','POST',{customer:customer.data.id,billingType:'PIX',value:19.90,dueDate:today,externalReference:ref+'_direct',description:'Teste isolado QR Pix avulso'});
  console.log('Cobrança avulsa Pix: HTTP '+direct.http+' / '+String(direct.data.billingType)+' / '+JSON.stringify(diagnostic(direct)));
  if(direct.ok&&direct.data.id){
+  console.log('ID da cobrança Pix avulsa para suporte: '+direct.data.id);
   try{
    const q=await ask('/payments/'+encodeURIComponent(direct.data.id)+'/pixQrCode');
    console.log('QR avulso: HTTP '+q.http+' / payload '+Boolean(q.data.payload)+' / imagem '+Boolean(q.data.encodedImage)+' / '+JSON.stringify(diagnostic(q)));
@@ -52,6 +53,7 @@ try{
  }
  if(!invoice?.id)throw Error('Asaas não criou a primeira fatura Pix.');
  paymentId=invoice.id;
+ console.log('ID da cobrança recorrente para suporte: '+paymentId);
  const saved=await ask('/payments/'+encodeURIComponent(paymentId));
  if(!saved.ok)throw Error('GET da fatura falhou: HTTP '+saved.http);
  console.log('Primeira fatura persistida: '+saved.data.billingType+' / '+saved.data.status);
