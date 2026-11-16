@@ -210,7 +210,7 @@ try{
    try{
     await asaas('/payments/'+encodeURIComponent(standalonePixId)+'/refund','POST',{description:'Estorno Pix avulso apenas para homologacao'});
     const result=await asaas('/payments/'+encodeURIComponent(standalonePixId));
-    log('Estorno Pix avulso Sandbox',String(result.status));
+    log('Estorno Pix avulso Sandbox',Array.isArray(result.refunds)?result.refunds.map(x=>x.status||'indefinido').join(', '):'solicitado; confirmação pendente');
    }catch(error){
     log('Estorno Pix avulso Sandbox','recusado pela API; requer conferência');
    }
