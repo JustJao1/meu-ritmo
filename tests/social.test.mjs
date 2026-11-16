@@ -172,7 +172,7 @@ test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pa
   assert.equal(db.prepare("SELECT status FROM subscriptions WHERE user_id='alice'").get().status,'canceled');
  }finally{globalThis.fetch=prevFetch;e.ASAAS_BILLING_ENABLED='false';}
 });
-test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago e pagamento confirmado',async()=>{
+test('Cartão com eventos fora de ordem e entrega 4 dias atrasada só ativa após cobrança confirmada',async()=>{
  const now=Math.floor(Date.now()/1000);
  const order='77777777-7777-4777-8777-777777777777';
  const checkoutId='88888888-8888-4888-8888-888888888888';
@@ -181,7 +181,7 @@ test('Cartão com eventos fora de ordem só ativa assinatura após checkout pago
  db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,?,?)")
   .run(order,'recurring-user','plus_year',19990,19990,'pending',now);
  db.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)")
-  .run(order,checkoutId,'','ACTIVE',now,now);
+  .run(order,checkoutId,'','ACTIVE',now-4*86400,now-4*86400);
  let current='PENDING';
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
