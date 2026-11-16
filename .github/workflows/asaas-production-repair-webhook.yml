@@ -1,0 +1,26 @@
+name: Reparar eventos do webhook Asaas produção (sem cobrança)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-production-repair-webhook.mjs'
+      - '.github/workflows/asaas-production-repair-webhook.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  repair_production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Atualizar apenas eventos necessários no webhook de produção
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+          ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED || 'false' }}
+        run: node scripts/asaas-production-repair-webhook.mjs
