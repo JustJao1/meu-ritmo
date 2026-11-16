@@ -14,7 +14,8 @@ test('pricing buttons take a contrasting foreground/background from the active t
   assert.match(css,/background:var\(--ink\);\s*border:1px solid var\(--ink\);\s*color:var\(--paper\)/);
   assert.match(css,/\.plan-select svg\{\s*color:inherit/);
   assert.match(css,/\.plan-select:hover\{[\s\S]*?color:var\(--paper\)/);
-  assert.match(prices,/className=\{'plan-select '\+/);
+  assert.match(prices,/className="plan-select secondary"/);
+  assert.doesNotMatch(prices,/plan-select[^>]*primary/);
 });
 
 test('pricing cards use the selected theme and avoid huge empty rows',()=>{
