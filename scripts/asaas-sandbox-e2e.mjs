@@ -126,6 +126,7 @@ try{
  if(!['CONFIRMED','RECEIVED'].includes(confirmed.status))
   fail('Sandbox não confirmou o pagamento simulado.');
  const check=await asaas('/payments/'+encodeURIComponent(paymentId));
+ log('Forma da cobrança simulada no Asaas',String(check.billingType||'não informada'));
  if(!['CONFIRMED','RECEIVED'].includes(check.status))
   fail('Consulta de pagamento não refletiu a confirmação simulada.');
  log('Pagamento simulado confirmado','OK; nenhum dinheiro real');
@@ -192,7 +193,7 @@ try{
   }
  }catch(error){
   if(/Asaas POST .*\/refund retornou HTTP 400/.test(error.message))
-   refundResult='indisponível por saldo ou regra de Sandbox; consultar Asaas';
+   refundResult='não homologado: cobrança classificada como '+String(check.billingType||'não informada')+' pelo Asaas Sandbox';
   else throw error;
  }
  log('Estorno Pix Sandbox',refundResult);
