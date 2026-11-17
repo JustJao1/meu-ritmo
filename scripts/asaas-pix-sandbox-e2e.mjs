@@ -9,7 +9,13 @@ async function ask(path,method='GET',body){
  const v=await r.json().catch(()=>({}));
  return {http:r.status,ok:r.ok,data:v};
 }
-const keys=await ask('/pix/addressKeys?limit=100');
+const [keys,webhooks]=await Promise.all([ask('/pix/addressKeys?limit=100'),ask('/webhooks?limit=100')]);
+const target='meu-ritmo-asaas-sandbox.silva-joao-232334.workers.dev/api/billing/webhook/asaas';
+const webhookList=webhooks.ok&&Array.isArray(webhooks.data.data)?webhooks.data.data:[];
+const matchingWebhooks=webhookList.filter(item=>typeof item.url==='string'&&item.url.includes(target));
+console.log('Webhook Sandbox: quantidade='+matchingWebhooks.length+', estado='+JSON.stringify(matchingWebhooks.map(w=>({enabled:w.enabled===true,interrupted:w.interrupted===true,sendType:w.sendType})))+
+ ', HTTP '+webhooks.http);
+
 console.log('Chaves Pix cadastradas no Sandbox: '+(keys.ok?(keys.data.data?.length??'resposta inesperada'):'HTTP '+keys.http));
 if(keys.ok&&Array.isArray(keys.data.data))
  console.log('Estados das chaves Pix: '+JSON.stringify(keys.data.data.reduce((acc,k)=>{const v=String(k.status||'UNKNOWN').replace(/[^A-Z_]/g,'');acc[v]=(acc[v]||0)+1;return acc;},{})));
@@ -25,15 +31,29 @@ try{
   mobilePhone:'11987654321',externalReference:ref,notificationDisabled:true});
  if(!customer.ok||!/^cus_/.test(customer.data.id||''))throw Error('Cliente fictício rejeitado: HTTP '+customer.http);
  const direct=await ask('/payments','POST',{customer:customer.data.id,billingType:'PIX',value:19.90,dueDate:today,externalReference:ref+'_direct',description:'Teste isolado QR Pix avulso'});
+ let directQrFailed=false;
  console.log('Cobrança avulsa Pix: HTTP '+direct.http+' / '+String(direct.data.billingType)+' / '+JSON.stringify(diagnostic(direct)));
  if(direct.ok&&direct.data.id){
   console.log('ID da cobrança Pix avulsa para suporte: '+direct.data.id);
   try{
    const q=await ask('/payments/'+encodeURIComponent(direct.data.id)+'/pixQrCode');
    console.log('QR avulso: HTTP '+q.http+' / payload '+Boolean(q.data.payload)+' / imagem '+Boolean(q.data.encodedImage)+' / '+JSON.stringify(diagnostic(q)));
+   directQrFailed=!q.ok;
   }finally{const c=await ask('/payments/'+encodeURIComponent(direct.data.id),'DELETE'); console.log('Avulsa teste cancelada: HTTP '+c.http);}
  }
- for(const key of keys.data.data||[]){
+ // The lean endpoint is documented as an alternative creation API. Probe it only
+ // if the ordinary Pix charge failed, to distinguish API-route from account issues.
+ if(directQrFailed){
+  const lean=await ask('/lean/payments','POST',{customer:customer.data.id,billingType:'PIX',value:19.90,dueDate:today,externalReference:ref+'_lean'});
+  console.log('Criação Pix lean: HTTP '+lean.http+' / '+JSON.stringify(diagnostic(lean)));
+  if(lean.ok&&/^pay_[A-Za-z0-9_-]+$/.test(lean.data.id||'')){
+   try{
+    const qr=await ask('/payments/'+encodeURIComponent(lean.data.id)+'/pixQrCode');
+    console.log('QR lean: HTTP '+qr.http+' / payload '+Boolean(qr.data.payload)+' / imagem '+Boolean(qr.data.encodedImage)+' / '+JSON.stringify(diagnostic(qr)));
+   }finally{const c=await ask('/payments/'+encodeURIComponent(lean.data.id),'DELETE');console.log('Cobrança Pix lean cancelada: HTTP '+c.http);}
+  }
+ }
+ for(const key of (keys.ok&&Array.isArray(keys.data.data)?keys.data.data:[]).filter(k=>k.status==='ACTIVE').slice(0,1)){
   const q=await ask('/pix/qrCodes/static','POST',{addressKey:key.key,value:19.90,format:'ALL',expirationSeconds:60,allowsMultiplePayments:false,description:'Teste QR Sandbox',externalReference:ref+'_static'});
   console.log('QR estático por chave ACTIVE: HTTP '+q.http+' / payload '+Boolean(q.data.payload)+' / imagem '+Boolean(q.data.encodedImage)+' / '+JSON.stringify(diagnostic(q)));
   if(q.ok&&q.data.id){const c=await ask('/pix/qrCodes/static/'+encodeURIComponent(q.data.id),'DELETE');console.log('QR estático teste removido: HTTP '+c.http);}

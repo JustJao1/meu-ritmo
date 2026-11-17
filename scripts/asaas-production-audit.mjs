@@ -42,6 +42,11 @@ if(activeMode&&key&& !key.startsWith('$aact_hmlg_')){
   show('Asaas produção: API autenticada',Array.isArray(customers.data));
  }catch(err){show('Asaas produção: API autenticada','não ('+String(err.message||'erro')+')')}
  try{
+  const pix=await call('/pix/addressKeys?limit=100');
+  show('Asaas produção: quantidade de chaves Pix',Array.isArray(pix.data)?pix.data.length:'resposta inesperada');
+  show('Asaas produção: chaves Pix ativas',Array.isArray(pix.data)?pix.data.filter(k=>k.status==='ACTIVE').length:'desconhecido');
+ }catch(err){show('Asaas produção: chave Pix','consulta indisponível ('+String(err.message||'erro')+')')}
+ try{
   const list=await call('/webhooks?limit=100');
   if(!Array.isArray(list.data))throw Error('resposta inesperada');
   const target='https://meuritmo.net/api/billing/webhook/asaas';

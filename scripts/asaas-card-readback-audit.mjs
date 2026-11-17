@@ -11,7 +11,7 @@ async function get(path){
  if(!r.ok)throw Error('Falha na consulta somente leitura à API: HTTP '+r.status);
  return await r.json();
 }
-const today=new Date(),from=new Date(today.getTime()-14*86400000).toISOString().slice(0,10);
+const today=new Date(),from=new Date(today.getTime()-30*86400000).toISOString().slice(0,10);
 const entries=[];
 for(let offset=0;offset<=900;offset+=100){
  const path='/payments?limit=100&offset='+offset+'&billingType=CREDIT_CARD&dateCreated%5Bge%5D='+from;
@@ -44,7 +44,7 @@ for(const p of own){
  const safeBrand=['VISA','MASTERCARD','UNKNOWN'].includes(brand)?brand:'OTHER';
  cards[category].brands[safeBrand]=(cards[category].brands[safeBrand]||0)+1;
 }
-console.log('Janela de consulta: últimos 14 dias');
+console.log('Janela de consulta: últimos 30 dias');
 console.log('Cobranças sintéticas do teste localizadas: '+own.length);
 console.log('Cobranças consultadas individualmente: '+persist);
 console.log('Distribuição dos status persistidos: '+JSON.stringify(counts));
@@ -53,3 +53,8 @@ console.log('Mudança entre lista e consulta individual: '+differentStatus);
 console.log('Forma de pagamento divergente do cartão: '+uncertain);
 console.log('Cobranças com data de pagamento/confirmação: '+withPaymentDate);
 console.log('Auditoria de leitura concluída, sem pagamentos, novos clientes ou alterações.');
+
+if(cards.mastercardRecusa.count||cards.visaRecusa.count){
+ const failures=cards.mastercardRecusa.confirmed+cards.visaRecusa.confirmed;
+ console.log('INCONSISTÊNCIA com cartões de recusa: '+failures+' confirmados; causa no simulador não comprovada.');
+}else console.log('Nenhum cartão de recusa do teste foi localizado na janela consultada.');
