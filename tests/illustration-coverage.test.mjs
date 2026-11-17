@@ -8,7 +8,7 @@ import {build} from 'esbuild';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 const folder=await mkdtemp(join(process.cwd(),'.mr-category-art-'));
-await build({entryPoints:['components/context-illustration.tsx','components/category-illustration.tsx'],outdir:folder,bundle:true,format:'esm',platform:'node',jsx:'automatic',external:['react','react-dom','react/jsx-runtime'],outExtension:{'.js':'.mjs'}});
+await build({entryPoints:['components/context-illustration.tsx','components/category-illustration.tsx'],outdir:folder,bundle:true,format:'esm',platform:'node',jsx:'automatic',packages:'external',outExtension:{'.js':'.mjs'}});
 const {default:Context}=await import(join(folder,'context-illustration.mjs'));
 const {default:Category}=await import(join(folder,'category-illustration.mjs'));
 after(()=>rm(folder,{recursive:true,force:true}));
