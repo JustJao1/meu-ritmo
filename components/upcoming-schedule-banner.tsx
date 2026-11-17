@@ -1,27 +1,14 @@
 'use client';
-import {useEffect,useMemo,useState} from 'react';
 import {CalendarDays,Clock3,ChevronRight} from 'lucide-react';
-import {upcomingAlerts} from '../lib/alerts';
+import type {UpcomingOccurrence} from '../lib/alerts';
 import type {Item} from '../lib/ritmo-domain';
-import type {SharedSpaceScheduled} from '../hooks/use-shared-space-notifications';
 import {useLocale} from './language-selector';
 
-export default function UpcomingScheduleBanner({items,shared,timezone,onOpenPersonal,onOpenShared}:{
- items:Item[];shared:SharedSpaceScheduled[];timezone:string;
+export default function UpcomingScheduleBanner({upcoming,onOpenPersonal,onOpenShared}:{
+ upcoming:UpcomingOccurrence[];
  onOpenPersonal:(item:Item)=>void;onOpenShared:(id:string)=>void;
 }){
  const {t,locale}=useLocale();
- const [now,setNow]=useState(()=>new Date());
- useEffect(()=>{
-  const refresh=()=>setNow(new Date());
-  const timer=setInterval(refresh,15000);
-  document.addEventListener('visibilitychange',refresh);
-  return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',refresh);};
- },[]);
- const upcoming=useMemo(()=>upcomingAlerts([
-  ...items.map(item=>({item})),
-  ...shared.map(s=>({item:s.item,spaceId:s.spaceId,spaceName:s.spaceName}))
- ],now,timezone),[items,shared,now,timezone]);
  if(!upcoming.length)return null;
  return <section className="mr-upcoming" aria-label={t('Próximos horários')}>
   <div className="mr-upcoming-heading"><Clock3 size={17}/><strong>{t('Próximos horários')}</strong></div>

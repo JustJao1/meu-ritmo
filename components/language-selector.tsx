@@ -3,6 +3,13 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"evento agendado":["scheduled event","evento programado"],
+"eventos agendados":["scheduled events","eventos programados"],
+"Eventos agendados":["Scheduled events","Eventos programados"],
+"eventos pendentes":["upcoming events","eventos pendientes"],
+"avisos para acompanhar":["alerts to review","avisos para revisar"],
+"Meu espaço pessoal":["My personal space","Mi espacio personal"],
+"Nenhum evento futuro agendado.":["No upcoming events scheduled.","No hay eventos futuros programados."],
 "Próximos horários":["Upcoming schedules","Próximos horarios"],
 "outros horários":["more scheduled items","otros horarios"],
 "Adicionar itens":["Add items","Añadir elementos"],
