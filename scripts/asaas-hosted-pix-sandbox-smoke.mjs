@@ -13,7 +13,7 @@ const callbackOrigin='https://meu-ritmo-asaas-sandbox.silva-joao-232334.workers.
 const session=await request('/checkouts','POST',{
  billingTypes:['PIX'],chargeTypes:['DETACHED'],minutesToExpire:30,
  externalReference:'mr-hostedpix-validation-'+crypto.randomUUID(),
- items:[{name:'Validação técnica de checkout Pix',description:'Teste de integração; não efetuar pagamento',quantity:1,value:1.90}],
+ items:[{name:'Teste MR Pix',description:'Validação de integração; não efetuar pagamento',quantity:1,value:5.00}],
  callback:{successUrl:callbackOrigin+'/app?billing=awaiting_webhook',
  cancelUrl:callbackOrigin+'/app?billing=canceled',
  expiredUrl:callbackOrigin+'/app?billing=expired'}
