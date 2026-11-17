@@ -3,6 +3,20 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Ganho":["Income","Ingreso"],
+"Registrar ganho":["Add income","Registrar ingreso"],
+"Ganhos do mês":["Monthly income","Ingresos del mes"],
+"Gastos do mês":["Monthly expenses","Gastos del mes"],
+"Saldo do mês":["Monthly balance","Saldo del mes"],
+"Resumo financeiro do mês":["Monthly financial summary","Resumen financiero del mes"],
+"Registre seus ganhos e gastos. Valores recorrentes entram como lançamentos previstos no mês.":["Record your income and expenses. Recurring amounts appear as expected transactions for the month.","Registra tus ingresos y gastos. Los importes recurrentes aparecen como movimientos previstos del mes."],
+"Registre um ganho ou gasto para acompanhar o mês.":["Record income or an expense to follow your month.","Registra un ingreso o un gasto para seguir tu mes."],
+"Ex.: Salário do mês":["E.g. Monthly salary","Ej.: Sueldo del mes"],
+"Salário":["Salary","Sueldo"],
+"Freelance":["Freelance","Trabajo independiente"],
+"Vendas":["Sales","Ventas"],
+"Investimentos":["Investments","Inversiones"],
+"Presentes":["Gifts","Regalos"],
 "Conflito de horário com:":["Time conflict with:", "Conflicto de horario con:"],
 "Trecho interpretado:":["Source text:", "Texto interpretado:"],
 "Quero manter esses horários mesmo com os conflitos indicados.":["Keep these times despite the listed conflicts.", "Quiero mantener estos horarios a pesar de los conflictos indicados."],

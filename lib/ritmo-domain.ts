@@ -1,5 +1,5 @@
 import type {Appearance} from './plans';
-export type Kind = 'task' | 'event' | 'expense' | 'note' | 'reminder' | 'alarm' | 'message';
+export type Kind = 'task' | 'event' | 'expense' | 'income' | 'note' | 'reminder' | 'alarm' | 'message';
 export type Item = {
     id: string;
     type: Kind;
@@ -45,3 +45,5 @@ export function occurs(x: Item, date: string) { if (x.archived || x.date > date 
 } return x.days.includes(String(dayDate(date).getDay())); }
 export function isDone(x: Item, date: string) { return x.repeat !== 'none' || x.days.length > 0 ? !!x.completedDates?.includes(date) : x.done; }
 export function monthExpenses(items: Item[], month: string) { const days = new Date(+month.slice(0, 4), +month.slice(5, 7), 0).getDate(); return items.filter(x => x.type === 'expense').flatMap(x => Array.from({ length: days }, (_, i) => month + '-' + String(i + 1).padStart(2, '0')).filter(d => occurs(x, d)).map(d => ({ ...x, date: d }))); }
+
+export function monthIncome(items: Item[], month: string) { const days = new Date(+month.slice(0, 4), +month.slice(5, 7), 0).getDate(); return items.filter(x => x.type === 'income').flatMap(x => Array.from({ length: days }, (_, i) => month + '-' + String(i + 1).padStart(2, '0')).filter(d => occurs(x, d)).map(d => ({ ...x, date: d }))); }

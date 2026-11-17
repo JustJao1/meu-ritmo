@@ -26,8 +26,9 @@ import './routine-social.css';
 import './plan-footer-admin-contrast.css';
 import './theme-calendar-alarm-contrast.css';
 import './assistant-feedback.css';
+import './finance-income.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';
-export const metadata:Metadata={title:'MR: Meu Ritmo · Seu dia em boa companhia',description:'Seu dia, suas contas e suas ideias em um lugar só.',manifest:'/manifest.webmanifest',appleWebApp:{capable:true,title:'MR: Meu Ritmo',statusBarStyle:'default'},icons:{apple:[{url:'/favicon-mr-v3.png',sizes:'64x64'}],icon:[{url:'/favicon-mr-v3.svg',type:'image/svg+xml'},{url:'/favicon-mr-v3.png',type:'image/png',sizes:'64x64'}],shortcut:'/favicon-mr-v3.svg'}};
+export const metadata:Metadata={metadataBase:new URL('https://meuritmo.net'),title:'MR: Meu Ritmo · Seu dia em boa companhia',description:'Organize sua rotina, agenda, lembretes, ganhos e gastos em um só lugar.',openGraph:{type:'website',locale:'pt_BR',siteName:'MR: Meu Ritmo',title:'MR: Meu Ritmo · Seu dia em boa companhia',description:'Sua rotina e suas finanças organizadas em um só lugar.',url:'https://meuritmo.net/',images:[{url:'/opengraph-image',width:1200,height:630,alt:'MR: Meu Ritmo — rotina e finanças em um só lugar'}]},twitter:{card:'summary_large_image',title:'MR: Meu Ritmo',description:'Organize rotina, ganhos, gastos e compromissos.',images:['/opengraph-image']},manifest:'/manifest.webmanifest',appleWebApp:{capable:true,title:'MR: Meu Ritmo',statusBarStyle:'default'},icons:{apple:[{url:'/favicon-mr-v3.png',sizes:'64x64'}],icon:[{url:'/favicon-mr-v3.svg',type:'image/svg+xml'},{url:'/favicon-mr-v3.png',type:'image/png',sizes:'64x64'}],shortcut:'/favicon-mr-v3.svg'}};
 export default function Layout({children}:{children:React.ReactNode}){return <html lang="pt-BR"><body><AppDialogProvider><a className="skiplink" href="#conteudo">Pular para o conteúdo</a><div id="conteudo" tabIndex={-1}>{children}</div><CookieConsent/><Analytics/></AppDialogProvider></body></html>}
