@@ -3,6 +3,16 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Novidades dos espaços":["Shared space updates","Novedades de los espacios"],
+"Novidades para ver":["New updates to view","Novedades por ver"],
+"Novidade no espaço":["New in shared space","Novedad en el espacio"],
+"Adicionado ao espaço":["Added to shared space","Añadido al espacio"],
+"Novo item adicionado":["New item added","Nuevo elemento añadido"],
+"Novos itens adicionados":["New items added","Nuevos elementos añadidos"],
+"notificações não vistas":["unread notifications","notificaciones sin leer"],
+"Nenhuma novidade pendente nos espaços.":["No unread shared-space updates.","No hay novedades pendientes en los espacios."],
+"Ver meus espaços":["View my spaces","Ver mis espacios"],
+"Ver espaço":["View space","Ver espacio"],
 "Registre seus gastos.":["Record your expenses.","Registra tus gastos."],
 "Registre valores que você recebeu.":["Record the money you received.","Registra el dinero que recibiste."],
 "Na área Gastos, você pode registrar ganhos, despesas e ajustar o orçamento. As recorrências entram no mês previsto. Se ultrapassar o limite de gastos, use Revisar excesso para registrar o motivo.":["In Expenses, track your income and expenses and adjust the budget. Recurring items count in their expected months. If expenses exceed the limit, use Review overrun to record the reason.","En Gastos, registra ingresos y gastos y ajusta el presupuesto. Los movimientos recurrentes cuentan en el mes previsto. Si superas el límite de gastos, usa Revisar exceso para registrar el motivo."],

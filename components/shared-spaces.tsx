@@ -25,7 +25,7 @@ async function request<T=any>(body?:unknown,id?:string):Promise<T>{
  if(!response.ok)throw Error(result.error||'Não foi possível consultar o espaço.');
  return result;
 }
-export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
+export default function SharedSpaces({onPersonal,unreadBySpace={},onReadSpace,onAdded,targetSpaceId,focusRequest=0}:{onPersonal:()=>void;unreadBySpace?:Record<string,number>;onReadSpace?:(id:string)=>void;onAdded?:(info:{spaceId:string;spaceName:string;count:number;firstTitle:string})=>void;targetSpaceId?:string|null;focusRequest?:number}){
  const {t}=useLocale();
  const dialogs=useAppDialog();
  const [spaces,setSpaces]=useState<Space[]>([]);
@@ -52,7 +52,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  }
  async function open(id:string){
   const response=await request<{space:Space}>(undefined,id);
-  setSelected(response.space);setShowMembers(false);setShowSettings(false);setEditing(null);setBatchOpen(false);setRenameValue(response.space.name);
+  setSelected(response.space);setShowMembers(false);setShowSettings(false);setEditing(null);setBatchOpen(false);setRenameValue(response.space.name);onReadSpace?.(id);
  }
  useEffect(()=>{
   let live=true;
@@ -63,14 +63,19 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
   return()=>{live=false};
  },[]);
  useEffect(()=>{
+  if(!targetSpaceId)return;
+  void open(targetSpaceId).catch(e=>setError(e instanceof Error?e.message:'Não foi possível abrir o espaço.'));
+ },[targetSpaceId,focusRequest]);
+ useEffect(()=>{
   if(!selected||editing||batchOpen||busy)return;
   const interval=setInterval(()=>{
    request<{space:Space}>(undefined,selected.id).then(r=>{
     setSelected(prev=>prev?.id===r.space.id?r.space:prev);
+    if(r.space.revision>selected.revision)onReadSpace?.(r.space.id);
    }).catch(e=>{if(e instanceof Error&&e.message.includes('acesso removido')){setSelected(null);setEditing(null);setError('Seu acesso a este espaço foi removido.');}});
   },20000);
   return()=>clearInterval(interval);
- },[selected?.id,editing,batchOpen,busy]);
+ },[selected?.id,selected?.revision,editing,batchOpen,busy]);
  async function act(action:Record<string,unknown>,after?:(result:any)=>void){
   setBusy(true);setError('');setNotice('');
   try{
@@ -98,9 +103,12 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
  }
  async function update(next:Item[]){
   if(!selected)return;
+  const oldIds=new Set((selected.items||[]).map(item=>item.id));
+  const added=next.filter(item=>!oldIds.has(item.id));
   return await act({action:'update',id:selected.id,revision:selected.revision,items:next},r=>{
    setSelected({...selected,items:next,revision:r.revision});
    setEditing(null);
+   if(added.length)onAdded?.({spaceId:selected.id,spaceName:selected.name,count:added.length,firstTitle:added[0].title});
   });
  }
  async function removeItem(item:Item){
@@ -204,7 +212,7 @@ export default function SharedSpaces({onPersonal}:{onPersonal:()=>void}){
   </div>:<div className="shared-list"><QuietIllustration kind="community"/>
    <p className="muted">{t('Seu espaço pessoal continua privado. Você pode participar de espaços por convite, mesmo no plano gratuito.')}</p>
    <button type="button" className="shared-personal" onClick={onPersonal}><span><strong>{t('Meu espaço')}</strong><small>{t('Pessoal')} · {t('Privado')}</small></span><ArrowLeft size={15}/></button>
-   {spaces.map(s=><button type="button" key={s.id} className="shared-space-entry" onClick={()=>{setError('');void open(s.id).catch(e=>setError(e.message))}}><Users size={19}/><span><strong>{s.name}</strong><small>{s.owner?t('Criado por você'):t('Participante')}</small></span><ArrowLeft size={15}/></button>)}
+   {spaces.map(s=><button type="button" key={s.id} className={'shared-space-entry'+(unreadBySpace[s.id]?' has-unread':'')} onClick={()=>{setError('');void open(s.id).catch(e=>setError(e.message))}}><Users size={19}/><span><strong>{s.name}</strong><small>{s.owner?t('Criado por você'):t('Participante')}{unreadBySpace[s.id]?' · '+t('Novidades para ver'):''}</small></span>{unreadBySpace[s.id]>0&&<b className="shared-entry-unread" aria-label={unreadBySpace[s.id]+' '+t('notificações não vistas')}>{unreadBySpace[s.id]>99?'99+':unreadBySpace[s.id]}</b>}<ArrowLeft size={15}/></button>)}
    <div className="shared-columns"><form onSubmit={join} className="shared-box"><h3>{t('Entrar com código')}</h3><p className="muted">{t('Peça o código de convite ao criador do espaço.')}</p><label>{t('Código de convite')}<input required minLength={12} maxLength={12} value={code} onChange={e=>setCode(e.target.value.toUpperCase().replace(/\s/g,''))} autoComplete="off" placeholder="XXXXXXXXXXXX"/></label><button className="primary" disabled={busy}>{t('Entrar no espaço')}</button></form>
    <form onSubmit={create} className="shared-box"><h3>{t('Criar espaço compartilhado')}</h3><p className="muted">{t('Criar um espaço é exclusivo do plano Pro. Qualquer conta pode participar por convite.')}</p><p className="shared-counter">{t('Espaços criados')}: <strong>{createdCount} / {maxCreated}</strong></p>{canCreate&&createdCount<maxCreated?<><label>{t('Nome do espaço')}<input required minLength={3} maxLength={64} value={name} onChange={e=>setName(e.target.value)} placeholder={t('Ex.: Minha equipe')}/></label><button className="primary" disabled={busy}><Plus size={16}/>{t('Criar espaço')}</button></>:<p className="muted">{canCreate?t('Você atingiu o limite de 2 espaços. Exclua um espaço criado por você para criar outro.'):t('A criação está disponível para assinantes Pro. Você ainda pode entrar em espaços compartilhados.')}</p>}</form></div>
   </div>}

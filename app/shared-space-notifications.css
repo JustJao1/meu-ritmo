@@ -1,0 +1,70 @@
+
+/* Shared space activity: in-app notices and persistent unread badges. */
+.appframe .workspace{position:relative}
+.appframe .shared-workspace-counter,
+.appframe .shared-top-space-counter,
+.appframe .shared-bell-counter,
+.shared-space-entry .shared-entry-unread,
+.shared-notification-inbox .shared-inbox-counter{
+ display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+ min-width:21px;height:21px;box-sizing:border-box;padding:0 5px;
+ background:var(--accent);color:var(--paper);border-radius:999px;
+ font-size:11px;font-weight:750;line-height:1;font-variant-numeric:tabular-nums;
+}
+.appframe .shared-top-space-counter{margin-left:5px}
+.appframe .shared-alert-button{position:relative}
+.appframe .shared-bell-counter{position:absolute;top:-9px;right:-9px;min-width:20px;height:20px;z-index:2}
+.shared-space-entry.has-unread{
+ border-color:color-mix(in srgb,var(--accent) 70%,var(--line));
+ background:color-mix(in srgb,var(--accent) 7%,var(--paper));
+}
+.shared-space-entry .shared-entry-unread{margin-left:auto}
+.shared-notification-inbox{
+ display:grid;gap:14px;margin:0 0 24px;padding:18px;
+ border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);
+}
+.shared-notification-inbox .shared-inbox-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.shared-notification-inbox .shared-inbox-heading>span:first-child{display:inline-flex;align-items:center;gap:9px;font-size:15px}
+.shared-notification-inbox .shared-inbox-heading svg{color:var(--accent)}
+.shared-notification-inbox .shared-inbox-list{display:grid;gap:8px;max-height:310px;overflow-y:auto}
+.shared-notification-inbox .shared-inbox-item{
+ display:flex;align-items:center;gap:12px;text-align:left;padding:12px;
+ width:100%;min-height:64px;background:color-mix(in srgb,var(--ink) 3%,var(--paper));
+ border:1px solid var(--line);border-radius:10px;color:var(--ink);
+}
+.shared-notification-inbox .shared-inbox-item:hover,
+.shared-notification-inbox .shared-inbox-item:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--paper));color:var(--ink)}
+.shared-notification-inbox .shared-inbox-item-icon{
+ display:inline-flex;align-items:center;justify-content:center;flex:0 0 37px;height:37px;
+ border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,var(--paper));
+}
+.shared-notification-inbox .shared-inbox-item-body{display:grid;gap:4px;min-width:0;flex:1;overflow-wrap:anywhere}
+.shared-notification-inbox .shared-inbox-item-body strong{font-size:13px}
+.shared-notification-inbox .shared-inbox-item-body small{font-size:11px;color:var(--muted)}
+.shared-notification-inbox .shared-inbox-item-body>span{font-size:12px;color:var(--ink)}
+.shared-notification-inbox .shared-inbox-view-all{
+ display:inline-flex;align-items:center;gap:6px;justify-self:start;padding:5px 1px;
+ font-size:13px;font-weight:650;color:var(--ink)
+}
+.shared-notification-inbox .shared-inbox-empty{font-size:13px;line-height:1.5}
+.shared-activity-toast{
+ position:fixed;right:22px;bottom:86px;z-index:220;
+ display:flex;align-items:center;gap:12px;width:min(510px,calc(100vw - 32px));
+ box-sizing:border-box;padding:16px;border:1px solid color-mix(in srgb,var(--accent) 55%,var(--line));
+ border-radius:14px;background:var(--paper);color:var(--ink);
+ box-shadow:0 14px 42px color-mix(in srgb,#000 22%,transparent);
+}
+.shared-activity-toast-icon{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:color-mix(in srgb,var(--accent) 15%,var(--paper))}
+.shared-activity-toast-text{display:grid;gap:4px;flex:1;min-width:0;overflow-wrap:anywhere}
+.shared-activity-toast-text>strong{font-size:13px}
+.shared-activity-toast-text>small{font-size:12px;color:var(--muted)}
+.shared-activity-toast-text>span{font-size:12px;max-height:2.9em;overflow:hidden}
+.shared-activity-toast>button:not(.shared-activity-toast-dismiss){min-height:38px;padding:8px 11px;border:1px solid var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 13%,var(--paper));color:var(--ink);white-space:nowrap;font-size:12px;font-weight:650}
+.shared-activity-toast-dismiss{padding:4px;align-self:flex-start;color:var(--ink)}
+.shared-activity-toast button:focus-visible,.shared-notification-inbox button:focus-visible,.shared-space-entry:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:650px){
+ .shared-activity-toast{right:12px;left:12px;bottom:116px;width:auto;gap:9px;flex-wrap:wrap;padding:12px}
+ .shared-activity-toast-text{flex:1 1 calc(100% - 95px)}
+ .shared-activity-toast>button:not(.shared-activity-toast-dismiss){margin-left:49px}
+ .shared-notification-inbox{padding:13px}
+}
