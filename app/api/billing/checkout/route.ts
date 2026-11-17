@@ -37,7 +37,7 @@ export async function POST(req:Request){
   if(paid&&['active','trialing'].includes(paid.status)&&(paid.valid_until||0)>now)return Response.json({error:'Você já possui uma assinatura ativa.'},{status:409});
   const plan=data.price as AsaasPlanCode;
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
-  try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
+  try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode,user.userId);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
   if(data.paymentMethod==='PIX'&&first<500)
     return Response.json({error:'O checkout Pix do Asaas exige pelo menos R$ 5,00. Ajuste o cupom de desconto.'},{status:400});
