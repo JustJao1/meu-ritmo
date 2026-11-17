@@ -39,16 +39,33 @@ test('visual controls use current theme and shared alarm never edits personal ac
  assert.match(player,/!activeEntry.shared/);
  assert.match(player,/setQueue\(old=>\[\.\.\.old,\.\.\.incoming\]\)/);
 });
-test('workspace attention indicator includes saved personal and shared appointments',async()=>{
+test('only shared-space items contribute to badges and shared event inbox',async()=>{
  const source=await readFile('app/ritmo.tsx','utf8');
  const spaces=await readFile('components/shared-spaces.tsx','utf8');
- assert.match(source,/personalUpcoming=\{personalUpcoming\}/);
+ const banner=await readFile('components/upcoming-schedule-banner.tsx','utf8');
+ const inbox=await readFile('components/upcoming-events-inbox.tsx','utf8');
+ assert.match(source,/sharedAlerts\.schedule\.map\(entry=>\(\{item:entry\.item,spaceId:entry\.spaceId,spaceName:entry\.spaceName\}\)\)/);
+ assert.doesNotMatch(source,/personalUpcoming/);
+ assert.doesNotMatch(source,/\.\.\.data\.items\.map\(item=>\(\{item\}\)\)/);
  assert.match(source,/scheduledBySpace=\{sharedPendingBySpace\}/);
- assert.match(source,/mr-workspace-scheduled-counter/);
- assert.match(source,/pendingTotal>0/);
  assert.match(source,/UpcomingEventsInbox upcoming=\{upcoming\}/);
- assert.match(spaces,/personalUpcoming\.length>0/);
+ assert.match(source,/className="mr-workspace-scheduled-counter"/);
+ assert.match(spaces,/className="shared-personal"/);
  assert.match(spaces,/scheduledBySpace\[s\.id\]/);
+ assert.doesNotMatch(spaces,/mr-personal-space-schedule|personalUpcoming|has-scheduled'\}\)\s*onClick=\{onPersonal/);
+ assert.doesNotMatch(banner,/onOpenPersonal/);
+ assert.doesNotMatch(inbox,/onOpenPersonal|Meu espaço pessoal/);
+});
+test('the personal space keeps its plain label even when other spaces have events',async()=>{
+ const source=await readFile('app/ritmo.tsx','utf8');
+ const spaces=await readFile('components/shared-spaces.tsx','utf8');
+ const player=await readFile('components/alarm-player.tsx','utf8');
+ assert.match(source,/<small>\{t\('Pessoal'\)\}<\/small>/);
+ assert.match(spaces,/<small>\{t\('Pessoal'\)\} · \{t\('Privado'\)\}<\/small>/);
+ assert.doesNotMatch(source,/personalUpcoming=/);
+ assert.doesNotMatch(source,/reminders\.length>0&&<i className="badge"\/>/);
+ assert.match(source,/AlarmPlayer items=\{data\.items\}/);
+ assert.match(player,/dueAlerts\(latest\.current/);
 });
 test('pending badge remains present for events far ahead and does not silently cap the count at 20',()=>{
  const farFuture=task({date:'2027-03-02',repeat:'weekly'});
