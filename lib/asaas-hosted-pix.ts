@@ -13,7 +13,7 @@ export function hostedPixCheckoutPayload(input:{
  orderId:string;customerId:string;plan:PixPlan;amountCents:number;siteOrigin:string;
 }){
  if(!uuid.test(input.orderId)||!customer.test(input.customerId))throw Error('Identificação comercial inválida.');
- if(!Number.isSafeInteger(input.amountCents)||input.amountCents<100)throw Error('Valor inválido.');
+ if(!Number.isSafeInteger(input.amountCents)||input.amountCents<500)throw Error('Checkout Pix exige no mínimo R$ 5,00.');
  const url=new URL(input.siteOrigin);
  const approved=new Set(['meuritmo.net','www.meuritmo.net','meu-ritmo-asaas-sandbox.silva-joao-232334.workers.dev']);
  if(url.protocol!=='https:'||!approved.has(url.hostname)||url.pathname!=='/'||url.search||url.hash||url.username||url.password)

@@ -14,7 +14,7 @@ test('Pix uses detached checkout linked to the authenticated customer and order'
  assert.equal(hostedCheckoutUrl(args.orderId),'https://asaas.com/checkoutSession/show?id='+args.orderId);
 });
 test('hosted Pix does not accept forged customers, amounts or callbacks',()=>{
- for(const override of [{orderId:'x'},{customerId:'cus_'},{amountCents:0},{amountCents:19.9},{siteOrigin:'https://attacker.invalid/'},{siteOrigin:'http://meuritmo.net/'}])
+ for(const override of [{orderId:'x'},{customerId:'cus_'},{amountCents:0},{amountCents:499},{amountCents:19.9},{siteOrigin:'https://attacker.invalid/'},{siteOrigin:'http://meuritmo.net/'}])
   assert.throws(()=>hostedPixCheckoutPayload({...args,...override}));
 });
 test('the monthly and yearly access periods account for calendar boundaries',()=>{

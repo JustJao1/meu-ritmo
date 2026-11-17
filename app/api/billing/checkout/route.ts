@@ -39,6 +39,8 @@ export async function POST(req:Request){
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
+  if(data.paymentMethod==='PIX'&&first<500)
+    return Response.json({error:'O checkout Pix do Asaas exige pelo menos R$ 5,00. Ajuste o cupom de desconto.'},{status:400});
   // Previous completed Pix periods must not prevent purchasing a new period.
   try{
     await env.DB!.prepare("UPDATE asaas_orders SET status='expired' WHERE user_id=? AND status='active' AND first_paid_at IS NOT NULL AND EXISTS (SELECT 1 FROM asaas_hosted_pix_checkouts h WHERE h.order_id=asaas_orders.id AND h.status='PAID') AND NOT EXISTS (SELECT 1 FROM subscriptions s WHERE s.user_id=asaas_orders.user_id AND s.status='active' AND s.valid_until>?)").bind(user.userId,now).run();
