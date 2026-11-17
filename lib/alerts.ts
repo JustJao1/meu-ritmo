@@ -12,6 +12,11 @@ export function upcomingAlerts(sources:ScheduledSource[],now:Date,timezone:strin
  return sources.flatMap(source=>{
   const item=source.item;
   if(item.archived||item.enabled===false||!item.time||!['event','reminder','task','alarm'].includes(item.type))return [];
+  // A one-time appointment stays listed even when booked months in advance.
+  if(item.repeat==='none'&&(!item.days||item.days.length===0)){
+   if(item.date+'T'+item.time<=current.date+'T'+current.time||isDone(item,item.date))return [];
+   return [{...source,date:item.date,time:item.time,key:(source.spaceId||'personal')+':'+item.id+':'+item.date+':'+item.time}];
+  }
   for(let offset=0;offset<=daysAhead;offset++){
    const date=new Date(start+offset*86400000).toISOString().slice(0,10);
    if(!occurs(item,date)||isDone(item,date))continue;
