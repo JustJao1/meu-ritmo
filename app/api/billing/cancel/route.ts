@@ -22,7 +22,9 @@ export async function POST(req:Request){
           env.DB!.prepare("UPDATE asaas_hosted_pix_checkouts SET status='CANCELED',updated_at=? WHERE order_id=? AND status='ACTIVE'")
             .bind(time,order.id),
           env.DB!.prepare("UPDATE asaas_orders SET status='cancelled',cancelled_at=? WHERE id=? AND status='pending' AND first_paid_at IS NULL")
-            .bind(time,order.id)
+            .bind(time,order.id),
+          env.DB!.prepare("DELETE FROM asaas_coupon_uses WHERE order_id=? AND EXISTS(SELECT 1 FROM asaas_orders WHERE id=? AND status='cancelled' AND first_paid_at IS NULL)")
+            .bind(order.id,order.id)
         ]);
         return Response.json({message:'Pagamento Pix pendente cancelado. Nenhum plano foi liberado.'});
       }catch{return Response.json({error:'Não foi possível cancelar o checkout Pix no Asaas.'},{status:503});}
