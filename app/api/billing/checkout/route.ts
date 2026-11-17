@@ -1,7 +1,8 @@
 import {env} from 'cloudflare:workers';
 import {getUser} from '../../../session';
 import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
-import {asaasConfig,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
+import {asaasConfig,asaasCardCheckoutReady,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
+import {hostedCardCheckoutPayload} from '../../../../lib/asaas-hosted-card';
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
 import {z} from 'zod';
 import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
@@ -9,7 +10,7 @@ import {parseLegalSettings} from '../../../../lib/legal-settings';
 
 const inputSchema=z.object({
   price:z.enum(['plus_month','plus_year','pro_month','pro_year']),
-  paymentMethod:z.literal('PIX'),
+  paymentMethod:z.enum(['PIX','CREDIT_CARD']),
   name:z.string().trim().min(3).max(120),
   cpfCnpj:z.string().trim().min(11).max(18),
   discountCode:z.string().trim().max(32).optional(),
@@ -25,6 +26,8 @@ export async function POST(req:Request){
   const parsed=inputSchema.safeParse(await req.json().catch(()=>null));
   if(!parsed.success)return Response.json({error:'Confira o plano, os dados do titular, os termos e a política de cancelamento e reembolso.'},{status:400});
   const data=parsed.data,cpfCnpj=data.cpfCnpj.replace(/\D/g,'');
+  if(data.paymentMethod==='CREDIT_CARD'&&!asaasCardCheckoutReady())
+    return Response.json({error:'Cartão de crédito indisponível até a homologação do provedor.'},{status:503});
   if(!validBrazilTaxId(cpfCnpj))return Response.json({error:'CPF ou CNPJ inválido. Confira os dígitos informados.'},{status:400});
   const now=Math.floor(Date.now()/1000);
   const legalRecord=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first<{value:string}>();
@@ -53,6 +56,27 @@ export async function POST(req:Request){
       if(!customerId)throw Error('Cliente não localizado.');
       await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
       customer={customer_id:customerId};
+    }
+    if(data.paymentMethod==='CREDIT_CARD'){
+      // Card data stays entirely on the Asaas hosted payment form.
+      const nextDueDate=new Date(Date.now()+600000).toISOString().slice(0,19).replace('T',' ');
+      const payload=hostedCardCheckoutPayload({
+        orderId:id,customerId:customer.customer_id,plan,amountCents:first,
+        nextDueDate,siteOrigin:new URL(req.url).origin+'/'
+      });
+      const remote=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body:payload});
+      if(!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(remote.id||''))
+        throw Error('Asaas não forneceu identificador válido do checkout.');
+      await env.DB!.batch([
+        env.DB!.prepare("INSERT INTO asaas_card_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,'ACTIVE',?,?)")
+          .bind(id,remote.id,customer.customer_id,now,now),
+        env.DB!.prepare("UPDATE asaas_orders SET status='pending' WHERE id=? AND status='creating'")
+          .bind(id)
+      ]);
+      return Response.json({orderId:id,method:'CREDIT_CARD',
+        url:'https://asaas.com/checkoutSession/show?id='+encodeURIComponent(remote.id),
+        mode:asaasConfig().mode,firstAmount:first/100,renewalAmount:base/100},
+        {headers:{'Cache-Control':'no-store'}});
     }
     const sub=await asaasRequest<AsaasSubscription>('/subscriptions',{method:'POST',body:{
       customer:customer.customer_id,billingType:data.paymentMethod,value:first/100,
@@ -84,12 +108,15 @@ export async function POST(req:Request){
           typeof qr.encodedImage!=='string'||qr.encodedImage.length<100)
           throw Error('QR Pix inválido.');
       }catch{
-        return Response.json({error:'O recebimento via Pix não está habilitado para cobranças nesta conta Asaas. A assinatura ficou pendente, mas nenhuma forma alternativa de pagamento será oferecida.',orderId:id},
-          {status:503,headers:{'Cache-Control':'no-store'}});
+        // A pending QR may be retried without creating duplicate subscriptions.
+        return Response.json({orderId:id,url:'/pagar?pedido='+encodeURIComponent(id),
+          qrReady:false,awaitingInvoice:false,method:'PIX',mode:asaasConfig().mode,
+          message:'O Asaas ainda não disponibilizou o QR Code Pix. Consulte esta cobrança novamente.'},
+          {headers:{'Cache-Control':'no-store'}});
       }
     }
     const url='/pagar?pedido='+encodeURIComponent(id);
-    return Response.json({orderId:id,url,awaitingInvoice:!invoice,mode:asaasConfig().mode,
+    return Response.json({orderId:id,url,method:'PIX',qrReady:!!invoice,awaitingInvoice:!invoice,mode:asaasConfig().mode,
       firstAmount:first/100,renewalAmount:base/100},{headers:{'Cache-Control':'no-store'}});
 
   }catch{
