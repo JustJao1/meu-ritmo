@@ -11,6 +11,7 @@ const db=new DatabaseSync(':memory:');
 const migration=readFileSync('drizzle/0015_asaas_webhook_reviews.sql','utf8').replace(/--> statement-breakpoint/g,'');
 db.exec(migration);
 db.exec("CREATE TABLE asaas_orders(id TEXT PRIMARY KEY,status TEXT NOT NULL)");
+db.exec("CREATE TABLE asaas_webhook_events(event_id TEXT PRIMARY KEY,event_type TEXT NOT NULL,received_at INTEGER NOT NULL)");
 db.prepare('INSERT INTO asaas_orders(id,status) VALUES (?,?)').run('order-1','pending');
 const prepare=sql=>({bind(...values){return{
  execute(){return db.prepare(sql).run(...values);}
