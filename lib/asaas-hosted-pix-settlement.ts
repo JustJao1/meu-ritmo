@@ -107,7 +107,9 @@ export async function hostedPixCheckoutEvent(event:any):Promise<Response>{
    env.DB!.prepare("UPDATE asaas_hosted_pix_checkouts SET status=?,updated_at=? WHERE order_id=? AND status='ACTIVE'")
     .bind(state,time,row.order_id),
    env.DB!.prepare("UPDATE asaas_orders SET status='cancelled',cancelled_at=? WHERE id=? AND status='pending' AND first_paid_at IS NULL")
-    .bind(time,row.order_id)
+    .bind(time,row.order_id),
+   env.DB!.prepare("DELETE FROM asaas_coupon_uses WHERE order_id=? AND EXISTS(SELECT 1 FROM asaas_orders WHERE id=? AND status='cancelled' AND first_paid_at IS NULL)")
+    .bind(row.order_id,row.order_id)
   ]);
  }
  await env.DB!.prepare('INSERT INTO asaas_webhook_events(event_id,event_type,received_at) VALUES (?,?,?) ON CONFLICT(event_id) DO NOTHING')

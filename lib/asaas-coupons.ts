@@ -14,17 +14,21 @@ export function discountedCents(base:number,coupon:Pick<Coupon,'kind'|'value'>):
   const difference=coupon.kind==='percent'?Math.round(base*coupon.value/100):coupon.value;
   return Math.max(0,base-difference);
 }
-export async function quoteCoupon(plan:AsaasPlanCode,raw:string){
+export async function quoteCoupon(plan:AsaasPlanCode,raw:string,userId?:string){
   const code=normalize(raw);
   if(!/^[A-Z0-9-]{6,32}$/.test(code))throw Error('Cupom inválido.');
   const c=await env.DB!.prepare('SELECT id,code,plan,kind,value,max_uses,expires_at,enabled FROM discount_codes WHERE code=?').bind(code).first<Coupon>();
   const now=Math.floor(Date.now()/1000);
   if(!c||!c.enabled||c.expires_at<=now||c.plan!=='all'&&!plan.startsWith(c.plan+'_'))throw Error('Cupom indisponível para este plano.');
   if(c.kind!=='percent'&&c.kind!=='amount'||c.kind==='percent'&&(c.value<1||c.value>90)||c.value<=0)throw Error('Configuração do cupom inválida.');
+  if(userId){
+    const previous=await env.DB!.prepare('SELECT 1 AS used FROM asaas_coupon_uses WHERE coupon_id=? AND user_id=?').bind(c.id,userId).first();
+    if(previous)throw Error('Esse cupom já foi utilizado nesta conta.');
+  }
   const counted=await env.DB!.prepare('SELECT count(*) as n FROM asaas_coupon_uses WHERE coupon_id=?').bind(c.id).first<{n:number}>();
   if((counted?.n||0)>=c.max_uses)throw Error('Esse cupom já atingiu o limite de usos.');
   const price=discountedCents(priceCents[plan],c);
-  if(price<100)throw Error('Esse desconto não pode ser usado nesta assinatura.');
+  if(price<500)throw Error('O valor com desconto precisa ser de pelo menos R$ 5,00 para pagar por Pix.');
   return {coupon:c,price};
 }
 export async function reserveCoupon(orderId:string,userId:string,coupon:Coupon) {

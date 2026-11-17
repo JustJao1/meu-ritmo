@@ -18,7 +18,7 @@ export async function POST(req:Request){
   let first=base,discountApplied=false;
   if(discountCode){
     try{
-      const coupon=await quoteCoupon(price,discountCode);
+      const coupon=await quoteCoupon(price,discountCode,user.userId);
       first=coupon.price;discountApplied=true;
     }catch(e){
       return Response.json({error:e instanceof Error?e.message:'Cupom inválido.'},{status:400,headers:{'Cache-Control':'no-store'}});

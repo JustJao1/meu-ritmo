@@ -23,8 +23,14 @@ const summaries=await query("SELECT status,COUNT(*) AS total FROM asaas_orders G
 const aging=await query("SELECT COUNT(*) AS total FROM asaas_orders WHERE status IN ('pending','creating') AND created_at<CAST(strftime('%s','now') AS INTEGER)-7200");
 const reviews=await query("SELECT COUNT(*) AS total FROM asaas_orders WHERE status='review'");
 const hosts=await query("SELECT status,COUNT(*) AS total FROM asaas_hosted_pix_checkouts GROUP BY status ORDER BY status");
+const discounts=await query("SELECT COUNT(*) AS total,COALESCE(SUM(CASE WHEN enabled=1 AND expires_at>CAST(strftime('%s','now') AS INTEGER) THEN 1 ELSE 0 END),0) AS available FROM discount_codes");
+const gifts=await query("SELECT COUNT(*) AS total,COALESCE(SUM(CASE WHEN enabled=1 AND expires_at>CAST(strftime('%s','now') AS INTEGER) AND used_count<max_uses THEN 1 ELSE 0 END),0) AS available FROM promotions");
+const couponUses=await query("SELECT COUNT(*) AS total FROM asaas_coupon_uses");
 const missing=await query("SELECT COUNT(*) AS total FROM asaas_orders o JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id LEFT JOIN subscriptions s ON s.subscription_id='checkout_'||h.checkout_id AND s.user_id=o.user_id WHERE o.status='active' AND o.first_paid_at IS NOT NULL AND (s.subscription_id IS NULL OR s.valid_until<=o.first_paid_at)");
 console.log('Asaas pedidos comerciais (contagens): '+JSON.stringify(summaries));
+console.log('Cupons de desconto (quantidade cadastrada e disponível): '+JSON.stringify(discounts));
+console.log('Códigos de acesso gratuito (quantidade cadastrada e disponível): '+JSON.stringify(gifts));
+console.log('Reservas de cupons de desconto (total histórico): '+Number(couponUses[0]?.total||0));
 console.log('Checkouts Pix comerciais (contagens): '+JSON.stringify(hosts));
 console.log('Pedidos pendentes há mais de 2 horas: '+Number(aging[0]?.total||0));
 console.log('Pedidos para revisão: '+Number(reviews[0]?.total||0));
