@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Pagamento desta compra":["Payment for this purchase","Pago de esta compra"],
+"Preço normal deste plano":["Regular price of this plan","Precio normal de este plan"],
+"Li os termos e compreendi que o Pix não tem renovação automática:":["I have read the terms and understand that Pix does not renew automatically:","He leído los términos y entiendo que Pix no se renueva automáticamente:"],
+"Cupons valem nesta compra elegível. Para continuar após o vencimento, faça uma nova compra pelo Pix.":["Coupons apply to this eligible purchase. To continue after expiry, make a new Pix purchase.","Los cupones se aplican a esta compra elegible. Para continuar después del vencimiento, realiza otra compra con Pix."],
 "Plus cuida dos detalhes do seu espaço. Pro acrescenta o assistente inteligente, modelos próprios e relatórios.":["Plus adds details to your space. Pro includes the smart assistant, custom templates and reports.","Plus cuida de los detalles de tu espacio. Pro incluye el asistente inteligente, plantillas personalizadas e informes."],
 "Cancelar pagamento pendente":["Cancel pending payment","Cancelar pago pendiente"],
 "O checkout Pix pendente será cancelado. Se já estiver pago, seu acesso permanece até o vencimento.":["The pending Pix checkout will be canceled. If already paid, access remains until expiration.","Se cancelará el checkout Pix pendiente. Si ya se pagó, el acceso continuará hasta el vencimiento."],
