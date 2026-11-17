@@ -34,7 +34,7 @@ test('a auditoria espelha a configuração que realmente será publicada',()=>{
 });
 test('checkout oferece Pix com compra por período e exige pagamento validado',()=>{
  assert.match(pix,/chargeTypes:\['DETACHED'\]/);
- assert.match(pix,/renewal:'manual'/);
+ assert.match(checkout,/renewal:'manual'/);
  assert.match(checkout,/if\(data\.paymentMethod==='CREDIT_CARD'&&!asaasCardCheckoutReady\(\)\)/);
  assert.match(checkout,/if\(data\.paymentMethod==='PIX'\)/);
  assert.match(settlement,/confirmed\.has\(payment\.status\)/);
