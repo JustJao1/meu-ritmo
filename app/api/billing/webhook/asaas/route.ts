@@ -1,6 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {asaasConfig,asaasRequest,hasValidAsaasWebhookToken,type AsaasPayment} from '../../../../../lib/asaas';
 import {handleCardWebhook,bindCardSubscription} from '../../../../../lib/asaas-card-webhook';
+import {recordAsaasReview} from '../../../../../lib/asaas-webhook-review';
 
 const paid=new Set(['CONFIRMED','RECEIVED']);
 const declinedEvents=new Set(['PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_CREDIT_CARD_THREE_D_SECURE_CHALLENGE_FAILED']);
@@ -43,7 +44,7 @@ export async function POST(req:Request){
       await bindCardSubscription(payment.subscription);
       order=await env.DB!.prepare('SELECT * FROM asaas_orders WHERE provider_subscription_id=?').bind(payment.subscription).first<any>();
     }
-    if(!order)return Response.json({error:'Assinatura ainda não registrada.'},{status:503});
+    if(!order)return recordAsaasReview(event,'subscription_unmatched');
     // A card Checkout creates its payer on Asaas after the hosted form is paid.
     // Never infer the payer from a previous Pix customer of the same account.
     const card=await env.DB!.prepare("SELECT customer_id,status FROM asaas_card_checkouts WHERE order_id=?")
@@ -51,10 +52,10 @@ export async function POST(req:Request){
     if(card){
       if(card.status!=='PAID'||!card.customer_id||card.customer_id!==payment.customer||
          payment.billingType!=='CREDIT_CARD')
-        return Response.json({error:'Vínculo do pagamento por cartão inválido.'},{status:409});
+        return recordAsaasReview(event,'card_checkout_mismatch',order.id);
     }else{
       const customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(order.user_id).first<any>();
-      if(!customer||customer.customer_id!==payment.customer)return Response.json({error:'Vínculo do pagamento inválido.'},{status:409});
+      if(!customer||customer.customer_id!==payment.customer)return recordAsaasReview(event,'customer_mismatch',order.id);
       // A Pix-only consent must never grant a plan for a paid bank slip or
       // credit-card transaction. Some Asaas receipts retain BOLETO even when
       // actually settled via Pix; pixTransaction proves that settlement method.
@@ -75,7 +76,7 @@ export async function POST(req:Request){
     }
     const previous=await env.DB!.prepare('SELECT amount_cents FROM asaas_payments WHERE payment_id=?').bind(payment.id).first<{amount_cents:number}>();
     const amount=Math.round(payment.value*100),expected=previous?.amount_cents??(order.first_paid_at?order.base_price_cents:order.first_price_cents);
-    if(amount!==expected)return Response.json({error:'Valor do pagamento divergente.'},{status:409});
+    if(amount!==expected)return recordAsaasReview(event,'amount_mismatch',order.id);
     const time=Math.floor(Date.now()/1000),confirmed=paid.has(payment.status)&&paymentConfirmationEvents.has(event.event);
     const statements=[
       env.DB!.prepare('INSERT INTO asaas_payments(payment_id,order_id,status,amount_cents,paid_at,due_date,updated_at) VALUES (?,?,?,?,?,?,?) ON CONFLICT(payment_id) DO UPDATE SET status=excluded.status,paid_at=COALESCE(excluded.paid_at,asaas_payments.paid_at),updated_at=excluded.updated_at')

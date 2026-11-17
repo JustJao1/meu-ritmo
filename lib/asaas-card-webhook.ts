@@ -1,5 +1,6 @@
 import {env} from 'cloudflare:workers';
 import {asaasRequest,type AsaasSubscription} from './asaas';
+import {recordAsaasReview} from './asaas-webhook-review';
 
 type CardOrder={order_id:string;checkout_id:string;customer_id:string;checkout_status:string;order_status:string;plan_code:string;first_price_cents:number;provider_subscription_id:string|null;created_at:number};
 const uuid=/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
@@ -33,7 +34,7 @@ async function checkoutEvent(event:any){
     !Array.isArray(checkout.billingTypes)||
     !checkout.billingTypes.some((type:unknown)=>type==='CREDIT_CARD'||type==='MUNDIPAGG_CIELO')||
     !Array.isArray(checkout.chargeTypes)||!checkout.chargeTypes.includes('RECURRENT')||
-    checkout.status!==state)return Response.json({error:'Checkout divergente.'},{status:409});
+    checkout.status!==state)return recordAsaasReview(event,'checkout_mismatch',row.order_id);
  // Never roll a confirmed paid checkout back to ACTIVE/EXPIRED via delayed events.
  if(row.checkout_status==='PAID'&&state!=='PAID'){
    await storeEvent(event);return ok();
@@ -104,8 +105,8 @@ async function subscriptionCreated(event:any){
  if(!subscriptionId.test(supplied||''))
   return Response.json({error:'Assinatura inválida.'},{status:400});
  const orderId=await bindCardSubscription(supplied);
- if(orderId)await storeEvent(event);
- return ok();
+ if(orderId){await storeEvent(event);return ok();}
+ return recordAsaasReview(event,'card_subscription_unmatched');
 }
 
 export async function handleCardWebhook(event:any):Promise<Response>{
