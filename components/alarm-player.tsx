@@ -3,4 +3,143 @@ import {useEffect,useRef,useState} from 'react';
 import {AlarmClock,Volume2,Clock3,PauseCircle,X,Check} from 'lucide-react';
 import {dueAlerts,snoozedAlert} from '../lib/alerts';
 import type {Item} from '../lib/ritmo-domain';
-export default function AlarmPlayer({items,timezone,onNotice,onToast,onSnooze,demo}:{items:Item[];timezone:string;onNotice:(s:string)=>Promise<void>;onToast:(s:string)=>void;onSnooze:(i:Item)=>void;demo:boolean}){const [queue,setQueue]=useState<Item[]>([]),[ready,setReady]=useState(false),[acknowledged,setAcknowledged]=useState(true),[err,setErr]=useState('');const audio=useRef<AudioContext|null>(null),fired=useRef(new Set<string>()),latest=useRef(items);latest.current=items;const active=queue[0];const soundWanted=items.some(i=>i.enabled!==false&&!i.archived&&(i.type==='alarm'||i.soundAlarm));async function enable(){try{audio.current??=new AudioContext();await audio.current.resume();setReady(audio.current.state==='running');setAcknowledged(true);try{localStorage.setItem('mr_alarm_audio_ack_v1','1')}catch{}setErr('');beep()}catch{setErr('Não foi possível ativar o som. Confira as permissões desta aba.')}}function beep(){const c=audio.current;if(c?.state!=='running')return;const start=c.currentTime;for(let n=0;n<2;n++){const at=start+n*.27;const o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.setValueAtTime(n===0?880:1175,at);g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(.16,at+.012);g.gain.setValueAtTime(.16,at+.19);g.gain.exponentialRampToValueAtTime(.001,at+.24);o.connect(g);g.connect(c.destination);o.start(at);o.stop(at+.25)}}useEffect(()=>{try{setAcknowledged(localStorage.getItem('mr_alarm_audio_ack_v1')==='1')}catch{setAcknowledged(false)}},[]);useEffect(()=>{if(!acknowledged||ready)return;const resume=()=>{const c=audio.current;if(c&&c.state==='suspended')void c.resume().then(()=>setReady(c.state==='running')).catch(()=>{})};window.addEventListener('pointerdown',resume);window.addEventListener('keydown',resume);return()=>{window.removeEventListener('pointerdown',resume);window.removeEventListener('keydown',resume)}},[acknowledged,ready]);useEffect(()=>{try{const stored=JSON.parse(sessionStorage.getItem(demo?'mr_demo_fired':'mr_fired')||'[]');if(Array.isArray(stored))fired.current=new Set(stored.filter(x=>typeof x==='string').slice(-500));}catch{}},[demo]);useEffect(()=>{const tick=()=>{for(const {item,key} of dueAlerts(latest.current,new Date(),timezone)){if(fired.current.has(key))continue;fired.current.add(key);try{sessionStorage.setItem(demo?'mr_demo_fired':'mr_fired',JSON.stringify([...fired.current].slice(-500)))}catch{}onToast('Aviso: '+item.title);if(item.notify)void onNotice(item.title).catch(()=>onToast('O aviso chegou aqui, mas a notificação do navegador não pôde ser exibida.'));if(item.type==='alarm'||item.soundAlarm)setQueue(q=>[...q,item]);}};tick();const timer=setInterval(tick,1000);return()=>clearInterval(timer)},[timezone,demo,onNotice,onToast]);useEffect(()=>{if(!active||!ready)return;beep();const t=setInterval(beep,1600),limit=setTimeout(()=>{clearInterval(t);setReady(false);void audio.current?.suspend();},60000);return()=>{clearInterval(t);clearTimeout(limit)}},[active?.id,ready]);useEffect(()=>()=>{void audio.current?.close()},[]);function dismiss(){setQueue(q=>q.slice(1))}return <>{soundWanted&&!ready&&!active&&!acknowledged&&<div className="soundnotice" role="status"><div className="soundnotice-icon"><Volume2 size={19}/></div><div className="soundnotice-copy"><strong>Ative o som dos alarmes</strong><span>Para ouvir seus avisos, permita o áudio nesta aba.</span>{err&&<span className="alarmerror" role="alert">{err}</span>}</div><button className="soundnotice-action" onClick={enable}>Ativar e testar <Volume2 size={15}/></button></div>}{active&&<div className="alarmbackdrop"><section className="alarmnotice" role="alertdialog" aria-modal="true" aria-labelledby="ringtitle" aria-describedby="ringhelp"><div className="alarmnotice-top"><div className="alarmnotice-state"><span className="alarmnotice-pulse"><AlarmClock size={18}/></span><span>{ready?'ALARME TOCANDO':'ALARME DISPARADO'}</span></div><button type="button" className="alarmnotice-close" onClick={dismiss} aria-label="Parar e fechar alarme"><X size={19}/></button></div><div className="alarmnotice-time"><Clock3 size={20}/><time>{active.time||new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div><h2 id="ringtitle">{active.title}</h2>{active.body&&<p className="alarmnotice-body">{active.body}</p>}<p id="ringhelp" className="alarmnotice-help">{ready?'Está na hora. Você pode parar o alarme ou adiá-lo.':'O horário chegou, mas o som ainda não foi ativado neste navegador.'}</p>{queue.length>1&&<p className="alarmnotice-queue">{queue.length-1} {queue.length===2?'outro alarme aguardando':'outros alarmes aguardando'}</p>}{!ready&&<button className="alarmnotice-enable" onClick={enable}><Volume2 size={17}/> Ativar som agora</button>}<div className="alarmnotice-actions"><button type="button" className="alarmnotice-snooze" onClick={()=>{onSnooze(snoozedAlert(active,new Date(),timezone));dismiss();onToast('Novo aviso em dez minutos. Mantenha esta aba aberta.')}}><PauseCircle size={19}/> Adiar 10 minutos</button><button type="button" autoFocus className="alarmnotice-stop" onClick={dismiss}><Check size={19}/> Parar alarme</button></div>{err&&<p className="alarmerror" role="alert">{err}</p>}<p className="alarmnotice-footnote">Os alarmes deste site funcionam enquanto a página está aberta.</p></section></div>}</>}
+import type {SharedSpaceScheduled} from '../hooks/use-shared-space-notifications';
+
+type AlertEntry={item:Item;spaceName?:string;shared:boolean};
+type Props={
+ items:Item[];shared?:SharedSpaceScheduled[];timezone:string;
+ onNotice:(s:string)=>Promise<void>;onToast:(s:string)=>void;
+ onSnooze:(i:Item)=>void;demo:boolean;
+};
+export default function AlarmPlayer({items,shared=[],timezone,onNotice,onToast,onSnooze,demo}:Props){
+ const [queue,setQueue]=useState<AlertEntry[]>([]);
+ const [ready,setReady]=useState(false);
+ const [acknowledged,setAcknowledged]=useState(false);
+ const [err,setErr]=useState('');
+ const audio=useRef<AudioContext|null>(null);
+ const fired=useRef(new Set<string>());
+ const latest=useRef(items);
+ const sharedLatest=useRef(shared);
+ latest.current=items;
+ sharedLatest.current=shared;
+ const activeEntry=queue[0],active=activeEntry?.item;
+ const soundWanted=items.some(i=>i.enabled!==false&&!i.archived&&(i.type==='alarm'||i.type==='event'||i.type==='reminder'||i.soundAlarm))
+  ||shared.some(s=>s.item.enabled!==false&&!s.item.archived&&['event','reminder','task'].includes(s.item.type)&&!!s.item.time);
+
+ function beep(){
+  const context=audio.current;
+  if(context?.state!=='running')return;
+  const start=context.currentTime;
+  for(let n=0;n<2;n++){
+   const at=start+n*.24,osc=context.createOscillator(),gain=context.createGain();
+   osc.type='sine';
+   osc.frequency.setValueAtTime(n===0?784:988,at);
+   gain.gain.setValueAtTime(0.0001,at);
+   gain.gain.exponentialRampToValueAtTime(.13,at+.028);
+   gain.gain.exponentialRampToValueAtTime(.001,at+.3);
+   osc.connect(gain);gain.connect(context.destination);osc.start(at);osc.stop(at+.31);
+  }
+ }
+ async function enable(test=true){
+  try{
+   audio.current??=new AudioContext();
+   await audio.current.resume();
+   const active=audio.current.state==='running';
+   setReady(active);
+   if(active){
+    setAcknowledged(true);
+    try{localStorage.setItem('mr_alarm_audio_ack_v1','1');}catch{}
+    setErr('');
+    if(test)beep();
+   }
+  }catch{setErr('Não foi possível ativar o som. Confira as permissões desta aba.');}
+ }
+ useEffect(()=>{
+  try{setAcknowledged(localStorage.getItem('mr_alarm_audio_ack_v1')==='1');}
+  catch{setAcknowledged(false);}
+ },[]);
+ // Browsers require a new user gesture to unlock Web Audio after a page reload.
+ useEffect(()=>{
+  if(!acknowledged||ready)return;
+  const unlock=()=>{void enable(false);};
+  window.addEventListener('pointerdown',unlock,{once:true});
+  window.addEventListener('keydown',unlock,{once:true});
+  return()=>{window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock);};
+ },[acknowledged,ready]);
+
+ useEffect(()=>{
+  const storageKey=demo?'mr_demo_fired_v2':'mr_fired_v2';
+  try{
+   const stored=JSON.parse(localStorage.getItem(storageKey)||'[]');
+   if(Array.isArray(stored))fired.current=new Set(stored.filter(v=>typeof v==='string').slice(-600));
+  }catch{}
+  const tick=()=>{
+   // Shared space IDs prevent collisions with personal items and other spaces.
+   const incoming:AlertEntry[]=[];
+   for(const {item,key} of dueAlerts(latest.current,new Date(),timezone)){
+    const unique='personal:'+key;
+    if(fired.current.has(unique))continue;
+    fired.current.add(unique);
+    incoming.push({item,shared:false});
+   }
+   for(const entry of sharedLatest.current){
+    const due=dueAlerts([{...entry.item,notify:true}],new Date(),timezone);
+    for(const {item,key} of due){
+     const unique='shared:'+entry.spaceId+':'+key;
+     if(fired.current.has(unique))continue;
+     fired.current.add(unique);
+     incoming.push({item,shared:true,spaceName:entry.spaceName});
+    }
+   }
+   if(!incoming.length)return;
+   try{localStorage.setItem(storageKey,JSON.stringify([...fired.current].slice(-600)));}catch{}
+   for(const entry of incoming){
+    const title=(entry.spaceName?entry.spaceName+' · ':'')+entry.item.title;
+    onToast('Está na hora: '+title);
+    if(typeof Notification!=='undefined'&&Notification.permission==='granted')
+     void onNotice(title).catch(()=>{});
+   }
+   setQueue(old=>[...old,...incoming]);
+  };
+  tick();
+  const timer=setInterval(tick,1000);
+  const onVisible=()=>{if(document.visibilityState==='visible')tick();};
+  document.addEventListener('visibilitychange',onVisible);
+  return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};
+ },[timezone,demo,onNotice,onToast]);
+
+ useEffect(()=>{
+  if(!active||!ready)return;
+  beep();
+  const interval=setInterval(beep,1700);
+  // Stop the repeating sound after 45s; keep the alert visible until dismissal.
+  const limit=setTimeout(()=>clearInterval(interval),45000);
+  return()=>{clearInterval(interval);clearTimeout(limit);};
+ },[active?.id,ready]);
+
+ useEffect(()=>()=>{void audio.current?.close();},[]);
+ const dismiss=()=>setQueue(q=>q.slice(1));
+ return <>
+  {soundWanted&&!ready&&!active&&<div className="soundnotice" role="status">
+   <div className="soundnotice-icon"><Volume2 size={19}/></div>
+   <div className="soundnotice-copy"><strong>Ative o som dos avisos</strong><span>Um toque para ouvir compromissos e lembretes enquanto o site estiver aberto.</span>{err&&<span className="alarmerror" role="alert">{err}</span>}</div>
+   <button className="soundnotice-action" onClick={()=>void enable()}>Ativar e testar <Volume2 size={15}/></button>
+  </div>}
+  {active&&<div className="alarmbackdrop"><section className="alarmnotice" role="alertdialog" aria-modal="true" aria-labelledby="ringtitle" aria-describedby="ringhelp">
+   <div className="alarmnotice-top"><div className="alarmnotice-state"><span className="alarmnotice-pulse"><AlarmClock size={18}/></span><span>{ready?'HORÁRIO CHEGOU':'AVISO DO HORÁRIO'}</span></div><button type="button" className="alarmnotice-close" onClick={dismiss} aria-label="Parar e fechar aviso"><X size={19}/></button></div>
+   <div className="alarmnotice-time"><Clock3 size={20}/><time>{active.time||new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></div>
+   {activeEntry.spaceName&&<p className="alarmnotice-space">{activeEntry.spaceName}</p>}
+   <h2 id="ringtitle">{active.title}</h2>
+   {active.body&&<p className="alarmnotice-body">{active.body}</p>}
+   <p id="ringhelp" className="alarmnotice-help">{ready?'Está na hora do compromisso. O aviso ficará aqui até você fechar.':'O horário chegou. Ative o som para ouvir os próximos avisos.'}</p>
+   {queue.length>1&&<p className="alarmnotice-queue">{queue.length-1} {queue.length===2?'outro aviso aguardando':'outros avisos aguardando'}</p>}
+   {!ready&&<button className="alarmnotice-enable" onClick={()=>void enable()}><Volume2 size={17}/> Ativar som agora</button>}
+   <div className="alarmnotice-actions">
+    {!activeEntry.shared&&<button type="button" className="alarmnotice-snooze" onClick={()=>{onSnooze(snoozedAlert(active,new Date(),timezone));dismiss();onToast('Novo aviso em dez minutos. Mantenha esta aba aberta.');}}><PauseCircle size={19}/> Adiar 10 minutos</button>}
+    <button type="button" autoFocus className="alarmnotice-stop" onClick={dismiss}><Check size={19}/> Entendi, fechar aviso</button>
+   </div>
+   {err&&<p className="alarmerror" role="alert">{err}</p>}
+   <p className="alarmnotice-footnote">Avisos sonoros do site funcionam com a página aberta e áudio ativado.</p>
+  </section></div>}
+ </>;
+}

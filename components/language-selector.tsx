@@ -3,6 +3,8 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Próximos horários":["Upcoming schedules","Próximos horarios"],
+"outros horários":["more scheduled items","otros horarios"],
 "Adicionar itens":["Add items","Añadir elementos"],
 "Comece com um item. Se precisar, adicione outros antes de salvar.":["Start with one item. Add more before saving if needed.","Empieza con un elemento. Si lo necesitas, añade más antes de guardar."],
 "Salvar item":["Save item","Guardar elemento"],

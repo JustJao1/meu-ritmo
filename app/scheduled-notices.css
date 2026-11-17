@@ -1,0 +1,34 @@
+/* Compact reminders remain visible until their scheduled start. All colors are theme tokens. */
+.appframe .mr-upcoming{
+ display:flex;align-items:center;gap:15px;flex-wrap:wrap;
+ padding:11px clamp(18px,3.7vw,45px);
+ border-bottom:1px solid var(--line);
+ background:color-mix(in srgb,var(--theme-banner,var(--paper)) 24%,var(--paper));
+ color:var(--ink);
+}
+.mr-upcoming-heading{display:flex;align-items:center;gap:8px;font-size:12px;flex:0 0 auto}
+.mr-upcoming-heading svg{color:var(--accent)}
+.mr-upcoming-items{display:flex;gap:8px;align-items:center;flex:1;min-width:0;flex-wrap:wrap}
+.mr-upcoming-items>button{
+ display:flex;align-items:center;gap:8px;min-height:42px;
+ max-width:min(350px,100%);min-width:0;padding:7px 11px;
+ border:1px solid var(--line);border-radius:10px;
+ background:var(--surface,var(--paper));color:var(--ink);
+ text-align:left;
+}
+.mr-upcoming-items>button:hover{background:var(--surface-hover,var(--paper));border-color:var(--accent)}
+.mr-upcoming-items>button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mr-upcoming-items>button>svg{flex:0 0 auto;color:var(--ink)}
+.mr-upcoming-items>button>span{display:grid;gap:3px;min-width:0}
+.mr-upcoming-items>button strong{font-size:12px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mr-upcoming-items>button small{font-size:11px;color:var(--muted);white-space:nowrap}
+.mr-upcoming-more{color:var(--muted);font-size:11px}
+.alarmnotice-space{font-size:12px;font-weight:650;color:var(--ink);opacity:.78;margin:0}
+@media(max-width:700px){
+ .appframe .mr-upcoming{padding:10px 16px;gap:8px}
+ .mr-upcoming-items{overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px}
+ .mr-upcoming-items>button{flex:0 0 auto;max-width:260px}
+ .mr-upcoming-items>button strong{max-width:180px}
+}
+/* Due alerts must always appear over share confirmations and account dialogs. */
+.appframe~.alarmbackdrop,.alarmbackdrop{z-index:1000}
