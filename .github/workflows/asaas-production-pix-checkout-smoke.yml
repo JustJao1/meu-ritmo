@@ -1,0 +1,25 @@
+name: Verificar Checkout Pix Asaas em produção sem pagamento
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-production-pix-checkout-smoke.mjs'
+      - '.github/workflows/asaas-production-pix-checkout-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Criar e cancelar um checkout de teste sem receber pagamento
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: node scripts/asaas-production-pix-checkout-smoke.mjs
