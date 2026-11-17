@@ -8,13 +8,13 @@ test('assistente usa dois painéis acessíveis com rótulos e indicadores de exp
  assert.match(app,/details className="assistant-examples"/);
  assert.match(app,/assistant-disclosure-chevron/);
  assert.match(app,/Horários disponíveis/);
- assert.match(app,/O que posso pedir\\?/);
+ assert.ok(app.includes('O que posso pedir?'));
 });
 test('painéis respeitam o tema, toque no celular e foco por teclado',()=>{
  const css=source('app/assistant-feedback.css');
  assert.match(css,/min-height:58px/);
- assert.match(css,/background:var\\(--paper\\)/);
- assert.match(css,/color:var\\(--ink\\)/);
+ assert.ok(css.includes('background:var(--paper)'));
+ assert.ok(css.includes('color:var(--ink)'));
  assert.match(css,/:focus-visible/);
  assert.match(css,/prefers-reduced-motion:reduce/);
  assert.match(css,/grid-template-columns:1fr/);
