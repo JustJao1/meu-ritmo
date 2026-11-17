@@ -28,7 +28,7 @@ test('assistente exige Pro no servidor, sem confiar no plano mostrado pelo naveg
  assert.match(assistant,/PRO_REQUIRED/);
 });
 test('períodos expirados deixam de conceder assinatura, sem apagar os dados',()=>{
- assert.match(entitlements,/s\.valid_until>now/);
+ assert.match(entitlements,/row\.valid_until>now/);
  assert.match(entitlements,/return \{plan:'free' as Plan/);
 });
 test('compras Pix exigem consentimento e checkout seguro; reembolsos não são prometidos como concluídos',()=>{
