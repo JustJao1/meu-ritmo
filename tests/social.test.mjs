@@ -55,18 +55,18 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
   db.prepare("INSERT INTO service_settings(key,value) VALUES ('legal',?)").run(JSON.stringify({name:'Operador de teste',taxId:'529.982.247-25',address:'Rua Teste, 100, São Paulo',email:'owner@test.example'}));
   db.prepare("UPDATE discount_codes SET plan='plus' WHERE code='DESCONTO10'").run();
   const original=globalThis.fetch;
-  let subscriptionRequest;
+  let hostedPixRequest;
   let customerCount=0, subscriptionCount=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
     if(path.includes('/customers?'))return Response.json({data:[]});
-    if(path.endsWith('/customers'))return Response.json({id:customerCount++===0?'cus_test':'cus_test_2'});
-    if(path.endsWith('/subscriptions')&&init?.method==='POST'){
-      subscriptionRequest=JSON.parse(init.body);
-      return Response.json({id:subscriptionCount++===0?'sub_0_test':'sub_0_test_2'});
-    }
-    if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))
-      return Response.json({data:[{id:'pay_pix_test',customer:'cus_test',subscription:'sub_0_test',
+    if(path.endsWith('/customers'))return Response.json({id:customerCount++===0?'cus_test123':'cus_test123_2'});
+    if(path.endsWith('/checkouts')&&init?.method==='POST'){
+       hostedPixRequest=JSON.parse(init.body);
+       return Response.json({id:'12345678-1234-4123-8123-123456789abc'});
+     }
+     if(path.includes('/subscriptions/sub_0_test/payments')||path.includes('/subscriptions/sub_0_test_2/payments'))
+      return Response.json({data:[{id:'pay_pix_test',customer:'cus_test123',subscription:'sub_0_test',
         billingType:'BOLETO',value:17.91,dueDate:new Date().toISOString().slice(0,10),status:'PENDING'}]});
     if(path.endsWith('/payments/pay_pix_test')&&init?.method==='PUT'){
       const request=JSON.parse(init.body);
@@ -94,13 +94,20 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
     const response=await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'});
     assert.equal(response.status,200);
     const body=await response.json();
-    assert.equal(body.url,'/pagar?pedido='+body.orderId);
-    assert.equal(body.awaitingInvoice,false);
+    assert.equal(body.url,'https://asaas.com/checkoutSession/show?id=12345678-1234-4123-8123-123456789abc');
+    assert.equal(body.method,'PIX');
     assert.equal(db.prepare("SELECT status FROM asaas_orders WHERE id=?").get(body.orderId).status,'pending');
-    assert.equal(subscriptionRequest.value,17.91);
-    assert.equal(subscriptionRequest.cycle,'MONTHLY');
-    assert.equal(subscriptionRequest.billingType,'PIX');
+    assert.deepEqual(hostedPixRequest.billingTypes,['PIX']);
+    assert.deepEqual(hostedPixRequest.chargeTypes,['DETACHED']);
+    assert.equal(hostedPixRequest.items[0].value,17.91);
+    assert.equal(hostedPixRequest.externalReference,body.orderId);
     assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,1);
+    // Seed a historical recurring Pix order for the existing payment webhook tests.
+    db.prepare("UPDATE asaas_orders SET status='cancelled' WHERE id=?").run(body.orderId);
+    db.prepare("INSERT INTO asaas_orders(id,user_id,provider_subscription_id,plan_code,base_price_cents,first_price_cents,coupon_id,coupon_code,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)").run(
+     'legacy_bob','bob','sub_0_test','plus_month',1990,1791,
+     db.prepare("SELECT id FROM discount_codes WHERE code='DESCONTO10'").get().id,'DESCONTO10','pending',Math.floor(Date.now()/1000)
+    );
     who('alice');
     e.ASAAS_CARD_CHECKOUT_ENABLED='false';
     const blockedCard=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true});
@@ -120,7 +127,7 @@ test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pa
   .run(historicalOrder,checkoutId,'','ACTIVE',now,now);
  const card=db.prepare('SELECT c.order_id,c.customer_id FROM asaas_card_checkouts c WHERE c.checkout_id=?').get(checkoutId);
  assert(card&&card.customer_id==='','Checkout histórico sem pagador permanece seguro');
- const subscription='sub_card_alice',paymentId='pay_card_alice',payerId='cus_test_2';
+ const subscription='sub_card_alice',paymentId='pay_card_alice',payerId='cus_test123_2';
  let paymentStatus='PENDING';
  globalThis.fetch=async url=>{
   const link=String(url);
@@ -302,7 +309,7 @@ test('Asaas webhook autenticado libera Plus uma vez e revoga cobrança estornada
   let status='RECEIVED',updates=0;
   globalThis.fetch=async(url,init)=>{
     const path=String(url);
-    if(path.includes('/payments/pay_0_test'))return Response.json({id:'pay_0_test',customer:'cus_test',subscription:'sub_0_test',billingType:'PIX',value:17.91,dueDate:new Date().toISOString().slice(0,10),status});
+    if(path.includes('/payments/pay_0_test'))return Response.json({id:'pay_0_test',customer:'cus_test123',subscription:'sub_0_test',billingType:'PIX',value:17.91,dueDate:new Date().toISOString().slice(0,10),status});
     if(path.includes('/subscriptions/sub_0_test')&&init?.method==='PUT'){updates++;return Response.json({id:'sub_0_test'});}
     throw Error('Unexpected Asaas request '+path);
   };
@@ -325,7 +332,7 @@ test('webhook ainda concilia pagamentos existentes quando novas vendas foram pau
  const original=globalThis.fetch;
  globalThis.fetch=async url=>{
    if(String(url).includes('/payments/pay_second'))
-     return Response.json({id:'pay_second',customer:'cus_test',subscription:'sub_0_test',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
+     return Response.json({id:'pay_second',customer:'cus_test123',subscription:'sub_0_test',billingType:'PIX',value:19.90,dueDate:new Date().toISOString().slice(0,10),status:'RECEIVED'});
    throw Error('Unexpected Asaas request '+url);
  };
  try{
