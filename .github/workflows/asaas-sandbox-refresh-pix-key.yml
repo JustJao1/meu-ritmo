@@ -1,0 +1,30 @@
+name: Recuperar chave Pix no Asaas Sandbox
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-sandbox-refresh-pix-key.mjs'
+      - '.github/workflows/asaas-sandbox-refresh-pix-key.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  refresh_pix:
+    runs-on: ubuntu-latest
+    environment: sandbox
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Registrar chave Pix aleatória somente no Sandbox
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: node scripts/asaas-sandbox-refresh-pix-key.mjs
+      - name: Repetir criação e cancelamento do Checkout Pix Sandbox
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: node scripts/asaas-hosted-pix-sandbox-smoke.mjs
