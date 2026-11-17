@@ -85,7 +85,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
     assert.equal((await request('checkout',{...payer,price:'plus_month'})).status,400);
     assert.equal((await request('checkout',{...payer,cpfCnpj:'00000000000',price:'plus_month',acceptTerms:true})).status,400);
     assert.equal((await request('checkout',{...payer,price:'pro_month',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'})).status,400);
-    for(const paymentMethod of ['BOLETO','CREDIT_CARD','UNDEFINED','bolet','']) {
+    for(const paymentMethod of ['BOLETO','UNDEFINED','bolet','']) {
       const invalid=await request('checkout',{...payer,price:'plus_month',acceptTerms:true,acceptRefundPolicy:true,paymentMethod});
       assert.equal(invalid.status,400,'Banned checkout method '+paymentMethod);
     }
@@ -102,9 +102,10 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata�
     assert.equal(subscriptionRequest.billingType,'PIX');
     assert.equal(db.prepare('SELECT count(*) AS n FROM asaas_coupon_uses').get().n,1);
     who('alice');
-    e.ASAAS_CARD_CHECKOUT_ENABLED='true';
+    e.ASAAS_CARD_CHECKOUT_ENABLED='false';
     const blockedCard=await request('checkout',{...payer,price:'pro_month',paymentMethod:'CREDIT_CARD',acceptTerms:true,acceptRefundPolicy:true});
-    assert.equal(blockedCard.status,400,'Cartão deve ser recusado mesmo se a flag estiver ativada');
+    assert.equal(blockedCard.status,503,'Cartão permanece desativado sem homologação explícita');
+    assert.equal(db.prepare("SELECT count(*) AS n FROM asaas_card_checkouts").get().n,0,'Bloqueio deve ocorrer antes de criar checkout');
   }finally{globalThis.fetch=original;e.ASAAS_BILLING_ENABLED='false';e.ASAAS_CARD_CHECKOUT_ENABLED='false';}
 });
 test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pagamento confirmado',async()=>{
