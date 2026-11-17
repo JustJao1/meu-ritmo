@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Plus cuida dos detalhes do seu espaço. Pro acrescenta o assistente inteligente, modelos próprios e relatórios.":["Plus adds details to your space. Pro includes the smart assistant, custom templates and reports.","Plus cuida de los detalles de tu espacio. Pro incluye el asistente inteligente, plantillas personalizadas e informes."],
 "Cancelar pagamento pendente":["Cancel pending payment","Cancelar pago pendiente"],
 "O checkout Pix pendente será cancelado. Se já estiver pago, seu acesso permanece até o vencimento.":["The pending Pix checkout will be canceled. If already paid, access remains until expiration.","Se cancelará el checkout Pix pendiente. Si ya se pagó, el acceso continuará hasta el vencimiento."],
 "Confirmar cancelamento":["Confirm cancellation","Confirmar cancelación"],
