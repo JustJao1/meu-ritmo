@@ -48,3 +48,26 @@
     flex:1 1 150px;white-space:normal;
   }
 }
+
+
+/* Despesas: não usar a cor positiva reservada aos ganhos. */
+.appframe{
+  --expense-chart-tone:color-mix(in srgb,#bd786a 88%,var(--accent) 12%);
+}
+.appframe .financesummary .categorybar .progress > i,
+.appframe .financecontent.budget-within .progress > i{
+  background:var(--expense-chart-tone);
+}
+:root:is(
+  [data-theme="midnight"],[data-theme="forest"],[data-theme="espresso"],
+  [data-theme="slate"],[data-theme="obsidian"],[data-theme="amethyst"],
+  [data-theme="burgundy"],[data-theme="ocean"],[data-theme="graphite"],
+  [data-theme="copper"],[data-theme="abyss"],[data-theme="blackout"],
+  [data-theme="eclipse"],[data-theme="noir"],[data-theme="deep-space"],
+  [data-theme="evergreen"]
+) .appframe{
+  --expense-chart-tone:color-mix(in srgb,#e8a18c 85%,var(--accent) 15%);
+}
+/* Os estados de excesso continuam usando seus próprios alertas. */
+.appframe .financecontent.budget-over .progress > i{background:#bc4d3d}
+.appframe .financecontent.budget-reviewed .progress > i{background:#bd9342}
