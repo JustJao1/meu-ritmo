@@ -3,6 +3,9 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Registre seus gastos.":["Record your expenses.","Registra tus gastos."],
+"Registre valores que você recebeu.":["Record the money you received.","Registra el dinero que recibiste."],
+"Na área Gastos, você pode registrar ganhos, despesas e ajustar o orçamento. As recorrências entram no mês previsto. Se ultrapassar o limite de gastos, use Revisar excesso para registrar o motivo.":["In Expenses, track your income and expenses and adjust the budget. Recurring items count in their expected months. If expenses exceed the limit, use Review overrun to record the reason.","En Gastos, registra ingresos y gastos y ajusta el presupuesto. Los movimientos recurrentes cuentan en el mes previsto. Si superas el límite de gastos, usa Revisar exceso para registrar el motivo."],
 "Ganho":["Income","Ingreso"],
 "Registrar ganho":["Add income","Registrar ingreso"],
 "Ganhos do mês":["Monthly income","Ingresos del mes"],
