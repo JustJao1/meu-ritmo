@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Cancelar pagamento pendente":["Cancel pending payment","Cancelar pago pendiente"],
+"O checkout Pix pendente será cancelado. Se já estiver pago, seu acesso permanece até o vencimento.":["The pending Pix checkout will be canceled. If already paid, access remains until expiration.","Se cancelará el checkout Pix pendiente. Si ya se pagó, el acceso continuará hasta el vencimiento."],
+"Confirmar cancelamento":["Confirm cancellation","Confirmar cancelación"],
+"Verificar pagamento Pix":["Verify Pix payment","Verificar pago Pix"],
 "Crie até 2 espaços compartilhados":["Create up to 2 shared spaces","Crea hasta 2 espacios compartidos"],
 "Assistente inteligente para organizar seu dia":["Smart assistant to organize your day","Asistente inteligente para organizar tu día"],
 "Planos mensais e anuais. O Pix tem renovação manual, e o acesso só é liberado após confirmação do pagamento.":["Monthly and yearly plans. Pix renews manually, and access activates only after payment confirmation.","Planes mensuales y anuales. Pix se renueva manualmente y el acceso se activa solo tras confirmar el pago."],
