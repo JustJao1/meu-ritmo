@@ -1,6 +1,11 @@
 name: Monitorar cobranças comerciais Pix
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-production-ledger-audit.mjs'
+      - '.github/workflows/asaas-production-ledger-audit.yml'
   schedule:
     - cron: '15 12 * * *'
 permissions:
