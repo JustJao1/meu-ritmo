@@ -29,9 +29,11 @@ const newer=keys.some(k=>{
 if(newer){
  console.log('Existe uma chave nova criada depois do início da manutenção. Nenhuma chave extra será criada.');
 }else{
- // A conservative ceiling avoids filling a PF sandbox with old broken keys.
- if(keys.filter(k=>k.status!=='DELETED').length>=5)
-  throw Error('A conta já possui 5 chaves não excluídas; revisão manual para evitar excesso.');
+ // Asaas limits PF accounts to 5 keys and PJ accounts to 20.
+ // Attempt one creation; the Asaas API will refuse it if the account is PF at its limit.
+ // Never delete old sandbox keys: Asaas does not support deletion in this environment.
+ if(keys.filter(k=>k.status!=='DELETED').length>=20)
+  throw Error('A conta atingiu o limite máximo de chaves Pix; acionar suporte Asaas.');
  const result=await call('/pix/addressKeys','POST',{type:'EVP'});
  console.log('Registro de nova chave Pix aleatória Sandbox: HTTP '+result.status);
  if(!result.ok){
