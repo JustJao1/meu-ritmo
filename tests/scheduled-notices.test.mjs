@@ -39,4 +39,29 @@ test('visual controls use current theme and shared alarm never edits personal ac
  assert.match(player,/!activeEntry.shared/);
  assert.match(player,/setQueue\(old=>\[\.\.\.old,\.\.\.incoming\]\)/);
 });
+test('workspace attention indicator includes saved personal and shared appointments',async()=>{
+ const source=await readFile('app/ritmo.tsx','utf8');
+ const spaces=await readFile('components/shared-spaces.tsx','utf8');
+ assert.match(source,/personalUpcoming=\{personalUpcoming\}/);
+ assert.match(source,/scheduledBySpace=\{sharedPendingBySpace\}/);
+ assert.match(source,/mr-workspace-scheduled-counter/);
+ assert.match(source,/pendingTotal>0/);
+ assert.match(source,/UpcomingEventsInbox upcoming=\{upcoming\}/);
+ assert.match(spaces,/personalUpcoming\.length>0/);
+ assert.match(spaces,/scheduledBySpace\[s\.id\]/);
+});
+test('pending badge remains present for events far ahead and does not silently cap the count at 20',()=>{
+ const farFuture=task({date:'2027-03-02',repeat:'weekly'});
+ const result=upcomingAlerts([{item:farFuture}],before,'America/Sao_Paulo');
+ assert.equal(result.length,1);
+ assert.equal(result[0].date,'2027-03-02');
+ const many=Array.from({length:27},(_,i)=>({item:task({id:'event-'+i})}));
+ assert.equal(upcomingAlerts(many,before,'America/Sao_Paulo').length,27);
+});
+test('no badge for cancelled, disabled or already elapsed one-off event',()=>{
+ const timePassed=new Date('2026-11-17T19:00:00Z');
+ assert.equal(upcomingAlerts([{item:task()}],timePassed,'America/Sao_Paulo').length,0);
+ assert.equal(upcomingAlerts([{item:task({enabled:false})}],before,'America/Sao_Paulo').length,0);
+ assert.equal(upcomingAlerts([{item:task({archived:true})}],before,'America/Sao_Paulo').length,0);
+});
 after(()=>rm(folder,{force:true,recursive:true}));
