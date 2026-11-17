@@ -2,6 +2,7 @@ import {env} from 'cloudflare:workers';
 import {asaasConfig,asaasRequest,hasValidAsaasWebhookToken,type AsaasPayment} from '../../../../../lib/asaas';
 import {handleCardWebhook,bindCardSubscription} from '../../../../../lib/asaas-card-webhook';
 import {recordAsaasReview} from '../../../../../lib/asaas-webhook-review';
+import {hostedPixCheckoutEvent,hostedPixPaymentEvent} from '../../../../../lib/asaas-hosted-pix-settlement';
 
 const paid=new Set(['CONFIRMED','RECEIVED']);
 const declinedEvents=new Set(['PAYMENT_CREDIT_CARD_CAPTURE_REFUSED','PAYMENT_REPROVED_BY_RISK_ANALYSIS','PAYMENT_CREDIT_CARD_THREE_D_SECURE_CHALLENGE_FAILED']);
@@ -30,12 +31,19 @@ export async function POST(req:Request){
     (typeof event.payment?.id!=='string'||!/^pay_[A-Za-z0-9_-]{1,90}$/.test(event.payment.id)))
     return Response.json({error:'Pagamento inválido.'},{status:400});
   if(await env.DB!.prepare('SELECT event_id FROM asaas_webhook_events WHERE event_id=?').bind(event.id).first())return Response.json({received:true});
-  if(event.event.startsWith('CHECKOUT_')||event.event==='SUBSCRIPTION_CREATED')
-    return handleCardWebhook(event);
+  if(event.event.startsWith('CHECKOUT_')){
+    // Hosted Pix one-off sales and recurring card checkouts are independent.
+    const hosted=await env.DB!.prepare('SELECT order_id FROM asaas_hosted_pix_checkouts WHERE checkout_id=?')
+      .bind(String(event.checkout?.id||'')).first();
+    return hosted?hostedPixCheckoutEvent(event):handleCardWebhook(event);
+  }
+  if(event.event==='SUBSCRIPTION_CREATED')return handleCardWebhook(event);
   if(!event.event.startsWith('PAYMENT_'))return Response.json({received:true});
   try{
     const payment=await asaasRequest<AsaasPayment>('/payments/'+encodeURIComponent(event.payment.id));
-    if(payment.id!==event.payment.id||!payment.subscription)return Response.json({received:true});
+    if(payment.id!==event.payment.id)return Response.json({received:true});
+    if(!payment.subscription)
+      return hostedPixPaymentEvent(event,payment as AsaasPayment&{checkoutSession?:string;paymentDate?:string});
     let order=await env.DB!.prepare('SELECT * FROM asaas_orders WHERE provider_subscription_id=?').bind(payment.subscription).first<any>();
     if(!order&&payment.billingType==='CREDIT_CARD'){
       // Hosted checkouts can send payment before SUBSCRIPTION_CREATED.
