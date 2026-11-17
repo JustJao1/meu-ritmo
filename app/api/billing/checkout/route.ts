@@ -41,6 +41,7 @@ export async function POST(req:Request){
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
   // Previous completed Pix periods must not prevent purchasing a new period.
   try{
+    await env.DB!.prepare("UPDATE asaas_orders SET status='expired' WHERE user_id=? AND status='active' AND first_paid_at IS NOT NULL AND EXISTS (SELECT 1 FROM asaas_hosted_pix_checkouts h WHERE h.order_id=asaas_orders.id AND h.status='PAID') AND NOT EXISTS (SELECT 1 FROM subscriptions s WHERE s.user_id=asaas_orders.user_id AND s.status='active' AND s.valid_until>?)").bind(user.userId,now).run();
     await env.DB!.batch([
       env.DB!.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,coupon_id,coupon_code,status,created_at) VALUES (?,?,?,?,?,?,?,?,?)")
         .bind(id,user.userId,plan,base,first,coupon?.coupon.id||null,coupon?.coupon.code||null,'creating',now),
