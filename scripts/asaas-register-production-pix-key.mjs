@@ -15,7 +15,7 @@ if(!existing.ok||!Array.isArray(existing.result.data))throw Error('Não foi poss
 const keys=existing.result.data;
 const active=keys.filter(k=>k.status==='ACTIVE').length;
 const pending=keys.filter(k=>!['ACTIVE','DELETED','ERROR'].includes(k.status)).length;
-console.log('Pix produção: '+active+' chaves ativas, '+pending+' aguardando processamento.');
+console.log('Pix produção: '+active+' chaves ativas, '+pending+' aguardando processamento; status '+JSON.stringify(keys.reduce((a,k)=>{const status=String(k.status||'UNKNOWN').replace(/[^A-Z_]/g,'');a[status]=(a[status]||0)+1;return a;},{})));
 if(active>0){console.log('Chave ativa já cadastrada. Nenhuma alteração executada.');}
 else if(pending>0){console.log('Existe chave pendente. Não será criada outra chave.');}
 else{
