@@ -91,7 +91,10 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata√
     }
     assert.equal((await request('checkout',{...payer,price:'plus_month',acceptTerms:true,acceptRefundPolicy:true})).status,400,'Payment method must be explicitly selected');
     assert.equal((await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,discountCode:'DESCONTO10'})).status,400,'Refund policy must be accepted explicitly');
-    const response=await request('checkout',{...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'});
+    const response=await api.checkout.POST(new Request('https://meuritmo.net/api/billing/checkout',{
+      method:'POST',headers:{origin:'https://meuritmo.net','Content-Type':'application/json'},
+      body:JSON.stringify({...payer,price:'plus_month',paymentMethod:'PIX',acceptTerms:true,acceptRefundPolicy:true,discountCode:'DESCONTO10'})
+    }));
     assert.equal(response.status,200);
     const body=await response.json();
     assert.equal(body.url,'https://asaas.com/checkoutSession/show?id=12345678-1234-4123-8123-123456789abc');
