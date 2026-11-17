@@ -19,6 +19,19 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - name: Validar ambiente de cobrança antes da publicação
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY }}
+        run: |
+          if [ "$ASAAS_MODE" != "production" ]; then
+            echo "::error::Publicação comercial bloqueada: ASAAS_MODE deve ser production."
+            exit 1
+          fi
+          if [ "$ASAAS_WEBHOOK_READY" != "true" ]; then
+            echo "::error::Publicação comercial bloqueada: webhook Asaas não está marcado como pronto."
+            exit 1
+          fi
       - run: npm ci --no-audit --no-fund
       - run: npm run typecheck
       - run: npm test
@@ -47,7 +60,7 @@ jobs:
           BILLING_LIVE_ENABLED: ${{ secrets.BILLING_LIVE_ENABLED }}
           BILLING_WEBHOOK_READY: ${{ secrets.BILLING_WEBHOOK_READY }}
           ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
-          ASAAS_MODE: ${{ vars.ASAAS_MODE || 'sandbox' }}
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
           ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}
           ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY || 'false' }}
           # Pix hosted purchases only; card remains gated until paid validation.
