@@ -1,0 +1,25 @@
+name: Homologar Checkout Pix Hospedado no Asaas Sandbox
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-hosted-pix-sandbox-smoke.mjs'
+      - '.github/workflows/asaas-hosted-pix-sandbox.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hosted_pix:
+    environment: sandbox
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Criar e cancelar checkout avulso Pix sem pagar
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+        run: node scripts/asaas-hosted-pix-sandbox-smoke.mjs
