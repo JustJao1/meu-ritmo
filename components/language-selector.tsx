@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Pagamento manual pelo Pix, sujeito à disponibilidade do Asaas.":["Manual Pix payment, subject to Asaas availability.","Pago manual por Pix, sujeto a la disponibilidad de Asaas."],
+"Pagamento na página segura do Asaas. Renovação automática conforme a assinatura.":["Payment on Asaas's secure page. Automatic renewal according to the subscription.","Pago en la página segura de Asaas. Renovación automática según la suscripción."],
+"Cartão em homologação. Ainda não disponível para contratação.":["Credit cards are under testing and not yet available to purchase.","Las tarjetas siguen en pruebas y aún no están disponibles para contratar."],
+"O cartão é informado somente na página segura do Asaas. O Meu Ritmo só libera o plano após confirmar a cobrança.":["Enter your card only on Asaas's secure page. Meu Ritmo activates the plan only after payment confirmation.","Introduce la tarjeta solo en la página segura de Asaas. Meu Ritmo activa el plan tras confirmar el pago."],
 "eventos pendentes em espaços compartilhados":["upcoming events in shared spaces","eventos pendientes en espacios compartidos"],
 "Eventos em outros espaços":["Events in other spaces","Eventos en otros espacios"],
 "Novidades em outros espaços":["Updates in other spaces","Novedades en otros espacios"],
