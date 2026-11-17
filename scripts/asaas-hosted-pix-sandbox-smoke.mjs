@@ -20,7 +20,11 @@ const session=await request('/checkouts','POST',{
 });
 console.log('Criação de Checkout Pix avulso: HTTP '+session.status);
 if(!session.ok){
- console.log('Códigos Asaas: '+JSON.stringify((session.data.errors||[]).slice(0,3).map(x=>String(x.code||'unknown').slice(0,40))));
+ console.log('Erros Asaas (sanitizados): '+JSON.stringify((session.data.errors||[]).slice(0,5).map(x=>({
+  code:String(x.code||'unknown').replace(/[^A-Za-z0-9_]/g,'').slice(0,40),
+  detail:String(x.description||'').replace(/https?:\/\/\S+/gi,'[URL]').replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,'[email]')
+    .replace(/\b\d{7,}\b/g,'[number]').replace(/\$aact_\S+/g,'[key]').slice(0,220)
+ }))));
  throw Error('O Asaas Sandbox recusou a criação do Checkout hospedado Pix.');
 }
 const id=session.data.id;
