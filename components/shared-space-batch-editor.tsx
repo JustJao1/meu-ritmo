@@ -35,7 +35,7 @@ export default function SharedSpaceBatchEditor({busy,onSave,onCancel}:{
   await onSave(items);
  }
  return <form className="shared-batch-editor" onSubmit={e=>void submit(e)}>
-  <div className="shared-editor-header"><div><h3>{t('Adicionar vários itens')}</h3><p className="muted">{t('Misture tarefas, compromissos, lembretes, notas e recados. Salve tudo de uma vez.')}</p></div><button type="button" className="secondary" onClick={onCancel}>{t('Cancelar')}</button></div>
+  <div className="shared-editor-header"><div><h3>{t('Adicionar itens')}</h3><p className="muted">{t('Comece com um item. Se precisar, adicione outros antes de salvar.')}</p></div><button type="button" className="secondary" onClick={onCancel}>{t('Cancelar')}</button></div>
   <div className="shared-batch-add" role="group" aria-label={t('Adicionar tipo de item')}>
    {kinds.map(kind=><button type="button" key={kind} onClick={()=>add(kind)} disabled={busy||drafts.length>=25}><Plus size={15}/>{t(names[kind])}</button>)}
   </div>
@@ -55,6 +55,6 @@ export default function SharedSpaceBatchEditor({busy,onSave,onCancel}:{
    {['note','message'].includes(item.type)&&<div className="shared-color-row" role="group" aria-label={t('Cor do item')}>{colors.map(color=><button type="button" aria-label={t('Cor')+' '+color} aria-pressed={item.color===color} className={'shared-color shared-color-'+color+(item.color===color?' selected':'')} key={color} onClick={()=>patch(item.id,{color})}/>)}</div>}
   </div>)}</div>
   {error&&<p className="autherror" role="alert">{error}</p>}
-  <div className="shared-batch-footer"><span className="muted">{drafts.length} {t('itens para adicionar')}</span><button type="submit" className="primary" disabled={busy}><Check size={17}/>{t('Salvar todos os itens')}</button></div>
+  <div className="shared-batch-footer"><span className="muted">{drafts.length} {t('itens para adicionar')}</span><button type="submit" className="primary" disabled={busy}><Check size={17}/>{drafts.length===1?t('Salvar item'):t('Salvar itens')}</button></div>
  </form>;
 }

@@ -170,7 +170,7 @@ export default function SharedSpaces({onPersonal,unreadBySpace={},onReadSpace,on
    </div>}
    <div className="shared-toolbar">
     <div className="shared-filter"><span className="shared-filter-title">{t('Filtrar por tipo')}</span><div className="shared-filter-options" role="group" aria-label={t('Filtrar por tipo')}>{(['all',...kinds] as string[]).map(kind=><button type="button" key={kind} className={filter===kind?'is-active':''} aria-pressed={filter===kind} onClick={()=>setFilter(kind)}><span>{kind==='all'?t('Tudo'):t(kindNames[kind])}</span><small>{counts[kind]}</small></button>)}</div></div>
-    <button type="button" className="primary" disabled={busy||batchOpen||!!editing} onClick={()=>{setEditing(null);setBatchOpen(true)}}><Plus size={16}/>{t('Adicionar vários itens')}</button>
+    <button type="button" className="primary" disabled={busy||batchOpen||!!editing} onClick={()=>{setEditing(null);setBatchOpen(true)}}><Plus size={16}/>{t('Adicionar itens')}</button>
    </div>
    {batchOpen&&<SharedSpaceBatchEditor busy={busy} onCancel={()=>setBatchOpen(false)} onSave={saveBatch}/>}
 

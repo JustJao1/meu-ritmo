@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Adicionar itens":["Add items","Añadir elementos"],
+"Comece com um item. Se precisar, adicione outros antes de salvar.":["Start with one item. Add more before saving if needed.","Empieza con un elemento. Si lo necesitas, añade más antes de guardar."],
+"Salvar item":["Save item","Guardar elemento"],
+"Salvar itens":["Save items","Guardar elementos"],
 "Novidades dos espaços":["Shared space updates","Novedades de los espacios"],
 "Novidades para ver":["New updates to view","Novedades por ver"],
 "Novidade no espaço":["New in shared space","Novedad en el espacio"],
