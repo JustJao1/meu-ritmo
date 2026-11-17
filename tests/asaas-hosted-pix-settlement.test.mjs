@@ -91,6 +91,30 @@ test('authenticated checkout PAID event still needs verified payment status',asy
  assert.equal(db.prepare("SELECT count(*) n FROM subscriptions WHERE user_id='payer'").get().n,0);
  assert.equal(db.prepare("SELECT status FROM asaas_hosted_pix_checkouts WHERE order_id=?").get(order).status,'PAID');
 });
+test('cancelamento autenticado de Pix devolve o cupom sem liberar plano',async()=>{
+ const checkout='22222222-3333-4444-8555-666666666666';
+ const cancelOrder='bbbbbbbb-cccc-4ddd-8eee-eeeeeeeeeeee';
+ const cancelCustomer='cus_cancel_123456';
+ const codeId='dddddddd-eeee-4fff-8aaa-123456789000';
+ db.prepare("INSERT INTO discount_codes(id,code,label,plan,kind,value,expires_at,max_uses,created_at) VALUES(?,?,?,?,?,?,?,?,?)")
+  .run(codeId,'TESTE-CANCEL','Cupom teste','plus','percent',10,now+86400,1,now);
+ db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES(?,?,?,?,?,'pending',?)")
+  .run(cancelOrder,'cancel-payer','plus_month',1990,1791,now);
+ db.prepare("INSERT INTO asaas_hosted_pix_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,'ACTIVE',?,?)")
+  .run(cancelOrder,checkout,cancelCustomer,now,now);
+ db.prepare("INSERT INTO asaas_coupon_uses(coupon_id,user_id,order_id,used_at) VALUES(?,?,?,?)")
+  .run(codeId,'cancel-payer',cancelOrder,now);
+ const response=await hostedPixCheckoutEvent({
+  id:'evt_hosted_cancel_coupon',event:'CHECKOUT_CANCELED',
+  checkout:{id:checkout,status:'CANCELED',customer:cancelCustomer,
+   externalReference:cancelOrder,billingTypes:['PIX'],chargeTypes:['DETACHED']}
+ });
+ assert.equal(response.status,200);
+ assert.equal(db.prepare('SELECT status FROM asaas_orders WHERE id=?').get(cancelOrder).status,'cancelled');
+ assert.equal(db.prepare('SELECT count(*) n FROM asaas_coupon_uses WHERE order_id=?').get(cancelOrder).n,0);
+ assert.equal(db.prepare("SELECT count(*) n FROM subscriptions WHERE user_id='cancel-payer'").get().n,0);
+});
+
 test('confirmed provider payment activates correct plan exactly once',async()=>{
  paymentStatus='RECEIVED';
  const first=await reconcileHostedPix(await row());
