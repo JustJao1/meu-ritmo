@@ -2,6 +2,21 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 const required=['CLOUDFLARE_ACCOUNT_ID','CLOUDFLARE_API_TOKEN','CLOUDFLARE_D1_DATABASE_ID','SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','SESSION_ENCRYPTION_KEY'];
 for(const name of required)if(!process.env[name])throw Error('Configure '+name+' como segredo da publicação.');
+
+// Bloquear publicação comercial com modo/segredos incompatíveis, sem exibir credenciais.
+// Esta checagem também vale para execução manual fora do GitHub Actions.
+if(process.env.ASAAS_BILLING_ENABLED==='true'){
+  if(process.env.ASAAS_MODE!=='production')throw Error('Cobrança comercial exige ASAAS_MODE=production.');
+  if(!process.env.ASAAS_API_KEY||process.env.ASAAS_API_KEY.startsWith('$aact_hmlg_'))
+    throw Error('Chave Asaas de produção não configurada.');
+  const webhook=process.env.ASAAS_WEBHOOK_TOKEN||'';
+  if(process.env.ASAAS_WEBHOOK_READY!=='true'||webhook.length<32||webhook.length>255||/\s/.test(webhook))
+    throw Error('Webhook Asaas de produção não configurado corretamente.');
+  if(process.env.EARLY_ACCESS_ENABLED!=='false')throw Error('Acesso antecipado ainda ativo: impedir contratação.');
+  if(process.env.ASAAS_CARD_CHECKOUT_ENABLED!=='false'||process.env.ASAAS_PRODUCTION_CARD_APPROVED!=='false')
+    throw Error('Lançamento Pix não pode habilitar checkout de cartão.');
+}
+
 const config=JSON.parse(await readFile('wrangler.jsonc','utf8'));if(!/^[\da-f-]{36}$/i.test(process.env.CLOUDFLARE_D1_DATABASE_ID)||process.env.CLOUDFLARE_D1_DATABASE_ID.startsWith('00000000'))throw Error('Configure um banco D1 real.');config.d1_databases[0].database_id=process.env.CLOUDFLARE_D1_DATABASE_ID;await writeFile('wrangler.jsonc',JSON.stringify(config,null,2)+'\n');
 const run=(args,input)=>{const r=spawnSync(process.execPath,args,{stdio:input?['pipe','inherit','inherit']:'inherit',input,env:process.env});if(r.status!==0)process.exit(r.status||1)};
 run(['node_modules/wrangler/bin/wrangler.js','d1','migrations','apply','DB','--remote']);
