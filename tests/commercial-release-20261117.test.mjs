@@ -42,6 +42,7 @@ test('checkout oferece Pix com compra por período e exige pagamento validado',(
 });
 test('tela e políticas explicam renovação manual nos três idiomas',()=>{
  assert.match(screen,/PIX · RENOVAÇÃO MANUAL/);
+ assert.match(screen,/purchaseStatus\?\.cardAvailable&&<label/);
  for(const key of [
   'Pagamento desta compra',
   'Preço normal deste plano',
