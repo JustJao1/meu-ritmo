@@ -39,6 +39,7 @@ export async function POST(req:Request){
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
   const id=crypto.randomUUID(),base=priceCents[plan],first=coupon?.price||base;
+  // Previous completed Pix periods must not prevent purchasing a new period.
   try{
     await env.DB!.batch([
       env.DB!.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,coupon_id,coupon_code,status,created_at) VALUES (?,?,?,?,?,?,?,?,?)")
