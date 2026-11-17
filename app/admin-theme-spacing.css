@@ -283,3 +283,24 @@
   font-size:12px;
  }
 }
+
+
+/* Códigos: ação de criação pertence ao conteúdo, não à barra de navegação. */
+.adminshell .admin-code-heading{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  gap:16px 24px;min-width:0;margin-bottom:12px;
+}
+.adminshell .admin-code-heading h2{margin:0;min-width:0;flex:1 1 260px}
+.adminshell .admin-code-heading .admin-code-create{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  flex:none;min-height:44px;padding:11px 17px;border-radius:8px;
+  font-size:13px;font-weight:650;white-space:nowrap;margin:0
+}
+.adminshell .admin-code-heading .admin-code-create:focus-visible{
+  outline:2px solid var(--accent);outline-offset:3px
+}
+@media(max-width:600px){
+  .adminshell .admin-code-heading{align-items:flex-start;gap:14px}
+  .adminshell .admin-code-heading h2{flex-basis:100%}
+  .adminshell .admin-code-heading .admin-code-create{width:100%}
+}
