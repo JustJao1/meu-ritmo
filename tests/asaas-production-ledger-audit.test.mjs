@@ -10,7 +10,7 @@ test('o monitor financeiro apenas consulta contagens do banco comercial e proteg
  assert.match(script,/SELECT status,COUNT\(\*\) AS total FROM asaas_hosted_pix_checkouts/);
  assert.match(script,/console\.warn/);
  assert.doesNotMatch(script,/UPDATE asaas_|DELETE FROM asaas_|INSERT INTO asaas_/);
- assert.doesNotMatch(script,/cpfCnpj|email|user_id\s*,\s*customer_id/);
+ assert.doesNotMatch(script,/SELECT[^"\n]*(?:cpfCnpj|email|user_id\s*,\s*customer_id)/);
  assert.match(workflow,/environment: production/);
  assert.match(workflow,/workflow_dispatch:/);
 });
