@@ -141,7 +141,9 @@ test('Checkout de cartão vincula assinatura ao pedido e só libera Pro após pa
  const checkout=(customer,status)=>({checkout:{id:checkoutId,customer,status,billingTypes:['CREDIT_CARD'],chargeTypes:['RECURRENT']}});
  try{
   assert.equal((await notify('evt_card_checkout_created','CHECKOUT_CREATED',checkout(null,'ACTIVE'))).status,200);
-  assert.equal((await notify('evt_card_checkout_unbound','CHECKOUT_PAID',checkout('invalid','PAID'))).status,409);
+  assert.equal((await notify('evt_card_checkout_unbound','CHECKOUT_PAID',checkout('invalid','PAID'))).status,200);
+   assert.equal(db.prepare("SELECT reason FROM asaas_webhook_reviews WHERE event_id='evt_card_checkout_unbound'").get().reason,'checkout_mismatch');
+   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='alice'").get(),undefined,'quarantined checkout must not grant Pro');
   assert.equal(db.prepare('SELECT status FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).status,'ACTIVE');
   assert.equal((await notify('evt_card_checkout_paid','CHECKOUT_PAID',checkout(payerId,'PAID'))).status,200);
   assert.equal(db.prepare('SELECT customer_id FROM asaas_card_checkouts WHERE checkout_id=?').get(checkoutId).customer_id,payerId);
@@ -196,7 +198,8 @@ test('Cartão com eventos fora de ordem e entrega 4 dias atrasada só ativa apó
   const subscriptionEvent=await send('evt_card_early_sub','SUBSCRIPTION_CREATED',{subscription:{id:subscriptionId}});
   assert.equal(subscriptionEvent.status,200);
   assert.equal(db.prepare('SELECT provider_subscription_id FROM asaas_orders WHERE id=?').get(order).provider_subscription_id,null);
-  assert.equal((await send('evt_card_early_payment','PAYMENT_UPDATED',{payment:{id:paymentId}})).status,503,'Do not bind an unpaid Checkout');
+  assert.equal((await send('evt_card_early_payment','PAYMENT_UPDATED',{payment:{id:paymentId}})).status,200,'Quarantine an unpaid Checkout without blocking Asaas delivery');
+   assert.equal(db.prepare("SELECT reason FROM asaas_webhook_reviews WHERE event_id='evt_card_early_payment'").get().reason,'subscription_unmatched');
   assert.equal(db.prepare("SELECT * FROM subscriptions WHERE user_id='recurring-user'").get(),undefined);
   assert.equal((await send('evt_card_real_checkout','CHECKOUT_PAID',paidCheckout)).status,200);
   assert.equal(db.prepare('SELECT customer_id FROM asaas_card_checkouts WHERE order_id=?').get(order).customer_id,'');
