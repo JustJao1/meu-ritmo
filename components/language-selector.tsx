@@ -3,6 +3,9 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Crie até 2 espaços compartilhados":["Create up to 2 shared spaces","Crea hasta 2 espacios compartidos"],
+"Assistente inteligente para organizar seu dia":["Smart assistant to organize your day","Asistente inteligente para organizar tu día"],
+"Planos mensais e anuais. O Pix tem renovação manual, e o acesso só é liberado após confirmação do pagamento.":["Monthly and yearly plans. Pix renews manually, and access activates only after payment confirmation.","Planes mensuales y anuales. Pix se renueva manualmente y el acceso se activa solo tras confirmar el pago."],
 "Pague com Pix no checkout seguro do Asaas. Renovação manual.":["Pay by Pix on Asaas's secure checkout. Renew manually.","Paga con Pix en la página segura de Asaas. Renovación manual."],
 "O Asaas apresenta o Pix e o QR Code na página de pagamento. O acesso começa somente após a confirmação da cobrança.":["Asaas displays Pix and the QR code on its checkout page. Access starts only after payment confirmation.","Asaas muestra Pix y el código QR en la página de pago. El acceso comienza tras la confirmación del pago."],
 "O assistente inteligente é exclusivo do plano Pro.":["The smart assistant is exclusive to Pro.","El asistente inteligente es exclusivo de Pro."],
