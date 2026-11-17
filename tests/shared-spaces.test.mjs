@@ -29,7 +29,7 @@ const plugin={name:'spaces-test',setup(b){
  b.onLoad({filter:/.*/,namespace:'spaces'},({path})=>({
   loader:'js',
   contents:path==='session'?'export const getUser=async()=>globalThis.__testSpacesUser;':
-   path==='entitlements'?'export const planAccess=async(id)=>({plan:id===globalThis.__testSpacesOwner?\'pro\':\'free\',source:id===globalThis.__testSpacesOwner?\'subscription\':\'free\'});':
+   path==='entitlements'?'export const planAccess=async(id)=>({plan:id===globalThis.__testSpacesOwner?\'pro\':id===globalThis.__testSpacesPlus?\'plus\':\'free\',source:\'subscription\'});':
    'export const env=globalThis.__testSpacesEnv;'
  }))
 }};
@@ -37,6 +37,7 @@ await build({entryPoints:['app/api/spaces/route.ts'],outfile:join(folder,'spaces
 const api=await import(join(folder,'spaces.mjs'));
 const a='aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa',b='bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb',c='cccccccc-3333-4333-8333-cccccccccccc';
 globalThis.__testSpacesOwner=a;
+globalThis.__testSpacesPlus=c;
 const user=id=>{globalThis.__testSpacesUser={userId:id,email:id+'@test.example',displayName:id,fullName:id};};
 function post(body,origin='https://example.test'){
  return api.POST(new Request('https://example.test/api/spaces',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify(body)}));
@@ -44,7 +45,7 @@ function post(body,origin='https://example.test'){
 function get(id){return api.GET(new Request('https://example.test/api/spaces'+(id?'?id='+id:'')))}
 const defaultItem=(id)=>({id,type:'task',title:'Revisar pauta',date:'2026-11-15',time:'',end:'',amount:0,category:'Outros',body:'Tarefas do grupo',color:'blue',repeat:'none',done:false,pinned:false,archived:false,tags:'',days:[],notify:false,checks:[]});
 let id,code,revision=0;
-test('only paid Pro creates; everyone can join; list never discloses join codes to members',async()=>{
+test('Plus and Pro create; Free can join; join codes stay private',async()=>{
  user(b);
  assert.equal((await post({action:'create',name:'Nosso grupo'})).status,403);
  user(a);
@@ -146,3 +147,12 @@ test('Pro account can create only two spaces and deleting one frees its slot',as
  assert.equal((await (await get()).json()).createdCount,2);
 });
 after(async()=>{db.close();await rm(folder,{force:true,recursive:true});delete globalThis.__testSpacesEnv;delete globalThis.__testSpacesUser;delete globalThis.__testSpacesOwner});
+
+test('Plus account can create a shared space',async()=>{
+ user(c);
+ const list=await(await get()).json();assert.equal(list.canCreate,true);
+ const created=await post({action:'create',name:'Equipe Plus'});
+ assert.equal(created.status,201,await created.clone().text());
+ user(b);
+ assert.equal((await(await get()).json()).canCreate,false);
+});
