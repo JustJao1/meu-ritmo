@@ -1,5 +1,6 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
+import type {Item} from '../lib/ritmo-domain';
 
 export type SharedSpaceNotification={
  id:string;spaceId:string;spaceName:string;actorName:string;
@@ -9,10 +10,12 @@ export type SharedSpacePopup={
  spaceId:string;spaceName:string;actorName:string;
  itemTitle:string;itemCount:number;local:boolean;
 };
-type Inbox={notifications:SharedSpaceNotification[];unreadBySpace:Record<string,number>;unreadTotal:number};
+export type SharedSpaceScheduled={spaceId:string;spaceName:string;item:Item};
+type Inbox={notifications:SharedSpaceNotification[];unreadBySpace:Record<string,number>;unreadTotal:number;schedule:SharedSpaceScheduled[]};
 
 export function useSharedSpaceNotifications(enabled:boolean){
  const [notifications,setNotifications]=useState<SharedSpaceNotification[]>([]);
+ const [schedule,setSchedule]=useState<SharedSpaceScheduled[]>([]);
  const [unreadBySpace,setUnreadBySpace]=useState<Record<string,number>>({});
  const [popup,setPopup]=useState<SharedSpacePopup|null>(null);
  const knownIds=useRef<Set<string>|null>(null);
@@ -39,6 +42,7 @@ export function useSharedSpaceNotifications(enabled:boolean){
    }else knownIds.current=new Set(data.notifications.map(item=>item.id));
    setNotifications(data.notifications);
    setUnreadBySpace(data.unreadBySpace);
+   setSchedule(Array.isArray(data.schedule)?data.schedule:[]);
   }catch{
    // Temporary offline errors must never wipe persistent unread indicators.
   }finally{busy.current=false;}
@@ -46,7 +50,7 @@ export function useSharedSpaceNotifications(enabled:boolean){
 
  useEffect(()=>{
   if(!enabled){
-   knownIds.current=null;setNotifications([]);setUnreadBySpace({});setPopup(null);
+   knownIds.current=null;setNotifications([]);setUnreadBySpace({});setPopup(null);setSchedule([]);
    return;
   }
   void refresh();
@@ -79,5 +83,5 @@ export function useSharedSpaceNotifications(enabled:boolean){
  },[refresh]);
 
  const unreadTotal=Object.values(unreadBySpace).reduce((sum,n)=>sum+n,0);
- return {notifications,unreadBySpace,unreadTotal,popup,dismissPopup:()=>setPopup(null),readSpace,localAdded,refresh};
+ return {notifications,unreadBySpace,unreadTotal,schedule,popup,dismissPopup:()=>setPopup(null),readSpace,localAdded,refresh};
 }

@@ -8,12 +8,13 @@ const reply=(body:unknown,status=200)=>Response.json(body,{status,headers:noStor
 const readInput=z.object({action:z.literal('read'),spaceId:z.string().uuid()});
 type ActivityRow={id:string;spaceId:string;spaceName:string;actorName:string;itemCount:number;itemTitle:string;createdAt:number};
 type CountRow={spaceId:string;count:number};
+type ScheduledRow={spaceId:string;spaceName:string;payload:string};
 
 export async function GET(){
  const user=await getUser();
  if(!user)return reply({error:'Entre na sua conta.'},401);
  try{
-  const [activities,counts]=await Promise.all([
+  const [activities,counts,scheduled]=await Promise.all([
    env.DB!.prepare(`SELECT n.id,n.space_id AS spaceId,s.name AS spaceName,
      COALESCE(p.name,a.display_name,'Participante') AS actorName,
      n.item_count AS itemCount,n.item_title AS itemTitle,n.created_at AS createdAt
@@ -27,11 +28,26 @@ export async function GET(){
    env.DB!.prepare(`SELECT n.space_id AS spaceId, count(*) AS count
      FROM shared_space_notifications n JOIN shared_space_members m
      ON m.space_id=n.space_id AND m.user_id=n.recipient_id
-     WHERE n.recipient_id=? AND n.read_at IS NULL GROUP BY n.space_id`).bind(user.userId).all<CountRow>()
+     WHERE n.recipient_id=? AND n.read_at IS NULL GROUP BY n.space_id`).bind(user.userId).all<CountRow>(),
+   env.DB!.prepare(`SELECT s.id AS spaceId,s.name AS spaceName,j.value AS payload
+     FROM shared_spaces s
+     JOIN shared_space_members m ON m.space_id=s.id
+     JOIN json_each(s.payload) j
+     WHERE m.user_id=? AND json_extract(j.value,'$.type') IN ('event','reminder','task')
+       AND json_extract(j.value,'$.time') IS NOT NULL AND json_extract(j.value,'$.time')<>''
+       AND coalesce(json_extract(j.value,'$.archived'),0)=0
+       AND coalesce(json_extract(j.value,'$.enabled'),1)<>0
+     LIMIT 300`).bind(user.userId).all<ScheduledRow>()
   ]);
   const unreadBySpace=Object.fromEntries((counts.results||[]).map(r=>[r.spaceId,r.count]));
   const unreadTotal=(counts.results||[]).reduce((sum,r)=>sum+r.count,0);
-  return reply({notifications:activities.results||[],unreadBySpace,unreadTotal});
+  const schedule=(scheduled.results||[]).flatMap(row=>{
+   try{
+    const item=JSON.parse(row.payload);
+    return item&&typeof item.id==='string'&&typeof item.date==='string'&&typeof item.time==='string'&&item.time? [{spaceId:row.spaceId,spaceName:row.spaceName,item}]:[];
+   }catch{return [];}
+  });
+  return reply({notifications:activities.results||[],unreadBySpace,unreadTotal,schedule});
  }catch{return reply({error:'Não foi possível carregar as novidades dos espaços.'},503);}
 }
 
