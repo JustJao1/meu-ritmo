@@ -10,7 +10,7 @@ const input=z.object({command:z.string().trim().min(3).max(2000),date:z.string()
 export async function POST(req:Request){
  const u=await getUser();if(!u)return output({error:'Entre na sua conta.'},401);
  if(!sameOrigin(req))return output({error:'Origem inválida.'},403);
- if(await userPlan(u.userId)==='free')return output({error:'O assistente está disponível nos planos Plus e Pro.',code:'PLUS_REQUIRED'},403);
+ if(await userPlan(u.userId)!=='pro')return output({error:'O assistente inteligente é exclusivo do plano Pro.',code:'PRO_REQUIRED'},403);
  try{
   if(!await socialRate(u.userId,'assistant',30,60))return output({error:'Aguarde um minuto antes de fazer novos pedidos.'},429);
   const raw=await req.text();if(raw.length>1500000)return output({error:'O conteúdo excede o limite de análise.'},413);

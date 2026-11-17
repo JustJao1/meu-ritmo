@@ -38,8 +38,8 @@ async function member(userId:string,id:string){
 }
 async function allowedCreate(user:{userId:string;email:string;displayName:string;fullName:string|null}){
  const entitlement=await planAccess(user.userId);
- // Honor the current Pro entitlement, including the temporary access campaign.
- return entitlement.plan==='pro';
+ // Honor the current Plus or Pro entitlement, including the temporary access campaign.
+ return entitlement.plan==='plus'||entitlement.plan==='pro';
 }
 function view(space:any,userId:string){
  return {id:space.id,name:space.name,owner:space.owner_id===userId,ownerId:space.owner_id,revision:space.revision,joinCode:space.owner_id===userId?space.join_code:undefined};
@@ -67,7 +67,7 @@ export async function POST(req:Request){
   const parsed=actions.safeParse(JSON.parse(raw));if(!parsed.success)return reply({error:'Confira os dados do espaço.'},400);
   const a=parsed.data,now=Math.floor(Date.now()/1000);
   if(a.action==='create'){
-   if(!await allowedCreate(user))return reply({error:'Somente assinantes Pro podem criar espaços. Participar é gratuito.'},403);
+   if(!await allowedCreate(user))return reply({error:'Criar espaços está disponível nos planos Plus e Pro. Participar é gratuito.'},403);
    await registerMember(user);
    const id=crypto.randomUUID();
    for(let attempt=0;attempt<5;attempt++){

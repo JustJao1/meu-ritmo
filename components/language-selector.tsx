@@ -3,6 +3,12 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"O assistente inteligente é exclusivo do plano Pro.":["The smart assistant is exclusive to Pro.","El asistente inteligente es exclusivo de Pro."],
+"Assistente Pro":["Pro assistant","Asistente Pro"],
+"Você pode continuar organizando tudo manualmente. O assistente inteligente é exclusivo do Pro.":["You can keep using manual entries. The assistant is exclusive to Pro.","Puedes seguir con los registros manuales. El asistente es exclusivo de Pro."],
+"Criar espaços está disponível nos planos Plus e Pro. Qualquer conta pode participar por convite.":["Creating spaces is available to Plus and Pro. Anyone can join by invitation.","Crear espacios está disponible en Plus y Pro. Cualquiera puede unirse por invitación."],
+"A criação está disponível a partir do Plus. Você ainda pode entrar em espaços compartilhados.":["Creating spaces requires Plus or Pro. You can still join spaces.","Crear espacios requiere Plus o Pro. Todavía puedes unirte a espacios."],
+"Criar espaços está disponível nos planos Plus e Pro. Participar é gratuito.":["Creating spaces is available to Plus and Pro. Joining is free.","Crear espacios está disponible en Plus y Pro. Participar es gratis."],
 "Pagamento manual pelo Pix, sujeito à disponibilidade do Asaas.":["Manual Pix payment, subject to Asaas availability.","Pago manual por Pix, sujeto a la disponibilidad de Asaas."],
 "Pagamento na página segura do Asaas. Renovação automática conforme a assinatura.":["Payment on Asaas's secure page. Automatic renewal according to the subscription.","Pago en la página segura de Asaas. Renovación automática según la suscripción."],
 "Cartão em homologação. Ainda não disponível para contratação.":["Credit cards are under testing and not yet available to purchase.","Las tarjetas siguen en pruebas y aún no están disponibles para contratar."],
