@@ -17,12 +17,14 @@ export function upcomingAlerts(sources:ScheduledSource[],now:Date,timezone:strin
    if(item.date+'T'+item.time<=current.date+'T'+current.time||isDone(item,item.date))return [];
    return [{...source,date:item.date,time:item.time,key:(source.spaceId||'personal')+':'+item.id+':'+item.date+':'+item.time}];
   }
-  for(let offset=0;offset<=daysAhead;offset++){
+  // Recurring appointments that start months ahead should be visible immediately.
+  const initialDay=Math.max(0,Math.floor((Date.parse(item.date+'T00:00:00Z')-start)/86400000));
+  for(let offset=initialDay;offset<=initialDay+Math.max(daysAhead,35);offset++){
    const date=new Date(start+offset*86400000).toISOString().slice(0,10);
    if(!occurs(item,date)||isDone(item,date))continue;
    if(date===current.date&&item.time<=current.time)continue;
    return [{...source,date,time:item.time,key:(source.spaceId||'personal')+':'+item.id+':'+date+':'+item.time}];
   }
   return [];
- }).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,20);
+ }).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
 }
