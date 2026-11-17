@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"PIX · RENOVAÇÃO MANUAL":["PIX · MANUAL RENEWAL","PIX · RENOVACIÓN MANUAL"],
 "Pagamento desta compra":["Payment for this purchase","Pago de esta compra"],
 "Preço normal deste plano":["Regular price of this plan","Precio normal de este plan"],
 "Li os termos e compreendi que o Pix não tem renovação automática:":["I have read the terms and understand that Pix does not renew automatically:","He leído los términos y entiendo que Pix no se renueva automáticamente:"],
