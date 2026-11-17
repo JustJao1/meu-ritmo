@@ -5,7 +5,7 @@ const e=process.env;
 const worker='https://meu-ritmo-asaas-sandbox.silva-joao-232334.workers.dev';
 const target=worker+'/api/billing/webhook/asaas';
 const base='https://api-sandbox.asaas.com/v3';
-const uuid=/^[0-9a-f]{8}-(?:-[0-9a-f]{4}-){3}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const uuid=/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 if(e.ASAAS_MODE!=='sandbox'||!e.ASAAS_API_KEY?.startsWith('$aact_hmlg_'))
  throw Error('Acesso negado: esta recuperação é exclusiva do Asaas Sandbox.');
 if(!uuid.test(e.SANDBOX_D1_DATABASE_ID||'')||
