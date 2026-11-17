@@ -1,0 +1,25 @@
+name: Monitorar cobranças comerciais Pix
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 12 * * *'
+permissions:
+  contents: read
+jobs:
+  audit_commerce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Auditar pedidos sem expor dados de clientes
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          SANDBOX_D1_DATABASE_ID: ${{ vars.SANDBOX_D1_DATABASE_ID }}
+        run: node scripts/asaas-production-ledger-audit.mjs

@@ -24,8 +24,9 @@ jobs:
           ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
           ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}
           ASAAS_WEBHOOK_READY: ${{ vars.ASAAS_WEBHOOK_READY }}
-          ASAAS_BILLING_ENABLED: ${{ vars.ASAAS_BILLING_ENABLED }}
-          ASAAS_CARD_CHECKOUT_ENABLED: ${{ vars.ASAAS_CARD_CHECKOUT_ENABLED }}
-          ASAAS_PRODUCTION_CARD_APPROVED: ${{ vars.ASAAS_PRODUCTION_CARD_APPROVED }}
-          EARLY_ACCESS_ENABLED: ${{ vars.EARLY_ACCESS_ENABLED }}
+          # Espelhar os valores efetivos do workflow deploy.yml, não variáveis legadas.
+          ASAAS_BILLING_ENABLED: 'true'
+          ASAAS_CARD_CHECKOUT_ENABLED: 'false'
+          ASAAS_PRODUCTION_CARD_APPROVED: 'false'
+          EARLY_ACCESS_ENABLED: 'false'
         run: node scripts/asaas-production-audit.mjs

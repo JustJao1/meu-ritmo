@@ -1,6 +1,6 @@
 # Pagamentos do MR: Meu Ritmo — somente Pix
 
-Atualizado em 16/11/2026. Este documento descreve a configuração vigente do site principal e do Sandbox isolado. **Não habilitar cobranças reais até obter um QR Code Pix válido e testar o recebimento por webhook.**
+> **Atualização em 17/11/2026:** as pendências de chave Pix e QR descritas abaixo são históricas e foram superadas. O Sandbox passou na criação de cobrança Pix, QR dinâmico e Pix Copia e Cola; a produção passou na criação e cancelamento de checkout Pix com chave ativa. O site usa **checkout Pix hospedado, compra por período e renovação manual**. Ainda falta comprovar a compra paga e conciliação pelo próprio checkout comercial em produção. Os cartões continuam desabilitados. Consulte [o plano atualizado](./lancamento-comercial-pix-2026-11-17.md) antes de agir; não use esta lista histórica para recriar chaves ou suspender um checkout que já funciona.\n\nAtualizado em 16/11/2026. Este documento descreve a configuração vigente do site principal e do Sandbox isolado. **Não habilitar cobranças reais até obter um QR Code Pix válido e testar o recebimento por webhook.**
 
 ## Funcionamento implementado
 
