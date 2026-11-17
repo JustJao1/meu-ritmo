@@ -3,6 +3,7 @@ import {getUser} from '../../../session';
 import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
 import {asaasConfig,asaasCardCheckoutReady,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
 import {hostedCardCheckoutPayload} from '../../../../lib/asaas-hosted-card';
+import {hostedPixCheckoutPayload,hostedCheckoutUrl} from '../../../../lib/asaas-hosted-pix';
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
 import {z} from 'zod';
 import {validBrazilTaxId} from '../../../../lib/brazil-tax-id';
@@ -56,6 +57,25 @@ export async function POST(req:Request){
       if(!customerId)throw Error('Cliente não localizado.');
       await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
       customer={customer_id:customerId};
+    }
+    if(data.paymentMethod==='PIX'){
+      // Redirect to the actual Asaas Pix hosted checkout instead of relying on
+      // the sandbox account's broken per-invoice dynamic Pix QR endpoint.
+      const payload=hostedPixCheckoutPayload({
+        orderId:id,customerId:customer.customer_id,plan,amountCents:first,
+        siteOrigin:new URL(req.url).origin+'/'
+      });
+      const remote=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body:payload});
+      const url=hostedCheckoutUrl(remote.id);
+      await env.DB!.batch([
+        env.DB!.prepare("INSERT INTO asaas_hosted_pix_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,'ACTIVE',?,?)")
+          .bind(id,remote.id,customer.customer_id,now,now),
+        env.DB!.prepare("UPDATE asaas_orders SET status='pending' WHERE id=? AND status='creating'").bind(id)
+      ]);
+      return Response.json({orderId:id,method:'PIX',hosted:true,
+        url,mode:asaasConfig().mode,firstAmount:first/100,
+        renewalAmount:base/100,renewal:'manual'},
+        {headers:{'Cache-Control':'no-store'}});
     }
     if(data.paymentMethod==='CREDIT_CARD'){
       // Card data stays entirely on the Asaas hosted payment form.
