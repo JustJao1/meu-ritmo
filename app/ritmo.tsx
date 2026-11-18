@@ -107,23 +107,36 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     async function redeemPromo(){if(demo){setToast('Resgates funcionam apenas na conta real. A demonstração não consome códigos.');return;}setPromoBusy(true);try{const r=await fetch('/api/promotions/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:promoCode})});const v:any=await r.json();if(!r.ok)throw Error(v.error);setAccountPlan(v.access.plan);setAccountAccess(v.access);setPromoCode('');setPanel('Conta');setToast(v.message);}catch(e:any){setToast(e.message);}finally{setPromoBusy(false)}}
     const [accountPlan,setAccountPlan]=useState<Plan>('free'),[demoPlan,setDemoPlan]=useState<Plan>('free'),[studioTab,setStudioTab]=useState('Aparência'),[requestedPlan,setRequestedPlan]=useState<Plan>('plus'),[benefitOrigin,setBenefitOrigin]=useState<'plans'|'style'>('plans'),[reviewReason,setReviewReason]=useState('');
     const plan=demo?demoPlan:accountPlan, appearance=effectiveAppearance(data,plan);
-    useEffect(()=>{setPurchaseTerms(false);setPurchaseRefund(false);},[requestedPlan,annual,paymentMethod,discountCode]);
+    useEffect(()=>{setPurchaseTerms(false);setPurchaseRefund(false);},[requestedPlan,annual,paymentMethod]);
     useEffect(()=>{
-      if(panel!=='Assinatura'||demo||requestedPlan==='free')return;
+      if(panel!=='Assinatura'||demo||requestedPlan==='free'){setQuoteLoading(false);return;}
       const code=discountCode.trim().toUpperCase();
-      if(code.length>0&&code.length<6){setPriceQuote(null);setPriceQuoteError(t('O cupom deve ter pelo menos 6 caracteres.'));return;}
-      let active=true;
+      setPriceQuote(null);
+      setPriceQuoteError('');
+      setQuoteLoading(false);
+      if(code.length>0&&code.length<6){setPriceQuoteError(t('O cupom deve ter pelo menos 6 caracteres.'));return;}
+      let active=true,timedOut=false;
+      const controller=new AbortController();
       const timer=setTimeout(async()=>{
-        setQuoteLoading(true);setPriceQuoteError('');
+        if(!active)return;
+        setQuoteLoading(true);
+        const limit=setTimeout(()=>{timedOut=true;controller.abort();},12000);
         try{
-          const response=await fetch('/api/billing/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({price:requestedPlan+'_'+(annual?'year':'month'),discountCode:code||undefined})});
+          const response=await fetch('/api/billing/quote',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({price:requestedPlan+'_'+(annual?'year':'month'),discountCode:code||undefined}),
+            signal:controller.signal,cache:'no-store'
+          });
           const quote:any=await response.json();
           if(!response.ok)throw Error(quote.error||'Não foi possível verificar o cupom.');
           if(active)setPriceQuote({...quote,discountCode:code});
-        }catch(e){if(active){setPriceQuote(null);setPriceQuoteError(e instanceof Error?e.message:'Não foi possível verificar o cupom.');}}
-        finally{if(active)setQuoteLoading(false);}
+        }catch(e){
+          if(active){setPriceQuote(null);setPriceQuoteError(timedOut?
+            'A consulta demorou demais. Confira sua conexão e tente novamente.':
+            e instanceof Error?e.message:'Não foi possível verificar o cupom.');}
+        }finally{clearTimeout(limit);if(active)setQuoteLoading(false);}
       },380);
-      return ()=>{active=false;clearTimeout(timer);};
+      return ()=>{active=false;controller.abort();clearTimeout(timer);};
     },[panel,demo,requestedPlan,annual,discountCode]);
 
     useEffect(()=>{const a=publicPage?defaultAppearance:appearance,t=themes.find(x=>x.id===a.theme)||themes[0];const root=document.documentElement;root.style.setProperty('--paper',t.paper);root.style.setProperty('--ink',t.ink);root.style.setProperty('--accent',a.accent);root.style.setProperty('--theme-side',t.side);root.style.setProperty('--theme-banner',t.banner);root.dataset.noteStyle=a.noteStyle;root.dataset.density=a.density;root.dataset.titleStyle=a.titleStyle;root.dataset.theme=t.id;if(!publicPage&&loaded){try{sessionStorage.setItem('meur ritmo-logout-theme',JSON.stringify({paper:t.paper,ink:t.ink,accent:a.accent,side:t.side,banner:t.banner,theme:t.id}));}catch{}}},[publicPage,loaded,appearance.theme,appearance.accent,appearance.noteStyle,appearance.density,appearance.titleStyle]);
@@ -286,8 +299,11 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     async function billing(action: 'checkout' | 'portal') { if (demo) {
         setToast('A demonstração não inicia assinaturas. Entre na sua conta para configurar um teste.');
         return;
-    } setSaving(true); try {
-        const r = await fetch('/api/billing/' + action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: requestedPlan+'_' + (annual ? 'year' : 'month'),name:billingName.trim(),cpfCnpj:billingTaxId,paymentMethod,discountCode:discountCode.trim()||undefined,acceptTerms:purchaseTerms,acceptRefundPolicy:purchaseRefund }) });
+    } setSaving(true);
+    const controller=new AbortController();
+    const limit=setTimeout(()=>controller.abort(),25000);
+    try {
+        const r = await fetch('/api/billing/' + action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: requestedPlan+'_' + (annual ? 'year' : 'month'),name:billingName.trim(),cpfCnpj:billingTaxId,paymentMethod,discountCode:discountCode.trim()||undefined,acceptTerms:purchaseTerms,acceptRefundPolicy:purchaseRefund }),signal:controller.signal });
         const v: any = await r.json();
         if (!r.ok)
             throw Error(v.error);
@@ -307,9 +323,10 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
         location.href=url.href;
     }
     catch (e: any) {
-        setToast(e.message);
+        setToast(e?.name==='AbortError'?t('O pagamento demorou a responder. Confira sua cobrança antes de tentar outra vez.'):e?.message||t('Não foi possível abrir o pagamento.'));
     }
     finally {
+        clearTimeout(limit);
         setSaving(false);
     } }
     async function verifyPixPayment(){
@@ -374,7 +391,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
 <label className={paymentMethod==='PIX'?'selected':''}><input type="radio" name="billing-payment-method" value="PIX" checked={paymentMethod==='PIX'} onChange={()=>setPaymentMethod('PIX')}/><span><strong>{t("Pix")}</strong><small>{t("Pague com Pix no checkout seguro do Asaas. Renovação manual.")}</small></span></label>
 {purchaseStatus?.cardAvailable&&<label className={paymentMethod==='CREDIT_CARD'?'selected':''}><input type="radio" name="billing-payment-method" value="CREDIT_CARD" disabled={!purchaseStatus?.cardAvailable} checked={paymentMethod==='CREDIT_CARD'} onChange={()=>setPaymentMethod('CREDIT_CARD')}/><span><strong>{t("Cartão de crédito")}</strong><small>{t(purchaseStatus?.cardAvailable?'Pagamento na página segura do Asaas. Renovação automática conforme a assinatura.':'Cartão em homologação. Ainda não disponível para contratação.')}</small></span></label>}
 </fieldset><label>{t("Cupom de desconto (opcional)")}<input maxLength={32} value={discountCode} onChange={e=>setDiscountCode(e.target.value.toUpperCase())} placeholder="Informe o cupom para a primeira cobrança"/></label><p className="muted">{t(paymentMethod==='PIX'?"Cupons valem nesta compra elegível. Para continuar após o vencimento, faça uma nova compra pelo Pix.":"Cupons de plano gratuito são resgatados no perfil. Descontos valem na primeira cobrança elegível; o valor normal volta nas próximas renovações.")}</p>{quoteLoading&&<p className="muted" role="status">{t("Conferindo valores e cupom…")}</p>}
-{priceQuoteError&&<p className="billing-quote-error" role="alert">{t(priceQuoteError)}</p>}
+{priceQuoteError&&<div className="billing-quote-error" role="alert"><span>{t(priceQuoteError)}</span>{discountCode.trim()&&<button type="button" className="billing-remove-coupon" onClick={()=>{setDiscountCode('');setPriceQuoteError('');setPriceQuote(null);}}>{t("Remover cupom e continuar sem desconto")}</button>}</div>}
 
 {priceQuote&&priceQuote.plan===requestedPlan+'_'+(annual?'year':'month')&&priceQuote.discountCode===discountCode.trim().toUpperCase()&&<div className="billing-quote" role="status">
  <div><span>{t(paymentMethod==='PIX'?"Pagamento desta compra":"Primeira cobrança")}</span><strong>{currency(priceQuote.firstAmountCents/100)}</strong></div>
