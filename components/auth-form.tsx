@@ -35,10 +35,11 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [phone,setPhone]=useState('');
   const [loginChannel,setLoginChannel]=useState<'email'|'whatsapp'>('email');
   const [whatsappAvailable,setWhatsappAvailable]=useState(false);
+  const [stepUpEnabled,setStepUpEnabled]=useState(false);
   const [loginChallenge,setLoginChallenge]=useState('');
   const [loginChallengeChannel,setLoginChallengeChannel]=useState<'email'|'whatsapp'>('email');
   const [loginCode,setLoginCode]=useState('');
-  useEffect(()=>{if(mode!=='login'&&mode!=='signup')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then((v:unknown)=>setWhatsappAvailable(Boolean((v as {whatsapp?:boolean})?.whatsapp))).catch(()=>{});},[mode]);
+  useEffect(()=>{if(mode!=='login'&&mode!=='signup')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then((v:unknown)=>{setWhatsappAvailable(Boolean((v as {whatsapp?:boolean})?.whatsapp));setStepUpEnabled(Boolean((v as {stepUpEnabled?:boolean})?.stepUpEnabled));}).catch(()=>{});},[mode]);
   useEffect(()=>{
     if(mode!=='verify')return;
     // Restore the previous email only on page entry; never overwrite user edits.
@@ -152,7 +153,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {mode!=='logout'&&mode!=='password'&&<label>{t('E-mail')}
           <input type="email" name="email" autoComplete="email" maxLength={254} value={mode==='verify'?pendingEmail:undefined} onChange={mode==='verify'?e=>setPendingEmail(e.target.value):undefined} required/>
         </label>}
-        {mode==='login'&&<label>{t('Receber código de segurança por')}<select name="channel" value={loginChannel} onChange={e=>setLoginChannel(e.target.value as 'email'|'whatsapp')}><option value="email">{t('E-mail')}</option><option value="whatsapp" disabled={!whatsappAvailable}>{t('WhatsApp')}{!whatsappAvailable?' ('+t('indisponível')+')':''}</option></select><small>{t('Se a conta ficar desconectada por 24 horas, pediremos um código adicional. O WhatsApp exige número previamente verificado.')}</small></label>}
+        {mode==='login'&&stepUpEnabled&&<label>{t('Receber código de segurança por')}<select name="channel" value={loginChannel} onChange={e=>setLoginChannel(e.target.value as 'email'|'whatsapp')}><option value="email">{t('E-mail')}</option><option value="whatsapp" disabled={!whatsappAvailable}>{t('WhatsApp')}{!whatsappAvailable?' ('+t('indisponível')+')':''}</option></select><small>{t('Se a conta ficar desconectada por 24 horas, pediremos um código adicional. O WhatsApp exige número previamente verificado.')}</small></label>}
         {needPassword&&<label>{t(mode==='password'?'Nova senha':'Senha')}
           <input type={showPassword?'text':'password'} name="password"
             autoComplete={mode==='login'?'current-password':'new-password'}
