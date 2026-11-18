@@ -137,15 +137,9 @@ test('a interface oferece lista independente e exclusão confirmada para os dois
  assert(extras.includes("action:'delete'"));
  assert(extras.includes("className=\"admin-discount-search\""));
  assert(extras.includes("className=\"admin-discount-pagination\""));
- const pattern=extras.match(/pattern="([^"]+)" title=\\{tr\\(/);
+ const pattern=extras.match(/pattern="([^"]+)" title=\{tr\(/);
  assert(pattern,'O formulário precisa declarar a expressão de validação do código.');
- const validates=new RegExp('^(?:'+pattern[1]+')
- assert(promoRoute.includes("promo_deleted"));
- assert(redeem.includes("p.archived_at IS NULL"));
-});
-
-after(()=>{db.close();rmSync(folder,{recursive:true,force:true});delete globalThis.__adminCouponEnv;delete globalThis.__adminCouponRole});
-,'v');
+ const validates=new RegExp('^(?:'+pattern[1]+')$','v');
  assert(validates.test('30%OFF!'));
  assert(validates.test('RITMO-30'));
  assert.equal(validates.test('30 OFF'),false);
