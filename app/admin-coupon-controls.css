@@ -1,0 +1,25 @@
+/* Cupons no painel: ação destrutiva discreta e adaptada ao tema atual. */
+.adminshell .admin-discount-search{display:flex;align-items:stretch;flex-wrap:wrap;gap:10px;margin:10px 0 16px}
+.adminshell .admin-discount-search label{flex:1 1 250px;display:flex;align-items:center;gap:10px;min-height:46px;padding:9px 14px;border:1px solid var(--admin-border);border-radius:10px;background:var(--admin-surface);color:var(--ink)}
+.adminshell .admin-discount-search input{flex:1;min-width:0;width:100%;color:var(--ink);font-size:14px;background:transparent;border:0;outline:0}
+.adminshell .admin-discount-search button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 15px;border:1px solid var(--admin-border);border-radius:10px;background:var(--admin-surface);color:var(--ink);font-size:13px}
+.adminshell .admin-discount-search :is(input,button):focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.adminshell .admin-discount-count{font-size:13px;color:var(--admin-muted);margin:7px 0 20px}
+.adminshell .admin-discount-count strong{color:var(--ink)}
+.adminshell .admin-coupon-actions{display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:20px}
+.adminshell .admin-coupon-actions :is(.promotoggle,.coupon-delete){display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;width:auto;padding:10px 13px;margin:0;border:1px solid var(--admin-border);border-radius:9px;background:var(--admin-surface);color:var(--ink);font-size:13px;font-weight:600;line-height:1.35;cursor:pointer}
+.adminshell .admin-coupon-actions :is(.promotoggle,.coupon-delete):hover{background:var(--admin-hover);border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
+.adminshell .admin-coupon-actions .coupon-delete{color:var(--ink);border-style:dashed}
+.adminshell .admin-coupon-actions .coupon-delete svg{color:var(--ink)}
+.adminshell .admin-coupon-actions button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.adminshell .admin-coupon-actions button:disabled{cursor:not-allowed;opacity:.6}
+.adminshell .admin-discount-pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:26px;color:var(--admin-muted);font-size:13px}
+.adminshell .admin-discount-pagination button{min-height:44px;padding:9px 16px;border:1px solid var(--admin-border);border-radius:9px;color:var(--ink);background:var(--admin-surface)}
+.adminshell .admin-discount-pagination button:disabled{opacity:.45;cursor:not-allowed}
+.adminshell .admin-discount-pagination button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(max-width:600px){
+ .adminshell .admin-discount-search label{flex-basis:100%}
+ .adminshell .admin-discount-search button{flex:1 1 135px}
+ .adminshell .admin-coupon-actions :is(.promotoggle,.coupon-delete){flex:1 1 145px}
+ .adminshell .admin-discount-pagination{justify-content:center}
+}

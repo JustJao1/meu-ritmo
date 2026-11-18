@@ -34,6 +34,7 @@ import './current-plan-highlight.css';
 import './comfort-polish.css';
 import './studio-action-theme.css';
 import './support-security.css';
+import './admin-coupon-controls.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';
