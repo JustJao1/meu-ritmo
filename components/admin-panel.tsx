@@ -24,7 +24,19 @@ export default function AdminPanel({role,email}:{role:'owner'|'admin';email:stri
 const {t:tr,locale}=useLocale();
 const dialogs=useAppDialog();
 const [data,setData]=useState<PanelData|null>(null),[tab,setTab]=useState('Contas'),[query,setQuery]=useState(''),[applied,setApplied]=useState(''),[page,setPage]=useState(0),[loading,setLoading]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[dialog,setDialog]=useState<{kind:'grant'|'role'|'promo'|'revoke';member?:Member;grant?:Grant;enabled?:boolean}|null>(null),[reason,setReason]=useState(''),[plan,setPlan]=useState('plus'),[days,setDays]=useState(30),[label,setLabel]=useState(''),[code,setCode]=useState(''),[expires,setExpires]=useState(nextMonth),[maxUses,setMaxUses]=useState(100);
-async function load(q=applied,p=page){setLoading(true);setError('');try{const r=await fetch('/api/admin?q='+encodeURIComponent(q)+'&page='+p,{cache:'no-store'});if(!r.headers.get('content-type')?.includes('application/json'))throw Error('Sua sessão não está disponível. Entre novamente pelo aplicativo.');const v:any=await r.json();if(!r.ok){if(r.status===403||r.status===401)setData(null);throw Error(v.error)}setData(v);}catch(e:any){setError(e.message||'Não foi possível abrir a administração.')}finally{setLoading(false)}}
+async function load(q=applied,p=page){
+ setLoading(true);setError('');
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),15000);
+ try{
+  const r=await fetch('/api/admin?q='+encodeURIComponent(q)+'&page='+p,{cache:'no-store',signal:controller.signal});
+  if(!r.headers.get('content-type')?.includes('application/json'))throw Error('Sua sessão não está disponível. Entre novamente pelo aplicativo.');
+  const v:any=await r.json();
+  if(!r.ok){if(r.status===403||r.status===401)setData(null);throw Error(v.error||'Não foi possível abrir a administração.')}
+  setData(v);
+ }catch(e:any){setError(controller.signal.aborted?'A consulta demorou demais. Tente novamente.':e?.message||'Não foi possível abrir a administração.')}
+ finally{clearTimeout(timeout);setLoading(false)}
+}
 useEffect(()=>{
  let active=true;
  const root=document.documentElement;
