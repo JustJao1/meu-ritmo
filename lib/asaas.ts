@@ -64,6 +64,16 @@ export function asaasCardCheckoutReady(){
     (c.mode==='sandbox'||e.ASAAS_PRODUCTION_CARD_APPROVED==='true');
 }
 
+/** A failed Asaas HTTP response is definitive; a timeout is not.
+ * Never forward the provider's raw body, tokens or payer data to the browser.
+ */
+export class AsaasApiError extends Error {
+  constructor(readonly status:number){
+    super('Asaas não concluiu a solicitação ('+status+').');
+    this.name='AsaasApiError';
+  }
+}
+
 function endpoint(path:string) {
   if (!/^\/[a-zA-Z0-9/_-]+(?:\?[a-zA-Z0-9_=&%-]+)?$/.test(path) || path.includes('..')) {
     throw new Error('Endpoint Asaas inválido.');
@@ -85,7 +95,7 @@ export async function asaasRequest<T>(path:string,options:{method?:'GET'|'POST'|
     });
     if(!response.ok) {
       // Do not leak provider payloads, card data, credentials or personal data.
-      throw new Error('Asaas não concluiu a solicitação ('+response.status+').');
+      throw new AsaasApiError(response.status);
     }
     return await response.json() as T;
   } catch(e) {
