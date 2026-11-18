@@ -27,3 +27,13 @@ test('signups have no daily quota and can finish without an email when provider 
  assert.doesNotMatch(route,/signupDailyLimit|signup_daily_limit/);
  assert.match(route,/action==='resend-signup'\?3:10/);
 });
+
+test('new signups open the app without email confirmation and login omits legacy signup link',()=>{
+ const form=read('components/auth-form.tsx'),routes=read('lib/auth-routes.ts');
+ assert.match(form,/if\(v\.emailConfirmationRequired===false\)/);
+ assert.match(form,/location\.href='\/app'/);
+ assert.doesNotMatch(form,/href="\/confirmar-email">\{t\('Ainda não confirmei meu e-mail'\)\}/);
+ assert.match(form,/\(mode==='signup'\|\|mode==='login'\)&&pendingSignup/);
+ assert.match(routes,/emailConfirmationRequired:false/);
+ assert.match(routes,/Confira seu e-mail e senha\./);
+});

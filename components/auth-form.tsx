@@ -222,7 +222,6 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {mode==='login'?<>
           <a href="/criar-conta">{t('Criar conta grátis')}</a>
           <a href="/recuperar-senha">{t('Esqueci a senha')}</a>
-          <a href="/confirmar-email">{t('Ainda não confirmei meu e-mail')}</a>
         </>:<>
           <a href="/entrar">{t('Voltar para entrar')}</a>
           {mode==='password'&&!recoveryReady&&<a href="/recuperar-senha">{t('Solicitar outro link')}</a>}
