@@ -3,6 +3,21 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Excluir cupom":["Delete coupon","Eliminar cupón"],
+"Excluir código promocional":["Delete promotional code","Eliminar código promocional"],
+"O cupom":["Coupon","El cupón"],
+"O código":["Code","El código"],
+"será removido da lista e não poderá ser utilizado novamente. Compras anteriores serão preservadas.":["will be removed from the list and can no longer be used. Previous purchases will be preserved.","se quitará de la lista y ya no podrá utilizarse. Se conservarán las compras anteriores."],
+"será removido da lista e não aceitará novos resgates. Acessos concedidos anteriormente serão mantidos.":["will be removed from the list and cannot be redeemed again. Previously granted access remains valid.","se quitará de la lista y no aceptará más canjes. Se conservarán los accesos otorgados anteriormente."],
+"Cupons encontrados":["Coupons found","Cupones encontrados"],
+"Buscar cupons de desconto":["Search discount coupons","Buscar cupones de descuento"],
+"Buscar por código ou campanha":["Search by code or campaign","Buscar por código o campaña"],
+"Atualizar cupons":["Refresh coupons","Actualizar cupones"],
+"Carregando cupons…":["Loading coupons…","Cargando cupones…"],
+"Nenhum cupom encontrado para essa busca.":["No coupons match your search.","No hay cupones que coincidan con la búsqueda."],
+"Cupom excluído. Ele não pode mais ser usado e foi retirado da lista. Compras anteriores foram preservadas.":["Coupon deleted. It can no longer be used and has been removed from the list. Previous purchases are preserved.","Cupón eliminado. Ya no puede usarse y se ha quitado de la lista. Se conservaron las compras anteriores."],
+"Código excluído. Novos resgates foram bloqueados e os acessos anteriores continuam válidos.":["Code deleted. New redemptions are blocked and previously granted access remains valid.","Código eliminado. No se permiten nuevos canjes y los accesos anteriores siguen vigentes."],
+
 "O telefone será mantido como dado de contato. A verificação da conta é feita por e-mail.":["Your phone number is stored as contact information. Account verification is done by email.","El teléfono se guarda como dato de contacto. La verificación de la cuenta se realiza por correo."],
 "Após 24 horas desconectado, você confirmará o acesso com um código enviado por e-mail.":["After 24 hours signed out, you will confirm access with a code sent by email.","Después de 24 horas sin iniciar sesión, confirmarás el acceso con un código enviado por correo."],
 "A confirmação de cadastro e os códigos de segurança são enviados exclusivamente por e-mail. O telefone fica salvo como dado de contato e não recebe códigos.":["Signup confirmation and security codes are sent by email only. Your phone is saved for contact purposes and does not receive codes.","La confirmación de registro y los códigos de seguridad se envían únicamente por correo. Tu teléfono se guarda como contacto y no recibe códigos."],
