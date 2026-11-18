@@ -10,7 +10,7 @@ const translations=readFileSync('components/legal-localized-text.tsx','utf8');
 
 test('plano atual é exibido no topo do cartão certo, inclusive na demonstração',()=>{
  assert.match(cards,/showCurrent&&current===id\?'true':undefined/);
- assert.match(cards,/className=\{'plancard'\+\(showCurrent&&current===id\?' plancard--current':'?'\)\}/);
+ assert(cards.includes("className={'plancard'+(showCurrent&&current===id?' plancard--current':'')}"));
  assert.match(cards,/className="plan-card-heading"/);
  assert.match(cards,/className="currentplan" role="status"/);
  assert.match(cards,/demo\?'Plano simulado':'Seu plano atual'/);
