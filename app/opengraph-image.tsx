@@ -1,12 +1,12 @@
 import { ImageResponse } from 'next/og';
-export const alt = 'MR: Meu Ritmo — organize sua rotina e finanças';
+export const alt = 'Meu Ritmo — organize sua rotina e finanças';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export default function Image() {
  return new ImageResponse(
  <div style={{width:'100%',height:'100%',display:'flex',alignItems:'center',background:'#f6f4ec',color:'#28372c',fontFamily:'sans-serif',padding:'72px 74px'}}>
   <div style={{display:'flex',flexDirection:'column',width:'58%',justifyContent:'center'}}>
-   <div style={{display:'flex',alignItems:'center',gap:18,marginBottom:40}}><div style={{display:'flex',width:69,height:69,borderRadius:18,background:'#2b382d',color:'#fff',alignItems:'center',justifyContent:'center',fontSize:27,fontWeight:800}}>MR</div><div style={{fontSize:36,fontWeight:700}}>MR: Meu Ritmo</div></div>
+   <div style={{display:'flex',alignItems:'center',gap:18,marginBottom:40}}><img src="https://meuritmo.net/favicon-mr-v3.png" width={69} height={69} alt="" style={{width:69,height:69,objectFit:'contain'}}/><div style={{fontSize:36,fontWeight:700}}>Meu Ritmo®</div></div>
    <div style={{display:'flex',fontSize:16,fontWeight:700,letterSpacing:2,color:'#63755f',marginBottom:18}}>ROTINA E FINANÇAS</div>
    <div style={{display:'flex',flexDirection:'column',fontSize:66,lineHeight:1.12,fontWeight:800,letterSpacing:-2}}><div>Seu dia mais</div><div>organizado.</div></div>
    <div style={{display:'flex',fontSize:25,marginTop:31,color:'#657468'}}>Tarefas, agenda, ganhos e gastos</div><div style={{display:'flex',fontSize:25,color:'#657468'}}>em um só lugar.</div>

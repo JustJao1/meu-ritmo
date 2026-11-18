@@ -38,7 +38,7 @@ export default function PixPaymentPage(){
    ?(data.amountCents/100).toLocaleString(locale,{style:'currency',currency:'BRL'}):null;
  return <main className="mr-pix-page">
    <div className="mr-pix-top">
-     <a className="mr-pix-brand" href="/app"><img src="/favicon-mr-v3.svg" alt="" width={38} height={38}/>MR: Meu Ritmo</a>
+     <a className="mr-pix-brand" href="/app"><img src="/favicon-mr-v3.svg" alt="" width={38} height={38}/>Meu Ritmo<span className="branddot">®</span></a>
      <LanguageSelector/>
    </div>
    <section className="mr-pix-card" aria-live="polite">
