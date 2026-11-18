@@ -3,6 +3,10 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Não foi possível validar o código.":["Could not verify the code.","No fue posible verificar el código."],
+"Código de confirmação":["Verification code","Código de verificación"],
+"WhatsApp":["WhatsApp","WhatsApp"],
+"Não foi possível atualizar.":["Could not update.","No se pudo actualizar."],
 "Atendimento":["Support","Atención"],
 "Entre na sua conta para solicitar atendimento.":["Sign in to request support.","Inicia sesión para solicitar atención."],
 "Fale com a equipe sobre sua conta, pagamento ou dificuldades no aplicativo. Cada pedido tem um protocolo e pode ser acompanhado aqui.":["Contact our team about your account, payment or app issues. Each request has a tracking number.","Contacta al equipo sobre tu cuenta, pagos o problemas con la aplicación. Cada solicitud tiene un número de seguimiento."],
