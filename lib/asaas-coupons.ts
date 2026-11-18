@@ -16,7 +16,7 @@ export function discountedCents(base:number,coupon:Pick<Coupon,'kind'|'value'>):
 }
 export async function quoteCoupon(plan:AsaasPlanCode,raw:string,userId?:string){
   const code=normalize(raw);
-  if(!/^[A-Z0-9-]{6,32}$/.test(code))throw Error('Cupom inválido.');
+  if(!/^[A-Z0-9_%!-]{6,32}$/.test(code))throw Error('Cupom inválido.');
   const c=await env.DB!.prepare('SELECT id,code,plan,kind,value,max_uses,expires_at,enabled FROM discount_codes WHERE code=? AND archived_at IS NULL').bind(code).first<Coupon>();
   const now=Math.floor(Date.now()/1000);
   if(!c||!c.enabled||c.expires_at<=now||c.plan!=='all'&&!plan.startsWith(c.plan+'_'))throw Error('Cupom indisponível para este plano.');

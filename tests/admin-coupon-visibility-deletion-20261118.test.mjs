@@ -108,6 +108,24 @@ test('somente proprietário pode excluir; administrador pode desativar',async()=
  globalThis.__adminCouponRole='owner';
 });
 
+test('código 30%OFF! é criado, encontrado e preparado para uso com porcentagem',async()=>{
+ const result=await post({
+  action:'create',code:'30%off!',label:'30% De Desconto!',plan:'all',kind:'percent',
+  value:30,expiresAt:until,maxUses:1000
+ });
+ assert.equal(result.status,200,JSON.stringify(result.data));
+ const saved=db.prepare('SELECT code,label,kind,value,expires_at,max_uses,enabled FROM discount_codes WHERE code=?').get('30%OFF!');
+ assert.equal(saved.code,'30%OFF!');
+ assert.equal(saved.value,30);
+ assert.equal(saved.enabled,1);
+ const listed=await get('?q='+encodeURIComponent('30%OFF!'));
+ assert.equal(listed.status,200);
+ assert.equal(listed.data.total,1);
+ assert.equal(listed.data.discounts[0].code,'30%OFF!');
+ const duplicate=await post({action:'create',code:'30%OFF!',label:'Outra campanha',plan:'all',kind:'percent',value:30,expiresAt:until,maxUses:1000});
+ assert.equal(duplicate.status,409);
+});
+
 test('a interface oferece lista independente e exclusão confirmada para os dois tipos',()=>{
  const panel=readFileSync('components/admin-panel.tsx','utf8');
  const extras=readFileSync('components/admin-extras.tsx','utf8');

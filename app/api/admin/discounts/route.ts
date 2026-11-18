@@ -7,7 +7,7 @@ import {z} from 'zod';
 const response=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
 const id=z.string().uuid();
 const request=z.discriminatedUnion('action',[
- z.object({action:z.literal('create'),code:z.string().trim().toUpperCase().regex(/^[A-Z0-9-]{6,32}$/),label:z.string().trim().min(3).max(80),plan:z.enum(['all','plus','pro']),kind:z.enum(['percent','amount']),value:z.number().int().positive().max(1000000),expiresAt:z.number().int(),maxUses:z.number().int().min(1).max(10000)}),
+ z.object({action:z.literal('create'),code:z.string().trim().toUpperCase().regex(/^[A-Z0-9_%!-]{6,32}$/),label:z.string().trim().min(3).max(80),plan:z.enum(['all','plus','pro']),kind:z.enum(['percent','amount']),value:z.number().int().positive().max(1000000),expiresAt:z.number().int(),maxUses:z.number().int().min(1).max(10000)}),
  z.object({action:z.literal('sync'),id}),
  z.object({action:z.literal('toggle'),id,enabled:z.boolean()}),
  z.object({action:z.literal('delete'),id})
@@ -48,7 +48,12 @@ export async function POST(req:Request){
   body=JSON.parse(raw);
  }catch{return response({error:'Dados inválidos.'},400);}
  const parsed=request.safeParse(body);
- if(!parsed.success)return response({error:'Confira os campos do cupom.'},400);
+ if(!parsed.success){
+  const invalidCode=parsed.error.issues.some(issue=>issue.path.includes('code'));
+  return response({error:invalidCode?
+   'Código inválido. Use de 6 a 32 caracteres: letras, números, hífen (-), _, % ou !.':
+   'Confira o desconto, a validade e o limite de usos do cupom.'},400);
+ }
  const data=parsed.data;
  const now=Math.floor(Date.now()/1000);
  try{

@@ -37,6 +37,14 @@ db.prepare('INSERT INTO discount_codes(id,code,label,plan,kind,value,expires_at,
 db.prepare("INSERT INTO asaas_orders(id,user_id,plan_code,base_price_cents,first_price_cents,status,created_at) VALUES (?,?,?,?,?,'pending',?)")
  .run(order,'payer','plus_month',1990,1791,until-1000);
 
+test('cupom com porcentagem e exclamação pode ser usado no checkout Pix',async()=>{
+ db.prepare('INSERT INTO discount_codes(id,code,label,plan,kind,value,expires_at,max_uses,created_at) VALUES (?,?,?,?,?,?,?,?,?)')
+  .run(crypto.randomUUID(),'30%OFF!','30% De Desconto!','all','percent',30,until,1000,until-1000);
+ const result=await quoteCoupon('plus_month',' 30%off! ','comprador-cupom-especial');
+ assert.equal(result.coupon.code,'30%OFF!');
+ assert.equal(result.price,1393);
+});
+
 test('cupom porcentual calcula valor real do Plus e respeita o plano',async()=>{
  const quote=await quoteCoupon('plus_month',' teste-10 ','payer');
  assert.equal(quote.price,1791);

@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"De 6 a 32 caracteres: letras, números, -, _, % ou !.":["Use 6 to 32 characters: letters, numbers, -, _, % or !.","Usa entre 6 y 32 caracteres: letras, números, -, _, % o !."],
 "Excluir cupom":["Delete coupon","Eliminar cupón"],
 "Excluir código promocional":["Delete promotional code","Eliminar código promocional"],
 "O cupom":["Coupon","El cupón"],
