@@ -75,7 +75,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     function openSharedSpace(id:string){setFocusSpace(previous=>({id,request:(previous?.request||0)+1}));setPanel('Espaços');}
     useEffect(()=>{try{setShowEarlyAccess(localStorage.getItem('mr-early-access-dismissed')!=='1');}catch{}},[]);
     function dismissEarlyAccess(){setShowEarlyAccess(false);try{localStorage.setItem('mr-early-access-dismissed','1');}catch{}}
-    const [socialProfile,setSocialProfile]=useState<SocialProfile|null>(null),[discountCode,setDiscountCode]=useState(''),[billingName,setBillingName]=useState(''),[billingTaxId,setBillingTaxId]=useState(''),[billingPhone,setBillingPhone]=useState(''),[billingPostalCode,setBillingPostalCode]=useState(''),[billingStreet,setBillingStreet]=useState(''),[billingNumber,setBillingNumber]=useState(''),[billingDistrict,setBillingDistrict]=useState(''),[paymentMethod,setPaymentMethod]=useState<'PIX'|'CREDIT_CARD'>('PIX'),[purchaseTerms,setPurchaseTerms]=useState(false),[purchaseRefund,setPurchaseRefund]=useState(false),[purchaseStatus,setPurchaseStatus]=useState<{configured:boolean;mode:string;earlyAccess?:boolean;manageAvailable?:boolean;cardAvailable?:boolean;hasPaymentHistory?:boolean;hasPixToVerify?:boolean;hasPendingPix?:boolean;hasFailedCheckout?:boolean}|null>(null),[priceQuote,setPriceQuote]=useState<{plan:string;firstAmountCents:number;renewalAmountCents:number;savingsCents:number;discountCode:string}|null>(null),[priceQuoteError,setPriceQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false);
+    const [socialProfile,setSocialProfile]=useState<SocialProfile|null>(null),[discountCode,setDiscountCode]=useState(''),[billingName,setBillingName]=useState(''),[billingTaxId,setBillingTaxId]=useState(''),[billingPhone,setBillingPhone]=useState(''),[billingPostalCode,setBillingPostalCode]=useState(''),[billingStreet,setBillingStreet]=useState(''),[billingNumber,setBillingNumber]=useState(''),[billingDistrict,setBillingDistrict]=useState(''),[paymentMethod,setPaymentMethod]=useState<'PIX'|'CREDIT_CARD'>('PIX'),[purchaseTerms,setPurchaseTerms]=useState(false),[purchaseRefund,setPurchaseRefund]=useState(false),[purchaseStatus,setPurchaseStatus]=useState<{configured:boolean;mode:string;earlyAccess?:boolean;manageAvailable?:boolean;cardAvailable?:boolean;hasPaymentHistory?:boolean;hasPixToVerify?:boolean;hasPendingPix?:boolean;hasFailedCheckout?:boolean}|null>(null),[priceQuote,setPriceQuote]=useState<{plan:string;firstAmountCents:number;renewalAmountCents:number;savingsCents:number;discountCode:string}|null>(null),[priceQuoteError,setPriceQuoteError]=useState(''),[quoteLoading,setQuoteLoading]=useState(false),[paymentOpenUrl,setPaymentOpenUrl]=useState('');
     useEffect(()=>{if(!landing&&initialArea==='Hoje'&&preferenceAllowed()){const saved=document.cookie.split('; ').find(x=>x.startsWith('mr_area='))?.split('=')[1];if(saved){const a=decodeURIComponent(saved);if(['Hoje','Agenda','Gastos','Notas','Rotina','Comunidade'].includes(a))setArea(a);}}},[landing,initialArea]);
     useEffect(()=>{if(!landing&&!demo&&loaded&&preferenceAllowed())document.cookie='mr_area='+encodeURIComponent(area)+'; Path=/; Max-Age=2592000; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');},[area,loaded,demo,landing]);
     useEffect(()=>{
@@ -299,7 +299,14 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
     async function billing(action: 'checkout' | 'portal') { if (demo) {
         setToast('A demonstração não inicia assinaturas. Entre na sua conta para configurar um teste.');
         return;
-    } setSaving(true);
+    } 
+    // Reserve the tab during the user click; browsers can block window.open after await.
+    const checkoutTab=window.open('about:blank','_blank');
+    if(checkoutTab){
+      try{checkoutTab.opener=null;checkoutTab.document.title='Meu Ritmo · Pagamento';checkoutTab.document.body.textContent=t('Preparando sua página de pagamento…');}catch{}
+    }
+    setPaymentOpenUrl('');
+    setSaving(true);
     const controller=new AbortController();
     const limit=setTimeout(()=>controller.abort(),25000);
     try {
@@ -312,7 +319,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
           }catch{}
           throw Error(v.error||t('Não foi possível iniciar o pagamento.'));
         }
-        if(!v.url){
+        if(!v.url){checkoutTab?.close();
           if(action==='checkout'&&v.awaitingInvoice){setToast('A assinatura foi registrada. A fatura ainda está sendo gerada. Use Consultar fatura em instantes.');return;}
           if(action==='portal'){setToast('Nenhuma fatura disponível para abrir agora. Consulte novamente mais tarde.');return;}
           throw Error('O provedor não retornou um endereço de pagamento.');
@@ -325,9 +332,17 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
           throw Error('O provedor retornou um endereço de pagamento inválido.');
         if(action==='checkout'&&v.method==='PIX'&&v.hosted&&typeof v.orderId==='string')
           sessionStorage.setItem('mr_pix_hosted_pending',v.orderId);
-        location.href=url.href;
+        if(checkoutTab&&!checkoutTab.closed){
+          checkoutTab.location.replace(url.href);
+          setPaymentOpenUrl('');
+          setToast(t('Pagamento aberto em outra aba. O Meu Ritmo continua aqui.'));
+        }else{
+          setPaymentOpenUrl(url.href);
+          setToast(t('Seu navegador bloqueou a nova aba. Use o botão Abrir pagamento em nova aba.'));
+        }
     }
     catch (e: any) {
+        checkoutTab?.close();
         setToast(e?.name==='AbortError'?t('O pagamento demorou a responder. Confira sua cobrança antes de tentar outra vez.'):e?.message||t('Não foi possível abrir o pagamento.'));
     }
     finally {
