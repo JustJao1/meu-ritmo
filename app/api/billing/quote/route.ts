@@ -1,3 +1,4 @@
+import {env} from 'cloudflare:workers';
 import {getUser} from '../../../session';
 import {z} from 'zod';
 import {asaasConfig} from '../../../../lib/asaas';
@@ -17,7 +18,7 @@ export async function POST(req:Request){
   const base=priceCents[price];
   // If a coupon was already reserved for this user's active checkout,
   // show its original price so the customer can reopen the SAME checkout.
-  const previous=await (await import('cloudflare:workers')).env.DB!.prepare(
+  const previous=await env.DB!.prepare(
     "SELECT o.plan_code,o.coupon_code,o.first_price_cents,o.created_at,h.status AS checkout_status "+
     "FROM asaas_orders o JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id "+
     "WHERE o.user_id=? AND o.status='pending' AND o.first_paid_at IS NULL "+
