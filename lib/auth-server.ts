@@ -1,5 +1,5 @@
 import type {Identity,SessionUser} from './auth-context';
-export type AuthEnv={DB?:D1Database;SUPABASE_URL?:string;SUPABASE_PUBLISHABLE_KEY?:string;SESSION_ENCRYPTION_KEY?:string;SUPABASE_SERVICE_ROLE_KEY?:string};
+export type AuthEnv={DB?:D1Database;SUPABASE_URL?:string;SUPABASE_PUBLISHABLE_KEY?:string;SESSION_ENCRYPTION_KEY?:string;SUPABASE_SERVICE_ROLE_KEY?:string;TURNSTILE_SITE_KEY?:string;TURNSTILE_SECRET_KEY?:string};
 export const cookieName='__Host-ritmo_session';
 const enc=new TextEncoder();const b64=(b:Uint8Array)=>btoa(String.fromCharCode(...b)).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 const bytes=(s:string)=>Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')),c=>c.charCodeAt(0));

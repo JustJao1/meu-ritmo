@@ -4,6 +4,7 @@ import {useEffect,useState,type FormEvent} from 'react';
 import {safeReturnPath} from '../lib/return-path';
 import {passwordMeetsPolicy,PASSWORD_GUIDANCE} from '../lib/password-policy';
 import LanguageSelector,{useLocale} from './language-selector';
+import TurnstileCaptcha from './turnstile-captcha';
 
 type AuthMode='login'|'signup'|'recover'|'verify'|'password'|'logout';
 const titles:Record<AuthMode,string>={
@@ -13,7 +14,7 @@ const titles:Record<AuthMode,string>={
 };
 const descriptions:Partial<Record<AuthMode,string>>={
   login:'Entre com o e-mail e a senha usados no cadastro.',
-  signup:'Crie sua conta gratuitamente. Depois, confirme o e-mail para começar a usar o Meu Ritmo.',
+  signup:'Crie sua conta gratuitamente para começar a usar o Meu Ritmo.',
   recover:'Informe o e-mail cadastrado para receber as instruções de recuperação.',
   verify:'Confira sua caixa de entrada e o spam. Digite o código de confirmação recebido para ativar sua conta.',
   password:'Escolha uma nova senha para voltar a acessar sua conta.'
@@ -36,7 +37,11 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [stepUpEnabled,setStepUpEnabled]=useState(false);
   const [loginChallenge,setLoginChallenge]=useState('');
   const [loginCode,setLoginCode]=useState('');
-  useEffect(()=>{if(mode!=='login'&&mode!=='signup')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then((v:unknown)=>{setStepUpEnabled(Boolean((v as {stepUpEnabled?:boolean})?.stepUpEnabled));}).catch(()=>{});},[mode]);
+  const [captchaRequired,setCaptchaRequired]=useState(false);
+  const [captchaSiteKey,setCaptchaSiteKey]=useState('');
+  const [captchaToken,setCaptchaToken]=useState('');
+  const [captchaResetKey,setCaptchaResetKey]=useState(0);
+  useEffect(()=>{if(mode!=='login'&&mode!=='signup'&&mode!=='recover')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then((v:unknown)=>{const data=v as {stepUpEnabled?:boolean;captchaRequired?:boolean;captchaSiteKey?:string};setStepUpEnabled(Boolean(data?.stepUpEnabled));setCaptchaRequired(Boolean(data?.captchaRequired));setCaptchaSiteKey(data?.captchaSiteKey||'');}).catch(()=>{});},[mode]);
   useEffect(()=>{
     if(mode!=='verify')return;
     // Restore the previous email only on page entry; never overwrite user edits.
@@ -114,13 +119,18 @@ export default function AuthForm({mode}:{mode:AuthMode}){
     setBusy(true);setError('');setMessage('');setPendingSignup(false);
     try{
       const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({...b,bio:'',accept:form.has('accept'),adult:form.has('adult')})});
+        body:JSON.stringify({...b,bio:'',captchaToken,accept:form.has('accept'),adult:form.has('adult')})});
       const v:any=await r.json();
       if(mode==='login'&&r.status===202&&v.challengeRequired===true){setLoginChallenge(v.challengeId);setLoginCode('');return;}
       if(!r.ok){if((mode==='signup'||mode==='login')&&v.pendingVerification===true){setPendingSignup(true);try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}}throw Error(v.error||t('Não foi possível concluir.'));}
       if(mode==='signup'){
-        try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}
-        location.href='/confirmar-email';
+        if(v.emailConfirmationRequired===false){
+          try{sessionStorage.removeItem('mr-pending-email');}catch{}
+          location.href='/app';
+        }else{
+          try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}
+          location.href='/confirmar-email';
+        }
       }else if(mode==='login'){
         location.href=safeReturnPath(new URLSearchParams(location.search).get('return_to')||'/app');
       }else if(mode==='verify'){
@@ -132,7 +142,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         setMessage(v.message||t('Concluído.'));
       }
     }catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível concluir.'));}
-    finally{setBusy(false);}
+    finally{setBusy(false);if(mode==='signup'||mode==='recover'){setCaptchaToken('');setCaptchaResetKey(v=>v+1);}}
   }
   const needPassword=mode==='login'||mode==='signup'||mode==='password';
   const newPasswordMode=mode==='signup'||mode==='password';
@@ -150,7 +160,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {mode!=='logout'&&mode!=='password'&&<label>{t('E-mail')}
           <input type="email" name="email" autoComplete="email" maxLength={254} value={mode==='verify'?pendingEmail:undefined} onChange={mode==='verify'?e=>setPendingEmail(e.target.value):undefined} required/>
         </label>}
-        {mode==='login'&&stepUpEnabled&&<p className="muted">{t('Após 24 horas desconectado, você confirmará o acesso com um código enviado por e-mail.')}</p>}
+        {mode==='login'&&stepUpEnabled&&<p className="muted">{t('Após 7 dias desconectado, você confirmará o acesso com um código enviado por e-mail.')}</p>}
         {needPassword&&<label>{t(mode==='password'?'Nova senha':'Senha')}
           <input type={showPassword?'text':'password'} name="password"
             autoComplete={mode==='login'?'current-password':'new-password'}
@@ -169,7 +179,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
             onChange={e=>setPasswordConfirmation(e.target.value)} required/>
         </label>}
         {mode==='signup'&&<>
-          <label>{t('Número de contato com DDD')}<input type="tel" inputMode="tel" name="phone" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+55 16 99999-9999" minLength={12} maxLength={24} required/><small>{t('O telefone será mantido como dado de contato. A verificação da conta é feita por e-mail.')}</small></label>
+          <label>{t('Número de contato com DDD')}<input type="tel" inputMode="tel" name="phone" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+55 16 99999-9999" minLength={12} maxLength={24} required/><small>{t('O telefone será mantido como dado de contato e não receberá códigos de segurança.')}</small></label>
           <label>{t('Nome de usuário')}<input name="username" autoComplete="username" required
             pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24} value={signupUsername} onChange={e=>setSignupUsername(e.target.value.toLowerCase())}/>
             <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small><small>{t('O @usuário é exclusivo. Duas contas não podem usar o mesmo identificador.')}</small>
@@ -181,8 +191,9 @@ export default function AuthForm({mode}:{mode:AuthMode}){
             {t('Li os')} <a href="/termos" target="_blank" rel="noreferrer">{t('termos')}</a> {t('e a')} <a href="/privacidade" target="_blank" rel="noreferrer">{t('política de privacidade')}</a>.
           </label>
           <label className="checkline"><input type="checkbox" name="adult" required/>{t('Tenho 18 anos ou mais.')}</label>
-          <p className="muted">{t('Você pode adicionar sua foto no perfil após confirmar o e-mail.')}</p>
+          <p className="muted">{t('Você pode adicionar sua foto depois de criar a conta.')}</p>
         </>}
+        {(mode==='signup'||mode==='recover')&&captchaRequired&&(captchaSiteKey?<TurnstileCaptcha siteKey={captchaSiteKey} onToken={setCaptchaToken} resetKey={captchaResetKey}/>:<p role="alert" className="autherror">{t('O CAPTCHA está sendo configurado. Tente novamente mais tarde.')}</p>)}
         {mode==='verify'&&<>
           <p className="muted">{t('Digite o código de seis dígitos enviado ao seu e-mail. Se não recebeu, você pode solicitar outro abaixo.')}</p>
           <label>{t('Qual código você recebeu?')}
@@ -200,7 +211,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {error&&<p role="alert" className="autherror">{error}</p>}
         {(mode==='signup'||mode==='login')&&pendingSignup&&<a className="authpendinglink" href="/confirmar-email">{t('Confirmar meu cadastro anterior')}</a>}
         {message&&<p role="status">{message}</p>}
-        {(mode!=='password'||recoveryReady)&&<button className="primary" type="submit" disabled={busy}>
+        {(mode!=='password'||recoveryReady)&&<button className="primary" type="submit" disabled={busy||((mode==='signup'||mode==='recover')&&captchaRequired&&!captchaToken)}>
           {busy?t('Aguarde…'):t({login:'Entrar',signup:'Criar minha conta',recover:'Enviar link de recuperação',verify:'Confirmar código',password:'Salvar nova senha',logout:'Sair da conta'}[mode])}
         </button>}
         {mode==='verify'&&verificationType==='signup'&&<button className="authresend" type="button" onClick={resendSignupCode} disabled={busy}>

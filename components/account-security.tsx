@@ -39,7 +39,7 @@ export default function AccountSecurity(){
  }
 
  return <section className="account-security">
-  <p>{t('A confirmação de cadastro e os códigos de segurança são enviados exclusivamente por e-mail. O telefone fica salvo como dado de contato e não recebe códigos.')}</p>
+  <p>{t('Os códigos de segurança e de recuperação de senha são enviados por e-mail. O telefone fica salvo como dado de contato e não recebe códigos.')}</p>
   {error&&<p role="alert" className="autherror">{error}</p>}
   {notice&&<p role="status">{notice}</p>}
   <form onSubmit={updatePhone}>
@@ -52,7 +52,7 @@ export default function AccountSecurity(){
    <button type="submit" disabled={busy||!phone||!password}>{busy?t('Salvando…'):t('Salvar número')}</button>
   </form>
   <p className="muted">{t(contact?.stepUpEnabled?
-   'Após 24 horas desconectado, a confirmação adicional de login será feita por e-mail.':
+   'Após 7 dias desconectado, a confirmação adicional de login será feita por e-mail.':
    'A verificação adicional de login será disponibilizada após a homologação do envio de códigos. Seu acesso atual continua funcionando normalmente.')}</p>
  </section>;
 }

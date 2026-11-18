@@ -40,14 +40,14 @@ test('pending usernames redirect their original owner to verification rather tha
 test('pending signup requires a valid code rather than password login or provider link',()=>{
  assert.match(route,/if\(await hasPendingVerification\(e,sessionUser\.userId\)\)/);
  assert.doesNotMatch(route,/action==='login'[^\n]*await finishProfile/);
- assert.match(route,/if\(v\.session\?\.access_token\|\|v\.access_token\)/);
+ assert.match(route,/if\(requiresEmailConfirmation\)/);
  assert.match(server,/if\(purpose==='login'&&await hasPendingVerification/);
  assert.match(server,/if\(row\.purpose==='login'&&await hasPendingVerification/);
  assert.match(route,/if\(type==='signup'\)await finishProfile/);
  assert.match(form,/\(mode==='signup'\|\|mode==='login'\)&&pendingSignup/);
 });
 test('username collision still leaves account pending until OTP and sends user through onboarding',()=>{
- assert.ok(route.includes("const generatedUsername='pending_'+id.replaceAll('-','').slice(0,16)"));
+ assert.ok(route.includes("(requiresEmailConfirmation?'pending_':'usuario_')+id.replaceAll('-','').slice(0,16)"));
  assert.ok(route.includes("bind(id,generatedUsername,p.name,now,now).run()"));
  assert.ok(server.includes("if(p.username==='pending_'+u.userId.replaceAll('-','').slice(0,16))"));
 });
@@ -68,7 +68,8 @@ test('signup checks Supabase public confirmation policy before creating an accou
  const settings=route.indexOf("const settingsResponse=await provider(e,'/settings')");
  const signup=route.indexOf("const r=await provider(e,'/signup'");
  assert.ok(settings>0&&signup>settings,'Provider settings must be checked before signup');
- assert.match(route,/settings\.mailer_autoconfirm!==false/);
- assert.match(route,/auth_signup_provider_confirmation_disabled/);
+ assert.match(route,/requiresEmailConfirmation=settings\.mailer_autoconfirm===false/);
+ assert.match(route,/emailConfirmationRequired:false/);
+ assert.match(route,/emailConfirmationRequired:true/);
  assert.match(route,/if\(!settingsResponse\.ok\)return reply/);
 });

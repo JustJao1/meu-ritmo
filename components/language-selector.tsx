@@ -3,6 +3,11 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Verificação de segurança":["Security check","Verificación de seguridad"],
+"Não foi possível carregar a verificação de segurança. Atualize a página.":["Could not load the security check. Refresh the page.","No se pudo cargar la verificación de seguridad. Actualiza la página."],
+"O CAPTCHA está sendo configurado. Tente novamente mais tarde.":["CAPTCHA is being configured. Try again later.","Se está configurando CAPTCHA. Inténtalo más tarde."],
+"Crie sua conta gratuitamente para começar a usar o Meu Ritmo.":["Create your free account to start using Meu Ritmo.","Crea tu cuenta gratuita para empezar a usar Meu Ritmo."],
+"Você pode adicionar sua foto depois de criar a conta.":["You can add your photo after creating your account.","Puedes agregar tu foto después de crear tu cuenta."],
 "De 6 a 32 caracteres: letras, números, -, _, % ou !.":["Use 6 to 32 characters: letters, numbers, -, _, % or !.","Usa entre 6 y 32 caracteres: letras, números, -, _, % o !."],
 "Excluir cupom":["Delete coupon","Eliminar cupón"],
 "Excluir código promocional":["Delete promotional code","Eliminar código promocional"],
@@ -19,11 +24,11 @@ const translations:Record<string,[string,string]>={
 "Cupom excluído. Ele não pode mais ser usado e foi retirado da lista. Compras anteriores foram preservadas.":["Coupon deleted. It can no longer be used and has been removed from the list. Previous purchases are preserved.","Cupón eliminado. Ya no puede usarse y se ha quitado de la lista. Se conservaron las compras anteriores."],
 "Código excluído. Novos resgates foram bloqueados e os acessos anteriores continuam válidos.":["Code deleted. New redemptions are blocked and previously granted access remains valid.","Código eliminado. No se permiten nuevos canjes y los accesos anteriores siguen vigentes."],
 
-"O telefone será mantido como dado de contato. A verificação da conta é feita por e-mail.":["Your phone number is stored as contact information. Account verification is done by email.","El teléfono se guarda como dato de contacto. La verificación de la cuenta se realiza por correo."],
-"Após 24 horas desconectado, você confirmará o acesso com um código enviado por e-mail.":["After 24 hours signed out, you will confirm access with a code sent by email.","Después de 24 horas sin iniciar sesión, confirmarás el acceso con un código enviado por correo."],
-"A confirmação de cadastro e os códigos de segurança são enviados exclusivamente por e-mail. O telefone fica salvo como dado de contato e não recebe códigos.":["Signup confirmation and security codes are sent by email only. Your phone is saved for contact purposes and does not receive codes.","La confirmación de registro y los códigos de seguridad se envían únicamente por correo. Tu teléfono se guarda como contacto y no recibe códigos."],
+"O telefone será mantido como dado de contato e não receberá códigos de segurança.":["Your phone number is saved for contact purposes and does not receive security codes.","El teléfono se guarda como contacto y no recibe códigos de seguridad."],
+"Após 7 dias desconectado, você confirmará o acesso com um código enviado por e-mail.":["After 7 days signed out, you will confirm access with a code sent by email.","Después de 7 días sin iniciar sesión, confirmarás el acceso con un código enviado por correo."],
+"Os códigos de segurança e de recuperação de senha são enviados por e-mail. O telefone fica salvo como dado de contato e não recebe códigos.":["Security and password-recovery codes are sent by email. Your phone is saved for contact purposes and does not receive codes.","Los códigos de seguridad y de recuperación de contraseña se envían por correo. El teléfono se guarda como contacto y no recibe códigos."],
 "Telefone atualizado.":["Phone number updated.","Número actualizado."],
-"Após 24 horas desconectado, a confirmação adicional de login será feita por e-mail.":["After 24 hours signed out, additional sign-in verification is done by email.","Tras 24 horas sin iniciar sesión, la verificación adicional se realiza por correo."],
+"Após 7 dias desconectado, a confirmação adicional de login será feita por e-mail.":["After 7 days signed out, additional sign-in verification is done by email.","Tras 7 días sin iniciar sesión, la verificación adicional se realiza por correo."],
 "Telefone e segurança da conta":["Phone and account security","Teléfono y seguridad de la cuenta"],
 
 "A verificação adicional de login será disponibilizada após a homologação do envio de códigos. Seu acesso atual continua funcionando normalmente.":["Additional login verification will be available after code delivery has been tested. Your current access remains unchanged.","La verificación adicional de inicio de sesión estará disponible después de probar el envío de códigos. Tu acceso actual no cambia."],
@@ -88,7 +93,7 @@ const translations:Record<string,[string,string]>={
 "O canal WhatsApp ainda depende da ativação do serviço de envio. Enquanto isso, os códigos continuam disponíveis por e-mail.":["WhatsApp delivery is not enabled yet. You can still receive codes by email.","El envío por WhatsApp todavía no está habilitado. Puedes recibir códigos por correo."],
 "Canal preferido para confirmar seu login":["Preferred login verification method","Método preferido para verificar tu acceso"],
 "Salvar preferência":["Save preference","Guardar preferencia"],
-"Uma nova confirmação é exigida quando sua conta fica desconectada por pelo menos 24 horas. Sessões existentes não são encerradas por essa configuração.":["An extra code is required after 24 hours signed out. Existing sessions stay active.","Se requiere un código adicional después de 24 horas desconectado. Las sesiones existentes siguen activas."],
+"Uma nova confirmação é exigida quando sua conta fica desconectada por pelo menos 7 dias. Sessões existentes não são encerradas por essa configuração.":["An extra code is required after 7 days signed out. Existing sessions stay active.","Se requiere un código adicional después de 7 días desconectado. Las sesiones existentes siguen activas."],
 
 "Abrir aplicativo Meu Ritmo":["Open Meu Ritmo app","Abrir la aplicación Meu Ritmo"],
 "Arredondada":["Rounded","Redondeada"],

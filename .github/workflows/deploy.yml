@@ -69,3 +69,5 @@ jobs:
           ASAAS_PRODUCTION_CARD_APPROVED: 'false'
           # Enable only after verifying the Supabase Magic Link template sends a numeric OTP.
           LOGIN_STEP_UP_ENABLED: ${{ vars.LOGIN_STEP_UP_ENABLED || 'false' }}
+          TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}

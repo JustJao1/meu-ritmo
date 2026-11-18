@@ -12,8 +12,8 @@ const locale=read('components/language-selector.tsx');
 
 test('cadastro e login deixam claro que códigos só chegam por e-mail',()=>{
  assert(form.includes("Enviamos um código de seis dígitos para seu e-mail."));
- assert(form.includes("O telefone será mantido como dado de contato. A verificação da conta é feita por e-mail."));
- assert(form.includes("Após 24 horas desconectado, você confirmará o acesso com um código enviado por e-mail."));
+ assert(form.includes("O telefone será mantido como dado de contato e não receberá códigos de segurança."));
+ assert(form.includes("Após 7 dias desconectado, você confirmará o acesso com um código enviado por e-mail."));
  assert(!form.includes('<option value="whatsapp"'));
  assert(!form.includes("loginChannel"));
  assert(!form.includes("loginChallengeChannel"));
@@ -40,7 +40,7 @@ test('API exige canal email mesmo quando o cliente envia WhatsApp',()=>{
 });
 
 test('novas mensagens seguem traduzidas no idioma selecionado',()=>{
- for(const key of ['Telefone e segurança da conta','Telefone atualizado.','Após 24 horas desconectado, você confirmará o acesso com um código enviado por e-mail.']){
+ for(const key of ['Telefone e segurança da conta','Telefone atualizado.','Após 7 dias desconectado, você confirmará o acesso com um código enviado por e-mail.']){
   assert(locale.includes(JSON.stringify(key)+':['),key);
  }
 });

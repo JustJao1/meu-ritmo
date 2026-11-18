@@ -41,10 +41,10 @@ export async function shouldChallenge(e:SecureEnv,userId:string){
  const contact=await e.DB!.prepare('SELECT disconnected_at FROM auth_contact_methods WHERE user_id=?').bind(userId).first<{disconnected_at:number|null}>();
  const active=await e.DB!.prepare("SELECT COUNT(*) AS count FROM auth_sessions WHERE user_id=? AND purpose='login' AND expires_at>?").bind(userId,current).first<{count:number}>();
  if((active?.count||0)>0)return false;
- if(contact?.disconnected_at!=null)return current-contact.disconnected_at>=86400;
+ if(contact?.disconnected_at!=null)return current-contact.disconnected_at>=604800;
  const last=await e.DB!.prepare("SELECT MAX(expires_at) AS last FROM auth_sessions WHERE user_id=? AND purpose='login'").bind(userId).first<{last:number|null}>();
  // On an unknown historical state, require the additional code rather than silently bypass it.
- return last?.last==null||current-last.last>=86400;
+ return last?.last==null||current-last.last>=604800;
 }
 export async function beginLoginChallenge(e:SecureEnv,userId:string,email:string,channel:'email'|'whatsapp',passwordSession:any){
  const id=opaque(),idHash=await hash(id),time=now(),expiry=time+600;
