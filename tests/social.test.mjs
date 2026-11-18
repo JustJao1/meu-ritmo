@@ -61,6 +61,12 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata√
     const path=String(url);
     if(path.includes('/customers?'))return Response.json({data:[]});
     if(path.endsWith('/customers'))return Response.json({id:customerCount++===0?'cus_test123':'cus_test123_2'});
+    if(path.includes('/customers/')&&init?.method==='PUT'){
+      const details=JSON.parse(init.body);
+      assert.equal(details.postalCode,'13560000');
+      assert.equal(details.addressNumber,'100');
+      return Response.json({id:'cus_test123',...details});
+    }
     if(path.endsWith('/checkouts')&&init?.method==='POST'){
        hostedPixRequest=JSON.parse(init.body);
        return Response.json({id:'12345678-1234-4123-8123-123456789abc'});
@@ -78,7 +84,7 @@ test('checkout Asaas valida plano, termos e cupom no servidor antes da contrata√
 
     throw Error('Network denied in test: '+path);
   };
-  const payer={name:'Bob Teste',cpfCnpj:'52998224725'};
+  const payer={name:'Bob Teste',cpfCnpj:'52998224725',phone:'16999999999',postalCode:'13560000',address:'Rua dos Testes',addressNumber:'100',province:'Centro'};
   try{
     who('bob');
     assert.equal((await request('checkout',{...payer,price:'__proto__',acceptTerms:true})).status,400);
