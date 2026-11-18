@@ -15,14 +15,16 @@ const asaasProbeReasons:Record<string,string>={
 };
 export default function AdminExtras({tab,owner}:{tab:string;owner:boolean}){const {t:tr,locale}=useLocale();const dialogs=useAppDialog();const [discountSearch,setDiscountSearch]=useState(''),[discountApplied,setDiscountApplied]=useState(''),[discountPage,setDiscountPage]=useState(0),[discountLoading,setDiscountLoading]=useState(false),[data,setData]=useState<any>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[create,setCreate]=useState(false),[code,setCode]=useState(''),[label,setLabel]=useState(''),[plan,setPlan]=useState('all'),[kind,setKind]=useState('percent'),[value,setValue]=useState(10),[maxUses,setMaxUses]=useState(100),[expiry,setExpiry]=useState(new Date(Date.now()+30*86400000).toISOString().slice(0,10)),[legal,setLegal]=useState({name:'',taxId:'',address:'',email:''}),[billingProbe,setBillingProbe]=useState<any>(null),[billingProbeBusy,setBillingProbeBusy]=useState(false);const endpoint=tab==='Descontos'?'/api/admin/discounts':tab==='Moderação'?'/api/social?moderation=1':'/api/admin/operations';async function load(q=discountApplied,page=discountPage){
  setError('');setDiscountLoading(true);
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),15000);
  try{
   const url=tab==='Descontos'?endpoint+'?q='+encodeURIComponent(q)+'&page='+page:endpoint;
-  const r=await fetch(url,{cache:'no-store'});
+  const r=await fetch(url,{cache:'no-store',signal:controller.signal});
   if(!r.headers.get('content-type')?.includes('application/json'))throw Error('Não foi possível consultar os cupons. Entre novamente no painel.');
   const v:any=await r.json();if(!r.ok)throw Error(v.error||'Não foi possível carregar os cupons.');
   setData(v);if(v.settings)setLegal(v.settings);
- }catch(e:any){setError(e.message||'Não foi possível carregar os cupons.');}
- finally{setDiscountLoading(false)}
+ }catch(e:any){setError(controller.signal.aborted?'A consulta dos cupons demorou demais. Tente novamente.':e?.message||'Não foi possível carregar os cupons.');}
+ finally{clearTimeout(timeout);setDiscountLoading(false)}
 }
 useEffect(()=>{setData(null);setDiscountSearch('');setDiscountApplied('');setDiscountPage(0);void load('',0)},[tab]);async function act(body:any,route=endpoint){setBusy(true);setError('');try{const r=await fetch(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const v:any=await r.json();if(!r.ok)throw Error(v.error);setNotice(v.message);setCreate(false);await load();}catch(e:any){setError(e.message)}finally{setBusy(false)}}async function probeBilling(){
  setBillingProbeBusy(true);setError('');
