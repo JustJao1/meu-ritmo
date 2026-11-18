@@ -1,0 +1,28 @@
+name: Diagnosticar checkout Pix comercial com cliente real, sem pagamento
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/asaas-production-customer-checkout-diagnostic.mjs'
+      - '.github/workflows/asaas-production-customer-checkout-diagnostic.yml'
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Testar o checkout com cliente existente e recuperar pedido somente após conciliação
+        env:
+          ASAAS_MODE: ${{ vars.ASAAS_MODE }}
+          ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          SANDBOX_D1_DATABASE_ID: ${{ vars.SANDBOX_D1_DATABASE_ID }}
+        run: node scripts/asaas-production-customer-checkout-diagnostic.mjs
