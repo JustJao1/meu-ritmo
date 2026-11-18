@@ -72,7 +72,7 @@ if(action==='contact'){
  return reply({ok:true,message:'Canal de segurança atualizado.'});
 }
 const mail=email.parse(b.email);if(!await authRate(e,req,action,mail,action==='resend-signup'?3:10))return reply({error:'Muitas tentativas. Aguarde uma hora.'},429);if(action==='login'){const pw=z.string().min(1).max(128).parse(b.password),r=await provider(e,'/token?grant_type=password',{email:mail,password:pw});if(!r.ok)return reply({error:'Confira seu e-mail, senha e a confirmação do cadastro.'},401);const v:any=await r.json();const sessionUser=verifiedUser(v.user);if(await hasPendingVerification(e,sessionUser.userId))return reply({error:'Confirme o código enviado por e-mail antes de entrar.',pendingVerification:true},403);
- if(await shouldChallenge(securityEnv,sessionUser.userId)){
+ if(securityEnv.LOGIN_STEP_UP_ENABLED==='true'&&await shouldChallenge(securityEnv,sessionUser.userId)){
   const channel=b.channel==='whatsapp'?'whatsapp':'email';
   const row=await e.DB!.prepare('SELECT phone_verified_at FROM auth_contact_methods WHERE user_id=?').bind(sessionUser.userId).first<{phone_verified_at:number|null}>();
   if(channel==='whatsapp'&&(!whatsappReady(securityEnv)||!row?.phone_verified_at))return reply({error:'Este número ainda não está verificado para receber códigos por WhatsApp. Escolha e-mail.'},400);
