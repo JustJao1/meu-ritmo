@@ -15,6 +15,7 @@ export default function AlarmPlayer({items,shared=[],timezone,onNotice,onToast,o
  const [queue,setQueue]=useState<AlertEntry[]>([]);
  const [ready,setReady]=useState(false);
  const [acknowledged,setAcknowledged]=useState(false);
+ const [audioPreferenceLoaded,setAudioPreferenceLoaded]=useState(false);
  const [err,setErr]=useState('');
  const audio=useRef<AudioContext|null>(null);
  const fired=useRef(new Set<string>());
@@ -57,6 +58,7 @@ export default function AlarmPlayer({items,shared=[],timezone,onNotice,onToast,o
  useEffect(()=>{
   try{setAcknowledged(localStorage.getItem('mr_alarm_audio_ack_v1')==='1');}
   catch{setAcknowledged(false);}
+  finally{setAudioPreferenceLoaded(true);}
  },[]);
  // Browsers require a new user gesture to unlock Web Audio after a page reload.
  useEffect(()=>{
@@ -120,7 +122,7 @@ export default function AlarmPlayer({items,shared=[],timezone,onNotice,onToast,o
  useEffect(()=>()=>{void audio.current?.close();},[]);
  const dismiss=()=>setQueue(q=>q.slice(1));
  return <>
-  {soundWanted&&!ready&&!active&&<div className="soundnotice" role="status">
+  {soundWanted&&audioPreferenceLoaded&&!acknowledged&&!ready&&!active&&<div className="soundnotice" role="status">
    <div className="soundnotice-icon"><Volume2 size={19}/></div>
    <div className="soundnotice-copy"><strong>Ative o som dos avisos</strong><span>Um toque para ouvir compromissos e lembretes enquanto o site estiver aberto.</span>{err&&<span className="alarmerror" role="alert">{err}</span>}</div>
    <button className="soundnotice-action" onClick={()=>void enable()}>Ativar e testar <Volume2 size={15}/></button>
