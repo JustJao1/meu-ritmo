@@ -74,3 +74,21 @@
   .overlay .dialog .mr-language-billing{width:100%;justify-content:flex-start}
   .overlay .dialog .billing-action-hint{text-align:left}
 }
+
+/* Recuperação de pedido Pix sem checkout emitido: mesma linguagem do formulário. */
+.overlay .dialog .billing-recover{
+ display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+ margin:16px 0 0;padding:16px;
+ border:1px solid color-mix(in srgb,var(--ink) 22%,transparent);
+ border-radius:10px;background:color-mix(in srgb,var(--paper) 95%,var(--ink));
+}
+.overlay .dialog .billing-recover p{
+ margin:0;color:var(--ink);font-size:13px;line-height:1.65;letter-spacing:normal;
+}
+.overlay .dialog .billing-recover .secondary{
+ margin:0;min-height:42px;padding:10px 14px;
+ font-size:12px;font-weight:650;
+ border-color:color-mix(in srgb,var(--ink) 40%,transparent);
+ background:var(--paper);color:var(--ink);
+}
+@media(max-width:520px){.overlay .dialog .billing-recover .secondary{width:100%}}

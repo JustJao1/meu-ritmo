@@ -1,7 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {getUser} from '../../../session';
 import {EARLY_ACCESS_ACTIVE} from '../../../../lib/entitlements';
-import {asaasConfig,asaasCardCheckoutReady,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
+import {AsaasApiError,asaasConfig,asaasCardCheckoutReady,asaasRequest,type AsaasSubscription,type AsaasPayment,type AsaasPlanCode} from '../../../../lib/asaas';
 import {hostedCardCheckoutPayload} from '../../../../lib/asaas-hosted-card';
 import {hostedPixCheckoutPayload,hostedCheckoutUrl} from '../../../../lib/asaas-hosted-pix';
 import {priceCents,quoteCoupon,reserveCoupon} from '../../../../lib/asaas-coupons';
@@ -79,25 +79,32 @@ export async function POST(req:Request){
         .bind(id,user.userId,'2026-11-15',data.paymentMethod,first,base,now)
     ]);
   }catch{return Response.json({error:'Já existe uma contratação em andamento ou o registro de consentimento está indisponível. Consulte sua assinatura.'},{status:409});}
+  let stage='coupon_reservation';
   try{
     if(coupon)await reserveCoupon(id,user.userId,coupon.coupon);
+    stage='customer_local';
     let customer=await env.DB!.prepare('SELECT customer_id FROM asaas_customers WHERE user_id=?').bind(user.userId).first<{customer_id:string}>();
     if(!customer){
+      stage='customer_lookup';
       const list=await asaasRequest<{data:{id:string}[]}>('/customers?externalReference='+encodeURIComponent(user.userId));
       let customerId=list.data?.[0]?.id;
-      if(!customerId){const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{name:data.name,cpfCnpj,email:user.email,externalReference:user.userId}});customerId=remote.id;}
+      if(!customerId){stage='customer_create';const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{name:data.name,cpfCnpj,email:user.email,externalReference:user.userId}});customerId=remote.id;}
       if(!customerId)throw Error('Cliente não localizado.');
+      stage='customer_store';
       await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
       customer={customer_id:customerId};
     }
     if(data.paymentMethod==='PIX'){
       // Redirect to the actual Asaas Pix hosted checkout instead of relying on
       // the sandbox account's broken per-invoice dynamic Pix QR endpoint.
+      stage='checkout_payload';
       const payload=hostedPixCheckoutPayload({
         orderId:id,customerId:customer.customer_id,plan,amountCents:first,
         siteOrigin:new URL(req.url).origin+'/'
       });
+      stage='checkout_create';
       const remote=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body:payload});
+      stage='checkout_record';
       const url=hostedCheckoutUrl(remote.id);
       await env.DB!.batch([
         env.DB!.prepare("INSERT INTO asaas_hosted_pix_checkouts(order_id,checkout_id,customer_id,status,created_at,updated_at) VALUES (?,?,?,'ACTIVE',?,?)")
@@ -110,13 +117,16 @@ export async function POST(req:Request){
         {headers:{'Cache-Control':'no-store'}});
     }
     if(data.paymentMethod==='CREDIT_CARD'){
+      stage='card_checkout_payload';
       // Card data stays entirely on the Asaas hosted payment form.
       const nextDueDate=new Date(Date.now()+600000).toISOString().slice(0,19).replace('T',' ');
       const payload=hostedCardCheckoutPayload({
         orderId:id,customerId:customer.customer_id,plan,amountCents:first,
         nextDueDate,siteOrigin:new URL(req.url).origin+'/'
       });
+      stage='card_checkout_create';
       const remote=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body:payload});
+      stage='card_checkout_record';
       if(!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(remote.id||''))
         throw Error('Asaas não forneceu identificador válido do checkout.');
       await env.DB!.batch([
@@ -171,8 +181,41 @@ export async function POST(req:Request){
     return Response.json({orderId:id,url,method:'PIX',qrReady:!!invoice,awaitingInvoice:!invoice,mode:asaasConfig().mode,
       firstAmount:first/100,renewalAmount:base/100},{headers:{'Cache-Control':'no-store'}});
 
-  }catch{
+  }catch(error){
+    const httpStatus=error instanceof AsaasApiError?error.status:null;
+    // Before POST /checkouts no checkout exists. A definite 4xx rejection
+    // also guarantees the checkout was not created. Timeouts and 5xx are
+    // ambiguous: never release a coupon or create another checkout blindly.
+    const rejectedCheckout=['checkout_create','card_checkout_create'].includes(stage)&&
+      httpStatus!==null&&[400,401,403,404,422].includes(httpStatus);
+    const beforeCheckout=!['checkout_create','checkout_record','card_checkout_create','card_checkout_record'].includes(stage);
+    const safeToRelease=beforeCheckout||rejectedCheckout;
+    const time=Math.floor(Date.now()/1000);
+    console.warn('Asaas checkout failure',JSON.stringify({
+      stage,httpStatus,release:safeToRelease,provider:'asaas'
+    }));
+    // Persist only operational classification; no name, document, email or keys.
+    try{
+      await env.DB!.prepare(
+        'INSERT INTO asaas_checkout_failures(order_id,stage,provider_http_status,failed_at) VALUES (?,?,?,?) ON CONFLICT(order_id) DO UPDATE SET stage=excluded.stage,provider_http_status=excluded.provider_http_status,failed_at=excluded.failed_at'
+      ).bind(id,stage,httpStatus,time).run();
+    }catch{ console.warn('Asaas checkout diagnostic storage unavailable'); }
+    if(safeToRelease){
+      await env.DB!.batch([
+        env.DB!.prepare("UPDATE asaas_orders SET status='cancelled',cancelled_at=? WHERE id=? AND status='creating' AND first_paid_at IS NULL")
+          .bind(time,id),
+        env.DB!.prepare("DELETE FROM asaas_coupon_uses WHERE order_id=? AND EXISTS(SELECT 1 FROM asaas_orders WHERE id=? AND status='cancelled' AND first_paid_at IS NULL)")
+          .bind(id,id)
+      ]);
+      return Response.json({error:stage==='checkout_create'?
+        'O Asaas recusou a criação do Pix. Nenhuma cobrança foi concluída e o cupom foi liberado. Confira os dados e tente novamente.':
+        'Não foi possível preparar o pagamento. Nenhuma cobrança foi criada e o cupom foi liberado. Tente novamente.',
+        stage:stage==='checkout_create'?'asaas_checkout':'payer_setup',
+        providerHttpStatus:httpStatus}, {status:502,headers:{'Cache-Control':'no-store'}});
+    }
     await env.DB!.prepare("UPDATE asaas_orders SET status='review' WHERE id=? AND status='creating'").bind(id).run();
-    return Response.json({error:'A contratação precisa de conferência antes de uma nova tentativa. Nenhum plano foi liberado.',orderId:id},{status:503});
+    return Response.json({error:'Não foi possível confirmar se o Asaas criou o Pix. A tentativa ficou em revisão para evitar uma cobrança duplicada. Nenhum plano foi liberado.',
+      stage:'asaas_checkout_review',providerHttpStatus:httpStatus,orderId:id},
+      {status:503,headers:{'Cache-Control':'no-store'}});
   }
 }

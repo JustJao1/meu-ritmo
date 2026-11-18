@@ -14,15 +14,16 @@ export async function GET(req:Request){
     // Apenas flags de navegação do próprio usuário. Nenhum dado da cobrança é exposto.
     try{
       const order=await env.DB!.prepare(
-        "SELECT o.status,h.status AS pix_status FROM asaas_orders o "+
+        "SELECT o.status,h.status AS pix_status,(SELECT COUNT(*) FROM asaas_card_checkouts c WHERE c.order_id=o.id) AS card_count FROM asaas_orders o "+
         "LEFT JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id "+
         "WHERE o.user_id=? ORDER BY o.created_at DESC LIMIT 1"
-      ).bind(user.userId).first<{status:string;pix_status:string|null}>();
-      result.hasPaymentHistory=!!order;
+      ).bind(user.userId).first<{status:string;pix_status:string|null;card_count:number}>();
+      result.hasPaymentHistory=!!order&&(order.status!=='review'||!!order.pix_status||order.card_count>0);
       result.hasPixToVerify=!!order&&order.status==='pending'&&['ACTIVE','PAID'].includes(order.pix_status||'');
       result.hasPendingPix=!!order&&order.status==='pending'&&order.pix_status==='ACTIVE';
+      result.hasFailedCheckout=!!order&&order.status==='review'&&!order.pix_status&&order.card_count===0;
     }catch{
-      result.hasPaymentHistory=false;result.hasPixToVerify=false;result.hasPendingPix=false;
+      result.hasPaymentHistory=false;result.hasPixToVerify=false;result.hasPendingPix=false;result.hasFailedCheckout=false;
     }
   }
   if(new URL(req.url).searchParams.get('diagnostic')==='1'){
