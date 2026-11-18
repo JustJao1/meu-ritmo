@@ -46,7 +46,7 @@ if(action==='contact'){
   const pw=z.string().min(1).max(128).parse(b.currentPassword);
   const check=await provider(e,'/token?grant_type=password',{email:s.user.email,password:pw});
   if(!check.ok)return reply({error:'Confirme sua senha atual para alterar o telefone.'},401);
-  const profile=verifiedUser((await check.json()).user);
+  const profile=verifiedUser(((await check.json()) as {user:unknown}).user);
   if(profile.userId!==s.user.userId)return reply({error:'Conta divergente.'},403);
   const time=Math.floor(Date.now()/1000);
   await e.DB!.prepare("INSERT INTO auth_contact_methods(user_id,phone,preferred_channel,updated_at) VALUES (?,?,'email',?) ON CONFLICT(user_id) DO UPDATE SET phone=excluded.phone,phone_verified_at=CASE WHEN auth_contact_methods.phone=excluded.phone THEN auth_contact_methods.phone_verified_at ELSE NULL END,preferred_channel=CASE WHEN auth_contact_methods.phone=excluded.phone THEN auth_contact_methods.preferred_channel ELSE 'email' END,updated_at=excluded.updated_at").bind(s.user.userId,phone,time).run();
