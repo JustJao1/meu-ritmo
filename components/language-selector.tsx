@@ -3,6 +3,20 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Fontes dos títulos":["Heading fonts","Fuentes para títulos"],
+"Dê personalidade aos títulos sem mudar a leitura das tarefas e dos seus dados.":["Make headings your own while keeping tasks and data easy to read.","Personaliza los títulos sin dificultar la lectura de tareas y datos."],
+"Acolhedora":["Warm","Acogedora"],
+"Leve e próxima":["Soft and familiar","Suave y cercana"],
+"Contemporânea":["Contemporary","Contemporánea"],
+"Simples e arejada":["Simple and spacious","Sencilla y aireada"],
+"Clássica":["Classic","Clásica"],
+"Traços de livro":["Book-inspired shapes","Trazos de libro"],
+"Leitura":["Reading","Lectura"],
+"Serena e confortável":["Calm and comfortable","Serena y cómoda"],
+"Limpa e familiar":["Clean and familiar","Limpia y familiar"],
+"Elegante e discreta":["Elegant and understated","Elegante y discreta"],
+"Títulos personalizados. Os textos continuam fáceis de ler.":["Personalized headings. Body text stays easy to read.","Títulos personalizados. El texto sigue siendo fácil de leer."],
+
 "Telefone com DDD":["Phone with area code","Teléfono con código de área"],
 "CEP do pagador":["Payer's postal code","Código postal del pagador"],
 "Endereço (rua ou avenida)":["Street address","Dirección (calle o avenida)"],
