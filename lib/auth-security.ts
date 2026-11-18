@@ -96,3 +96,32 @@ export async function completeLoginChallenge(e:SecureEnv,id:string,code:string){
  if(!consumed.meta.changes)return null;
  return issueSession(e,verified);
 }
+
+export async function beginPhoneVerification(e:SecureEnv,userId:string){
+ if(!whatsappReady(e))throw Error('whatsapp_not_configured');
+ const row=await e.DB!.prepare('SELECT phone FROM auth_contact_methods WHERE user_id=?').bind(userId).first<{phone:string|null}>();
+ if(!row?.phone)throw Error('phone_missing');
+ const phone=normalizePhone(row.phone);if(!phone)throw Error('phone_invalid');
+ const id=opaque(),idHash=await hash(id),code=otpCode(),time=now();
+ const codeHash=await secureCodeHash(e,id,code);
+ await e.DB!.prepare('DELETE FROM auth_phone_challenges WHERE user_id=? OR expires_at<?').bind(userId,time).run();
+ await e.DB!.prepare('INSERT INTO auth_phone_challenges(id_hash,user_id,phone,code_hash,expires_at,attempts) VALUES (?,?,?,?,?,0)').bind(idHash,userId,phone,codeHash,time+600).run();
+ try{await sendWhatsAppCode(e,phone,code);}catch(error){await e.DB!.prepare('DELETE FROM auth_phone_challenges WHERE id_hash=?').bind(idHash).run();throw error;}
+ return {challengeId:id,expiresIn:600};
+}
+export async function finishPhoneVerification(e:SecureEnv,userId:string,id:string,code:string){
+ const idHash=await hash(id),time=now();
+ const row=await e.DB!.prepare('SELECT user_id,phone,code_hash FROM auth_phone_challenges WHERE id_hash=? AND user_id=? AND expires_at>? AND attempts<5').bind(idHash,userId,time).first<{user_id:string;phone:string;code_hash:string}>();
+ if(!row)return false;
+ const attempt=await e.DB!.prepare('UPDATE auth_phone_challenges SET attempts=attempts+1 WHERE id_hash=? AND attempts<5 AND expires_at>?').bind(idHash,time).run();
+ if(!attempt.meta.changes)return false;
+ const expected=await secureCodeHash(e,id,code);
+ let diff=0;for(let i=0;i<expected.length;i++)diff|=expected.charCodeAt(i)^row.code_hash.charCodeAt(i);
+ if(diff)return false;
+ const current=await e.DB!.prepare('SELECT phone FROM auth_contact_methods WHERE user_id=?').bind(userId).first<{phone:string|null}>();
+ if(current?.phone!==row.phone)return false;
+ const consumed=await e.DB!.prepare('DELETE FROM auth_phone_challenges WHERE id_hash=?').bind(idHash).run();
+ if(!consumed.meta.changes)return false;
+ await e.DB!.prepare("UPDATE auth_contact_methods SET phone_verified_at=?,preferred_channel='whatsapp',updated_at=? WHERE user_id=? AND phone=?").bind(time,time,userId,row.phone).run();
+ return true;
+}
