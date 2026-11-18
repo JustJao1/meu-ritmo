@@ -191,6 +191,12 @@ export async function POST(req:Request){
     console.warn('Asaas checkout failure',JSON.stringify({
       stage,httpStatus,release:safeToRelease,provider:'asaas'
     }));
+    // Persist only operational classification; no name, document, email or keys.
+    try{
+      await env.DB!.prepare(
+        'INSERT INTO asaas_checkout_failures(order_id,stage,provider_http_status,failed_at) VALUES (?,?,?,?) ON CONFLICT(order_id) DO UPDATE SET stage=excluded.stage,provider_http_status=excluded.provider_http_status,failed_at=excluded.failed_at'
+      ).bind(id,stage,httpStatus,time).run();
+    }catch{ console.warn('Asaas checkout diagnostic storage unavailable'); }
     if(safeToRelease){
       await env.DB!.batch([
         env.DB!.prepare("UPDATE asaas_orders SET status='cancelled',cancelled_at=? WHERE id=? AND status='creating' AND first_paid_at IS NULL")
