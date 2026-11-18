@@ -23,6 +23,9 @@ const summaries=await query("SELECT status,COUNT(*) AS total FROM asaas_orders G
 const aging=await query("SELECT COUNT(*) AS total FROM asaas_orders WHERE status IN ('pending','creating') AND created_at<CAST(strftime('%s','now') AS INTEGER)-7200");
 const reviews=await query("SELECT COUNT(*) AS total FROM asaas_orders WHERE status='review'");
 const hosts=await query("SELECT status,COUNT(*) AS total FROM asaas_hosted_pix_checkouts GROUP BY status ORDER BY status");
+const failedReview=await query("SELECT CASE WHEN c.user_id IS NOT NULL THEN 'customer_recorded' ELSE 'before_customer_recorded' END AS checkpoint,COUNT(*) AS total FROM asaas_orders o LEFT JOIN asaas_customers c ON c.user_id=o.user_id LEFT JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id WHERE o.status='review' AND o.first_paid_at IS NULL AND h.checkout_id IS NULL GROUP BY checkpoint ORDER BY checkpoint");
+const failureCauses=await query("SELECT stage,COALESCE(provider_http_status,0) AS http,COUNT(*) AS total FROM asaas_checkout_failures GROUP BY stage,provider_http_status ORDER BY stage");
+
 const discounts=await query("SELECT COUNT(*) AS total,COALESCE(SUM(CASE WHEN enabled=1 AND expires_at>CAST(strftime('%s','now') AS INTEGER) THEN 1 ELSE 0 END),0) AS available FROM discount_codes");
 const gifts=await query("SELECT COUNT(*) AS total,COALESCE(SUM(CASE WHEN enabled=1 AND expires_at>CAST(strftime('%s','now') AS INTEGER) AND used_count<max_uses THEN 1 ELSE 0 END),0) AS available FROM promotions");
 const couponUses=await query("SELECT COUNT(*) AS total FROM asaas_coupon_uses");
@@ -32,6 +35,8 @@ console.log('Cupons de desconto (quantidade cadastrada e disponível): '+JSON.st
 console.log('Códigos de acesso gratuito (quantidade cadastrada e disponível): '+JSON.stringify(gifts));
 console.log('Reservas de cupons de desconto (total histórico): '+Number(couponUses[0]?.total||0));
 console.log('Checkouts Pix comerciais (contagens): '+JSON.stringify(hosts));
+console.log('Pedidos em revisão sem checkout (estágio do cadastro): '+JSON.stringify(failedReview));
+console.log('Falhas de checkout por etapa e código HTTP (sem dados pessoais): '+JSON.stringify(failureCauses));
 console.log('Pedidos pendentes há mais de 2 horas: '+Number(aging[0]?.total||0));
 console.log('Pedidos para revisão: '+Number(reviews[0]?.total||0));
 console.log('Pedidos Pix pagos sem período correspondente: '+Number(missing[0]?.total||0));
