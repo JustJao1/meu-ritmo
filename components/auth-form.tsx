@@ -32,6 +32,13 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [message,setMessage]=useState('');
   const [error,setError]=useState('');
   const [pendingSignup,setPendingSignup]=useState(false);
+  const [phone,setPhone]=useState('');
+  const [loginChannel,setLoginChannel]=useState<'email'|'whatsapp'>('email');
+  const [whatsappAvailable,setWhatsappAvailable]=useState(false);
+  const [loginChallenge,setLoginChallenge]=useState('');
+  const [loginChallengeChannel,setLoginChallengeChannel]=useState<'email'|'whatsapp'>('email');
+  const [loginCode,setLoginCode]=useState('');
+  useEffect(()=>{if(mode!=='login'&&mode!=='signup')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then(v=>setWhatsappAvailable(!!v.whatsapp)).catch(()=>{});},[mode]);
   useEffect(()=>{
     if(mode!=='verify')return;
     // Restore the previous email only on page entry; never overwrite user edits.
@@ -96,6 +103,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
     }catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível reenviar o código.'));}
     finally{setBusy(false);}
   }
+  async function confirmLogin(e:FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');try{const r=await fetch('/api/auth/complete-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({challengeId:loginChallenge,code:loginCode})});const v:any=await r.json();if(!r.ok)throw Error(v.error||'Código inválido.');location.href=safeReturnPath(new URLSearchParams(location.search).get('return_to')||'/app');}catch(e){setError(e instanceof Error?t(e.message):t('Não foi possível validar o código.'));}finally{setBusy(false)}}
   async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();
     const form=new FormData(e.currentTarget),b=Object.fromEntries(form);
@@ -110,6 +118,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
       const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({...b,bio:'',accept:form.has('accept'),adult:form.has('adult')})});
       const v:any=await r.json();
+      if(mode==='login'&&r.status===202&&v.challengeRequired===true){setLoginChallenge(v.challengeId);setLoginChallengeChannel(v.channel);setLoginCode('');return;}
       if(!r.ok){if((mode==='signup'||mode==='login')&&v.pendingVerification===true){setPendingSignup(true);try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}}throw Error(v.error||t('Não foi possível concluir.'));}
       if(mode==='signup'){
         try{sessionStorage.setItem('mr-pending-email',String(b.email||''));}catch{}
@@ -129,6 +138,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   }
   const needPassword=mode==='login'||mode==='signup'||mode==='password';
   const newPasswordMode=mode==='signup'||mode==='password';
+  if(mode==='login'&&loginChallenge)return <main className="authpage"><header className="authheader"><a className="brand" href="/">MR: Meu Ritmo</a><LanguageSelector className="mr-language-auth"/></header><section className="authsheet"><ContextIllustration context="Segurança"/><span className="eyebrow">{t('VERIFICAÇÃO DE SEGURANÇA')}</span><h1>{t('Confirme que é você.')}</h1><p className="muted">{t(loginChallengeChannel==='email'?'Enviamos um código de seis dígitos para seu e-mail.':'Enviamos um código de seis dígitos para seu WhatsApp.')}</p><form onSubmit={confirmLogin}><label>{t('Código de confirmação')}<input required autoFocus inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" minLength={6} maxLength={6} value={loginCode} onChange={e=>setLoginCode(e.target.value.replace(/\\D/g,'').slice(0,6))}/></label>{error&&<p role="alert" className="autherror">{error}</p>}<button className="primary" disabled={busy||loginCode.length!==6}>{t('Confirmar acesso')}</button><button className="authresend" type="button" disabled={busy} onClick={()=>{setLoginChallenge('');setLoginCode('');}}>{t('Voltar e solicitar outro código')}</button></form></section></main>;
   return <main className="authpage">
     <header className="authheader">
       <a className="brand" href="/" aria-label="MR: Meu Ritmo"><img className="brandmark brandmark-icon" src="/favicon-mr-v3.svg" alt="" width="34" height="34"/>MR: Meu Ritmo<span className="branddot">®</span></a>
@@ -142,6 +152,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {mode!=='logout'&&mode!=='password'&&<label>{t('E-mail')}
           <input type="email" name="email" autoComplete="email" maxLength={254} value={mode==='verify'?pendingEmail:undefined} onChange={mode==='verify'?e=>setPendingEmail(e.target.value):undefined} required/>
         </label>}
+        {mode==='login'&&<label>{t('Receber código de segurança por')}<select name="channel" value={loginChannel} onChange={e=>setLoginChannel(e.target.value as 'email'|'whatsapp')}><option value="email">{t('E-mail')}</option><option value="whatsapp" disabled={!whatsappAvailable}>{t('WhatsApp')}{!whatsappAvailable?' ('+t('indisponível')+')':''}</option></select><small>{t('Se a conta ficar desconectada por 24 horas, pediremos um código adicional. O WhatsApp exige número previamente verificado.')}</small></label>}
         {needPassword&&<label>{t(mode==='password'?'Nova senha':'Senha')}
           <input type={showPassword?'text':'password'} name="password"
             autoComplete={mode==='login'?'current-password':'new-password'}
@@ -160,6 +171,8 @@ export default function AuthForm({mode}:{mode:AuthMode}){
             onChange={e=>setPasswordConfirmation(e.target.value)} required/>
         </label>}
         {mode==='signup'&&<>
+          <label>{t('Número de contato com DDD')}<input type="tel" inputMode="tel" name="phone" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+55 16 99999-9999" minLength={12} maxLength={24} required/><small>{t('Usaremos este contato para segurança da conta. O cadastro é confirmado por e-mail; depois, você poderá verificar o WhatsApp nas configurações.')}</small></label>
+          <label>{t('Canal de confirmação do cadastro')}<select defaultValue="email"><option value="email">{t('Código por e-mail')}</option><option value="whatsapp" disabled>{t('WhatsApp disponível após verificar seu número')}</option></select></label>
           <label>{t('Nome de usuário')}<input name="username" autoComplete="username" required
             pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24} value={signupUsername} onChange={e=>setSignupUsername(e.target.value.toLowerCase())}/>
             <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small><small>{t('O @usuário é exclusivo. Duas contas não podem usar o mesmo identificador.')}</small>
