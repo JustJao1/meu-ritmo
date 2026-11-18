@@ -132,17 +132,35 @@
  border-bottom:1px solid var(--admin-border);
 }
 .adminshell > .adminnav .brand,
-.adminshell > .adminnav .brandmark,
-.adminshell > .adminnav .brandmark span,
 .adminshell > .adminnav > span,
 .adminshell > .adminnav > a,
 .adminshell > .adminnav svg{
  color:var(--ink)!important;
  opacity:1;
 }
-.adminshell > .adminnav .brandmark{
- background:var(--admin-surface)!important;
- border:1px solid var(--admin-border);
+/* A marca oficial é uma imagem, não o monograma textual: sem moldura nem fundo. */
+.adminshell > .adminnav .adminbrand-link{
+ display:inline-flex;align-items:center;gap:11px;
+ min-width:0;flex-shrink:0;line-height:1.2;
+ font-family:Manrope,'DM Sans',sans-serif;
+ font-size:clamp(16px,1.6vw,20px);font-weight:700;
+ letter-spacing:-.035em;
+}
+.adminshell > .adminnav .adminbrand-logo{
+ display:block!important;flex:none!important;
+ width:36px!important;height:36px!important;max-width:36px!important;
+ padding:0!important;margin:0!important;
+ object-fit:contain!important;
+ border:0!important;border-radius:0!important;
+ background:transparent!important;
+ box-shadow:none!important;filter:none!important;
+ transform:none!important;opacity:1!important;
+}
+@media(max-width:520px){
+ .adminshell > .adminnav .adminbrand-link{gap:8px;font-size:16px}
+ .adminshell > .adminnav .adminbrand-logo{
+  width:32px!important;height:32px!important;max-width:32px!important;
+ }
 }
 .adminshell .adminsearch{
  border:0!important;
