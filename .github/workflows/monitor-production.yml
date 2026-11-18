@@ -1,0 +1,60 @@
+name: Monitorar Meu Ritmo
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/15 * * * *'
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: meu-ritmo-health-monitor
+  cancel-in-progress: false
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Verificar disponibilidade e banco de produção
+        id: health
+        continue-on-error: true
+        run: |
+          node --input-type=module <<'NODE'
+          const url='https://meuritmo.net/api/health';
+          let ok=false;
+          for(let i=0;i<3;i++){
+            try{
+              const r=await fetch(url,{headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(12000)});
+              const data=await r.json();
+              if(r.ok&&data?.status==='ok'){ok=true;break;}
+            }catch{}
+            if(i<2)await new Promise(resolve=>setTimeout(resolve,4000));
+          }
+          if(!ok){console.error('O Meu Ritmo não respondeu como saudável após três tentativas.');process.exitCode=1;}
+          NODE
+      - name: Abrir alerta sem duplicar incidentes
+        if: steps.health.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          title="Alerta de produção: Meu Ritmo indisponível"
+          existing="$(gh issue list --state open --limit 100 --json title,number --jq '.[] | select(.title == "Alerta de produção: Meu Ritmo indisponível") | .number' | head -1)"
+          if [ -z "$existing" ]; then
+            gh issue create --title "$title" --body "Monitoramento automático de https://meuritmo.net/api/health falhou em três tentativas. Verificar Cloudflare, D1, Supabase e Asaas. Logs: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID"
+          else
+            gh issue comment "$existing" --body "Falha persistente detectada. Execução: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID"
+          fi
+      - name: Fechar incidente depois da recuperação
+        if: steps.health.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          existing="$(gh issue list --state open --limit 100 --json title,number --jq '.[] | select(.title == "Alerta de produção: Meu Ritmo indisponível") | .number' | head -1)"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Serviço respondeu saudável novamente. Execução: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID"
+            gh issue close "$existing" --reason completed
+          fi
+      - name: Sinalizar falha da verificação
+        if: steps.health.outcome == 'failure'
+        run: exit 1
