@@ -3,7 +3,7 @@ export type Plan='free'|'plus'|'pro';
 /** Fontes de títulos: pilhas locais para não depender de terceiros ou alterar o corpo de texto. */
 export const titleFonts=[
  {id:'sans',name:'Original',description:'Limpa e familiar',family:'"Meu Ritmo UI", "Segoe UI", Arial, sans-serif'},
- {id:'humanist',name:'Acolhedora',description:'Leve e próxima',family:'"Trebuchet MS", "Segoe UI", Arial, sans-serif'},
+ {id:'humanist',name:'Arredondada',description:'Traços abertos e legíveis',family:'"Trebuchet MS", "Segoe UI", Arial, sans-serif'},
  {id:'modern',name:'Contemporânea',description:'Simples e arejada',family:'"Segoe UI", "Helvetica Neue", Arial, sans-serif'},
  {id:'editorial',name:'Editorial',description:'Elegante e discreta',family:'Georgia, "Times New Roman", serif'},
  {id:'classic',name:'Clássica',description:'Traços de livro',family:'"Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif'},
