@@ -12,12 +12,12 @@ test('diagnóstico usa somente a produção e nunca expõe dados de clientes em 
  assert.match(wf,/environment: production/);
  assert.match(wf,/ASAAS_API_KEY: \$\{\{ secrets\.ASAAS_API_KEY \}\}/);
 });
-test('cria um único checkout Pix técnico sem cartão e cancela antes de liberar pedido',()=>{
+test('cria checkout Pix técnico com cliente ou dados preenchidos sem cartão e cancela antes de liberar pedido',()=>{
  assert.match(src,/billingTypes:\['PIX'\],chargeTypes:\['DETACHED'\]/);
  assert.match(src,/value:5\.00/);
  assert.match(src,/encodeURIComponent\(checkoutId\)\+'\/cancel'/);
- assert.match(src,/if\(!cancelOk\)throw Error/);
- assert.ok(src.indexOf("if(!cancelOk)throw Error")<src.indexOf("UPDATE asaas_orders SET status='cancelled'"));
+ assert.match(src,/if\(!canceled\.ok\)throw Error/);
+ assert.ok(src.indexOf("if(!canceled.ok)throw Error")<src.indexOf("UPDATE asaas_orders SET status='cancelled'"));
 });
 test('não libera o cupom se houver pagamento, assinatura ou checkout local',()=>{
  assert.match(src,/payments\.data\.data\.length\|\|subs\.data\.data\.length/);

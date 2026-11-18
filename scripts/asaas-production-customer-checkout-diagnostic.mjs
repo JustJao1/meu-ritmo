@@ -20,9 +20,16 @@ async function provider(path,method='GET',body){
   ...(body!==undefined?{body:JSON.stringify(body)}:{}),
   signal:AbortSignal.timeout(25000)});
  const data=await res.json().catch(()=>({}));
- const codes=(Array.isArray(data.errors)?data.errors:[]).slice(0,3)
-  .map(x=>String(x.code||'unknown').replace(/[^a-zA-Z0-9_]/g,'').slice(0,55));
- return {ok:res.ok,http:res.status,data,codes};
+ const diagnostics=(Array.isArray(data.errors)?data.errors:[]).slice(0,4)
+  .map(x=>({
+    code:String(x.code||'unknown').replace(/[^a-zA-Z0-9_]/g,'').slice(0,55),
+    description:String(x.description||'').replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,'[email]')
+      .replace(/https?:\/\/\S+/g,'[url]')
+      .replace(/\b\d{5,}\b/g,'[number]')
+      .replace(/\$aact_\S+/g,'[key]')
+      .replace(/[\r\n]/g,' ').slice(0,150)
+  }));
+ return {ok:res.ok,http:res.status,data,diagnostics};
 }
 const d1url='https://api.cloudflare.com/client/v4/accounts/'+
  encodeURIComponent(e.CLOUDFLARE_ACCOUNT_ID)+'/d1/database/'+
@@ -49,30 +56,41 @@ console.log('Etapa 1: pedido em revisão e cadastro de cliente local confirmados
 const cust=await provider('/customers/'+encodeURIComponent(order.customer_id));
 console.log('Consulta ao cliente Asaas: HTTP '+cust.http);
 if(!cust.ok)throw Error('Cadastro não encontrado ou não acessível no Asaas. Pedido preservado.');
-let checkoutId=null,cancelOk=false;
-try{
+let successCustomer=false,successCustomerData=false;
+for(const variant of ['customer','customerData']){
+ const data=variant==='customer'?{customer:order.customer_id}:{
+  customerData:{
+   name:cust.data.name,
+   cpfCnpj:cust.data.cpfCnpj,
+   ...(cust.data.email?{email:cust.data.email}:{})
+  }
+ };
+ if(variant==='customerData'&&(!data.customerData?.name||!data.customerData?.cpfCnpj)){
+  console.log('Pré-preenchimento indisponível: cadastro incompleto.');
+  continue;
+ }
+ let checkoutId=null;
  const test=await provider('/checkouts','POST',{
   billingTypes:['PIX'],chargeTypes:['DETACHED'],minutesToExpire:10,
-  customer:order.customer_id,
+  ...data,
   externalReference:'mr_diag_'+crypto.randomUUID(),
   items:[{name:'Diagnóstico Pix Meu Ritmo',description:'Teste técnico, não pagar',quantity:1,value:5.00}],
   callback:{successUrl:'https://meuritmo.net/app?billing=awaiting_webhook',
    cancelUrl:'https://meuritmo.net/app?billing=canceled',
    expiredUrl:'https://meuritmo.net/app?billing=expired'}
  });
- console.log('Checkout Pix associado a cliente existente: HTTP '+test.http+' / códigos '+JSON.stringify(test.codes));
- if(!test.ok)throw Error('Asaas rejeitou checkout com cliente cadastrado. Pedido original mantido.');
- if(!uuid.test(test.data.id||''))throw Error('Checkout sem identificador válido; cancelar manualmente no Asaas.');
+ console.log('Checkout com '+variant+': HTTP '+test.http+' / validação '+JSON.stringify(test.diagnostics));
+ if(!test.ok)continue;
+ if(!uuid.test(test.data.id||''))
+  throw Error('Asaas não retornou checkout cancelável. Revisão manual obrigatória.');
  checkoutId=test.data.id;
-}finally{
- if(checkoutId){
-  const canceled=await provider('/checkouts/'+encodeURIComponent(checkoutId)+'/cancel','POST');
-  console.log('Cancelamento do checkout técnico: HTTP '+canceled.http);
-  cancelOk=canceled.ok;
- }
+ const canceled=await provider('/checkouts/'+encodeURIComponent(checkoutId)+'/cancel','POST');
+ console.log('Cancelamento do teste '+variant+': HTTP '+canceled.http);
+ if(!canceled.ok)throw Error('Checkout técnico não cancelado. Pedido original intocado.');
+ if(variant==='customer')successCustomer=true;
+ if(variant==='customerData')successCustomerData=true;
 }
-if(!cancelOk)throw Error('Checkout técnico não confirmado como cancelado. Pedido original intocado.');
-console.log('Etapa 2: checkout de R$5 aceito e cancelado sem pagamento.');
+console.log('Resultado dos testes: com cliente='+successCustomer+', com preenchimento='+successCustomerData+'.');
 // The failed checkout was never delivered to the payer: local lookup has no
 // checkout ID or paid date. Check external references before releasing reserve.
 if(Math.floor(Date.now()/1000)-Number(order.created_at)<90){
