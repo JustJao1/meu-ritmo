@@ -20,7 +20,8 @@ test('pricing buttons take a contrasting foreground/background from the active t
 
 test('pricing cards use the selected theme and avoid huge empty rows',()=>{
   assert.match(css,/\.plancomparison \.plans\{[\s\S]*?align-items:start/);
-  assert.match(prices,/className="plancard"/);
+  assert.match(prices,/className=\{'plancard'\+/);
+  assert.match(prices,/plancard--current/);
   assert.doesNotMatch(prices,/featured/);
   assert.match(css,/\.plancomparison \.plancard \.plantry\{[\s\S]*?margin:25px 0 0/);
   assert.match(prices,/data-plan=\{id\}/);
