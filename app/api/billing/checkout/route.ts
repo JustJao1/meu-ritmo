@@ -35,6 +35,34 @@ export async function POST(req:Request){
   if(!parseLegalSettings(legalRecord?.value))return Response.json({error:'Identificação comercial do fornecedor pendente ou inválida. Não é possível contratar neste momento.'},{status:503});
   const paid=await env.DB!.prepare('SELECT status,valid_until FROM subscriptions WHERE user_id=?').bind(user.userId).first<any>();
   if(paid&&['active','trialing'].includes(paid.status)&&(paid.valid_until||0)>now)return Response.json({error:'Você já possui uma assinatura ativa.'},{status:409});
+  // Reuse the same pending Pix checkout instead of creating duplicate charges.
+  // A different plan, an expired checkout or a review must be resolved first.
+  const openOrder=await env.DB!.prepare(
+    "SELECT o.id,o.plan_code,o.coupon_code,o.first_price_cents,o.status,o.created_at,h.checkout_id,h.status AS checkout_status "+
+    "FROM asaas_orders o LEFT JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id "+
+    "WHERE o.user_id=? AND o.status IN ('creating','pending','review') ORDER BY o.created_at DESC LIMIT 1"
+  ).bind(user.userId).first<{
+    id:string;plan_code:string;coupon_code:string|null;first_price_cents:number;status:string;
+    created_at:number;checkout_id:string|null;checkout_status:string|null
+  }>();
+  if(openOrder){
+    const samePrice=openOrder.plan_code===data.price;
+    const sameCoupon=(openOrder.coupon_code||'')===(data.discountCode||'').trim().toUpperCase();
+    if(data.paymentMethod==='PIX'&&openOrder.status==='pending'&&
+      openOrder.checkout_status==='ACTIVE'&&openOrder.checkout_id&&
+      now-openOrder.created_at<3000&&samePrice&&sameCoupon){
+      try{
+        return Response.json({orderId:openOrder.id,method:'PIX',hosted:true,
+          resumed:true,url:hostedCheckoutUrl(openOrder.checkout_id),
+          mode:asaasConfig().mode,firstAmount:openOrder.first_price_cents/100,
+          renewal:'manual'}, {headers:{'Cache-Control':'no-store'}});
+      }catch{ /* Invalid checkout IDs must not be sent to a customer. */ }
+    }
+    return Response.json({error:openOrder.status==='review'?
+      'Há uma contratação em revisão. Consulte o painel de cobranças antes de tentar novamente.':
+      'Há um checkout anterior em andamento. Consulte a fatura ou cancele o Pix pendente antes de iniciar outra compra.',
+      action:'existing_order',orderId:openOrder.id},{status:409,headers:{'Cache-Control':'no-store'}});
+  }
   const plan=data.price as AsaasPlanCode;
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode,user.userId);}catch(e){return Response.json({error:(e as Error).message},{status:400});}

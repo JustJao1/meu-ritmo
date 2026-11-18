@@ -14,7 +14,7 @@ const checkout=read('app/api/billing/checkout/route.ts');
 test('modal de benefícios oferece contratação Pix em vez de acesso gratuito sem pagamento',()=>{
  assert.match(app,/onClick=\{\(\)=>beginPurchase\(requestedPlan\)\}/);
  assert.match(app,/setPanel\('Assinatura'\)/);
- assert.match(app,/accountAccess\?\.source==='subscription'/);
+ assert.match(app,/accountAccess&&accountAccess\.source!=='free'&&accountAccess\.source!=='early_access'/);
  assert.match(app,/Usar meus recursos/);
  assert.doesNotMatch(app,/Durante o acesso antecipado, todos esses recursos estão disponíveis gratuitamente na sua conta/);
  assert.match(app,/A contratação é feita por Pix e vale pelo período escolhido/);
