@@ -33,6 +33,8 @@ export async function POST(req:Request){
   const now=Math.floor(Date.now()/1000);
   const legalRecord=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first<{value:string}>();
   if(!parseLegalSettings(legalRecord?.value))return Response.json({error:'Identificação comercial do fornecedor pendente ou inválida. Não é possível contratar neste momento.'},{status:503});
+  const paid=await env.DB!.prepare('SELECT status,valid_until FROM subscriptions WHERE user_id=?').bind(user.userId).first<any>();
+  if(paid&&['active','trialing'].includes(paid.status)&&(paid.valid_until||0)>now)return Response.json({error:'Você já possui uma assinatura ativa.'},{status:409});
   // Reuse the same pending Pix checkout instead of creating duplicate charges.
   // A different plan, an expired checkout or a review must be resolved first.
   const openOrder=await env.DB!.prepare(
@@ -61,8 +63,6 @@ export async function POST(req:Request){
       'Há um checkout anterior em andamento. Consulte a fatura ou cancele o Pix pendente antes de iniciar outra compra.',
       action:'existing_order',orderId:openOrder.id},{status:409,headers:{'Cache-Control':'no-store'}});
   }
-  const paid=await env.DB!.prepare('SELECT status,valid_until FROM subscriptions WHERE user_id=?').bind(user.userId).first<any>();
-  if(paid&&['active','trialing'].includes(paid.status)&&(paid.valid_until||0)>now)return Response.json({error:'Você já possui uma assinatura ativa.'},{status:409});
   const plan=data.price as AsaasPlanCode;
   let coupon:Awaited<ReturnType<typeof quoteCoupon>>|null=null;
   try{if(data.discountCode)coupon=await quoteCoupon(plan,data.discountCode,user.userId);}catch(e){return Response.json({error:(e as Error).message},{status:400});}
