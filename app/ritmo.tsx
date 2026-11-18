@@ -353,7 +353,7 @@ export default function Ritmo({ landing = false, user = 'você', initialArea='Ho
       finally{setSaving(false);}
     }
     async function cancelSubscription(){
-      if(!await dialogs.confirm({title:t(paymentMethod==='PIX'?'Cancelar pagamento pendente':'Cancelar renovação'),description:t(paymentMethod==='PIX'?'O checkout Pix pendente será cancelado. Se já estiver pago, seu acesso permanece até o vencimento.':'As próximas cobranças serão canceladas, mas seu acesso já pago será mantido até o vencimento.'),confirmText:t(paymentMethod==='PIX'?'Confirmar cancelamento':'Cancelar renovação'),intent:'warning'}))return;
+      if(!await dialogs.confirm({title:t(purchaseStatus?.hasFailedCheckout?'Encerrar tentativa com falha?':paymentMethod==='PIX'?'Cancelar pagamento pendente':'Cancelar renovação'),description:t(purchaseStatus?.hasFailedCheckout?'O Meu Ritmo consultará o Asaas para confirmar que não existe pagamento vinculado. A reserva do cupom só será liberada se for seguro encerrar a tentativa.':paymentMethod==='PIX'?'O checkout Pix pendente será cancelado. Se já estiver pago, seu acesso permanece até o vencimento.':'As próximas cobranças serão canceladas, mas seu acesso já pago será mantido até o vencimento.'),confirmText:t(purchaseStatus?.hasFailedCheckout?'Conferir e encerrar tentativa':paymentMethod==='PIX'?'Confirmar cancelamento':'Cancelar renovação'),intent:'warning'}))return;
       setSaving(true);
       try{
         const r=await fetch('/api/billing/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
