@@ -218,3 +218,97 @@ html body .premiumstudio .mockpaper h3.studio-custom-title span {
 @media(prefers-reduced-motion:reduce){
  .premiumstudio .font-option{transition:none}
 }
+
+/* Acabamento do produto: uma mesma hierarquia em todas as telas, sem trocar os temas. */
+:root{
+ --mr-field-radius:10px;
+ --mr-surface-radius:14px;
+ --mr-reading-width:68ch;
+ --mr-edge:color-mix(in srgb,var(--ink) 16%,transparent);
+}
+.landing .herotext h1{letter-spacing:-.052em;line-height:1.03}
+.landing .herotext>p{max-width:43ch;font-size:clamp(15px,1.25vw,17px);line-height:1.75}
+.landing .herobuttons :is(a,button){min-height:48px;align-items:center}
+.landing .previewpaper{
+ border-radius:15px;
+ box-shadow:0 22px 55px color-mix(in srgb,var(--ink) 11%,transparent);
+}
+.landing .floatingnote{transform:rotate(-2deg)}
+.landing .featurestrip{gap:12px 23px}
+.landing .featurestrip span{font-size:12px;line-height:1.55;white-space:normal}
+.landing #como .features article>.organizing-illustration{
+ grid-column:1;grid-row:1 / span 2;width:100%;
+ height:auto;max-height:135px;margin:0;
+}
+.landing #como .features article h3{margin:0}
+.landing #como .features article p{font-size:14px;line-height:1.7}
+.landing #planos .planintro p{font-size:14px;line-height:1.7;max-width:67ch}
+.landing #planos .plancard{border-radius:var(--mr-surface-radius)}
+.landing #planos .plancard :is(ul,li){line-height:1.65}
+.landing #planos .plancard li{font-size:13px}
+.landing #planos .planprice small{font-size:13px}
+.landing #planos .planfoot{font-size:12px!important;max-width:78ch}
+.appframe .sidebar nav>button{min-height:44px;line-height:1.42}
+.appframe .sidebar .sideutility{min-height:42px;line-height:1.4}
+.appframe .sidebar .sidebottomlabel{font-size:11px;letter-spacing:.065em}
+.appframe .sidebar .daily-pitch{
+ padding:15px 16px;border-radius:11px;
+ background:color-mix(in srgb,var(--theme-banner,var(--paper)) 38%,var(--paper));
+ border:1px solid var(--mr-edge);
+}
+.appframe .sidebar .daily-pitch .eyebrow{font-size:11px;letter-spacing:.06em}
+.appframe .pageheading>p,.appframe .pageheading p{max-width:var(--mr-reading-width);line-height:1.72}
+.appframe .daybanner{border-radius:var(--mr-surface-radius)}
+.appframe :is(.empty,.emptycompact) p{font-size:14px;line-height:1.7}
+.appframe .notesgrid .note{border-radius:var(--mr-surface-radius)}
+.appframe :is(.taskrow,.expenserow,.eventrow){border-color:var(--mr-edge);line-height:1.6}
+.appframe .settingspanel .listbutton{min-height:49px;border-radius:var(--mr-field-radius);font-size:14px}
+.appframe .studiotabs button{min-height:44px}
+.appframe .studiocontrols h4{line-height:1.38}
+.appframe .premiumstudio .themegroup{margin-bottom:20px}
+.appframe .premiumstudio .themegroupheading{gap:10px;align-items:baseline}
+.appframe .premiumstudio .themegroupheading span{line-height:1.45}
+.appframe .premiumstudio .themegroup .themelist{gap:9px}
+.appframe .premiumstudio .themelist>button{border-radius:11px;min-height:66px}
+.appframe .premiumstudio .font-gallery{row-gap:12px}
+.appframe .premiumstudio .font-option{border-radius:12px}
+.appframe .premiumstudio .font-gallery-intro{font-size:14px;line-height:1.65}
+.appframe .plancomparison .plancard{border-radius:var(--mr-surface-radius)}
+.appframe .plancomparison .plancard>p{font-size:14px;line-height:1.6}
+.appframe .plancomparison .plancard li{font-size:13px;line-height:1.6}
+.appframe .plancomparison .plancard .currentplan{min-height:35px;font-size:12px}
+.appframe .dialog:not(.billing-dialog){border-radius:var(--mr-surface-radius)}
+.appframe .dialog:not(.billing-dialog)>header{gap:18px}
+.appframe .dialog:not(.billing-dialog)>header h2{letter-spacing:-.025em}
+.appframe .dialog:not(.billing-dialog) :is(p,li){line-height:1.72}
+.appframe .dialog:not(.billing-dialog) :is(label,legend){font-size:14px}
+.authpage .authsheet>p,.authpage .authsheet .muted{font-size:14px;line-height:1.7}
+.authpage .authsheet label{font-size:14px}
+.authpage .authsheet :is(input,select,textarea){min-height:48px;border-radius:var(--mr-field-radius)}
+.adminshell .adminmain{max-width:1280px}
+.adminshell .adminheading{align-items:start}
+.adminshell .adminheading p{max-width:var(--mr-reading-width);font-size:14px;line-height:1.7}
+.adminshell .admintabbar nav button{min-height:44px}
+.adminshell :is(.memberrow,.moderationreport,.auditlist>article){border-radius:var(--mr-field-radius)}
+.adminshell .adminsearch input{min-height:44px}
+.legalpage p{max-width:76ch}
+.legalpage h2{line-height:1.35}
+:is(.landing,.appframe,.adminshell,.authpage) :is(button,a,input,select,textarea):focus-visible{
+ outline:2px solid var(--ink);outline-offset:3px;
+}
+@media(max-width:900px){
+ .landing #como .features article>.organizing-illustration{max-height:115px}
+ .landing .hero{gap:24px}
+}
+@media(max-width:600px){
+ .landing .herotext h1{font-size:clamp(48px,12vw,70px)}
+ .landing .herotext>p{font-size:15px}
+ .landing #como .features article>.organizing-illustration{max-height:99px}
+ .landing #como .features article p{font-size:13px}
+ .landing .featurestrip span{font-size:12px}
+ .landing #planos .plancard li{font-size:13px}
+ .appframe .sidebar .sideutility{min-height:44px}
+ .appframe .studiotabs button{min-height:44px}
+ .appframe .dialog:not(.billing-dialog){padding:22px 19px}
+ .adminshell .admintabbar nav button{min-height:44px}
+}
