@@ -18,11 +18,12 @@ export async function GET(req:Request){
         "LEFT JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id "+
         "WHERE o.user_id=? ORDER BY o.created_at DESC LIMIT 1"
       ).bind(user.userId).first<{status:string;pix_status:string|null}>();
-      result.hasPaymentHistory=!!order;
+      result.hasPaymentHistory=!!order&&order.status!=='review';
       result.hasPixToVerify=!!order&&order.status==='pending'&&['ACTIVE','PAID'].includes(order.pix_status||'');
       result.hasPendingPix=!!order&&order.status==='pending'&&order.pix_status==='ACTIVE';
+      result.hasFailedCheckout=!!order&&order.status==='review'&&!order.pix_status;
     }catch{
-      result.hasPaymentHistory=false;result.hasPixToVerify=false;result.hasPendingPix=false;
+      result.hasPaymentHistory=false;result.hasPixToVerify=false;result.hasPendingPix=false;result.hasFailedCheckout=false;
     }
   }
   if(new URL(req.url).searchParams.get('diagnostic')==='1'){
