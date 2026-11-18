@@ -9,8 +9,23 @@ export async function GET(req:Request){
   const legal=await env.DB!.prepare("SELECT value FROM service_settings WHERE key='legal'").first();
   const legalConfigured=!!parseLegalSettings(legal?.value);
   const result:Record<string,unknown>={configured:!EARLY_ACCESS_ACTIVE&&c.enabled&&legalConfigured,cardAvailable:!EARLY_ACCESS_ACTIVE&&legalConfigured&&asaasCardCheckoutReady(),earlyAccess:EARLY_ACCESS_ACTIVE,mode:c.mode,legalConfigured,provider:'asaas',manageAvailable:c.apiReady};
+  const user=await getUser();
+  if(user){
+    // Apenas flags de navegação do próprio usuário. Nenhum dado da cobrança é exposto.
+    try{
+      const order=await env.DB!.prepare(
+        "SELECT o.status,h.status AS pix_status FROM asaas_orders o "+
+        "LEFT JOIN asaas_hosted_pix_checkouts h ON h.order_id=o.id "+
+        "WHERE o.user_id=? ORDER BY o.created_at DESC LIMIT 1"
+      ).bind(user.userId).first<{status:string;pix_status:string|null}>();
+      result.hasPaymentHistory=!!order;
+      result.hasPixToVerify=!!order&&order.status==='pending'&&['ACTIVE','PAID'].includes(order.pix_status||'');
+      result.hasPendingPix=!!order&&order.status==='pending'&&order.pix_status==='ACTIVE';
+    }catch{
+      result.hasPaymentHistory=false;result.hasPixToVerify=false;result.hasPendingPix=false;
+    }
+  }
   if(new URL(req.url).searchParams.get('diagnostic')==='1'){
-    const user=await getUser();
     if(!user||await appRole(user)!=='owner')return Response.json({error:'Somente o proprietário.'},{status:403});
     const e=env as unknown as Record<string,string>;
     const diagnostic:Record<string,unknown>={
