@@ -16,7 +16,7 @@ test('cadastro não permite telefone inválido nem pula verificação de e-mail'
  assert.match(router,/normalizePhone\(b\.phone\)/);
  assert.match(router,/mailer_autoconfirm!==false/);
  assert.match(form,/name="phone"/);
- assert.match(form,/Código por e-mail/);
+ assert.match(form,/A verificação da conta é feita por e-mail/);
 });
 test('sessão é liberada somente após código do login validado',()=>{
  assert.match(router,/LOGIN_STEP_UP_ENABLED==='true'&&await shouldChallenge\(/);
