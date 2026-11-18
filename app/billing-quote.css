@@ -29,7 +29,7 @@
   display:inline-flex;align-items:center;justify-content:center;
   min-height:38px;padding:8px 11px;border-radius:7px;
   background:var(--ink);border:1px solid var(--ink);color:var(--paper);
-  font:600 12px/1.4 inherit;cursor:pointer;opacity:1;
+  font-family:inherit;font-size:12px;font-weight:600;line-height:1.4;cursor:pointer;opacity:1;
 }
 .overlay .dialog .billing-remove-coupon:hover{
   background:color-mix(in srgb,var(--ink) 87%,var(--accent));
@@ -38,4 +38,39 @@
 .overlay .dialog button[aria-busy="true"]{cursor:progress}
 .overlay .dialog .billing-quote-error button:focus-visible{
   outline:2px solid var(--accent);outline-offset:3px
+}
+
+/* Assinatura: linguagem, termos e ações com a mesma tipografia do aplicativo. */
+.overlay .dialog .billing-header-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px 18px;margin:0 0 8px;
+}
+.overlay .dialog .mr-language-billing{font-size:12px;color:var(--ink);margin:0}
+.overlay .dialog .mr-language-billing select{
+  min-height:36px;max-width:180px;color:var(--ink);background:var(--paper);
+}
+.overlay .dialog label.checkline{
+  display:flex;align-items:flex-start;flex-wrap:nowrap;gap:11px;
+  font-family:inherit;font-size:13px;line-height:1.65;
+  letter-spacing:normal;font-weight:400;color:var(--ink);
+  margin:16px 0;
+}
+.overlay .dialog label.checkline input[type="checkbox"]{
+  flex:0 0 18px;width:18px;height:18px;
+  margin:2px 0 0;accent-color:var(--accent);
+}
+.overlay .dialog label.checkline > span{display:block;flex:1;min-width:0}
+.overlay .dialog label.checkline a{
+  display:inline;color:var(--ink);font-size:inherit;
+  font-weight:650;text-decoration:underline;text-underline-offset:2px;
+}
+.overlay .dialog .billing-action-hint{
+  font:400 12px/1.5 inherit;letter-spacing:normal;
+  color:color-mix(in srgb,var(--ink) 80%,var(--paper));
+  margin:9px 0 15px;text-align:right;
+}
+@media(max-width:520px){
+  .overlay .dialog .billing-header-meta{align-items:flex-start;flex-direction:column}
+  .overlay .dialog .mr-language-billing{width:100%;justify-content:flex-start}
+  .overlay .dialog .billing-action-hint{text-align:left}
 }
