@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"A verificação adicional de login será disponibilizada após a homologação do envio de códigos. Seu acesso atual continua funcionando normalmente.":["Additional login verification will be available after code delivery has been tested. Your current access remains unchanged.","La verificación adicional de inicio de sesión estará disponible después de probar el envío de códigos. Tu acceso actual no cambia."],
 "Não foi possível validar o código.":["Could not verify the code.","No fue posible verificar el código."],
 "Código de confirmação":["Verification code","Código de verificación"],
 "WhatsApp":["WhatsApp","WhatsApp"],
