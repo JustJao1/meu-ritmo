@@ -3,7 +3,7 @@ const now=()=>Math.floor(Date.now()/1000);
 const encoder=new TextEncoder();
 export type SecureEnv=AuthEnv&{
  WHATSAPP_ACCESS_TOKEN?:string;WHATSAPP_PHONE_NUMBER_ID?:string;
- WHATSAPP_AUTH_TEMPLATE?:string;WHATSAPP_TEMPLATE_LANGUAGE?:string;
+ WHATSAPP_AUTH_TEMPLATE?:string;WHATSAPP_TEMPLATE_LANGUAGE?:string;LOGIN_STEP_UP_ENABLED?:string;
 };
 export const normalizePhone=(input:unknown)=>{
  if(typeof input!=='string')return null;
