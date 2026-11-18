@@ -32,6 +32,30 @@ export async function POST(req:Request){
     // Hosted card checkout has no subscription until the payer completes it.
     const checkout=await env.DB!.prepare('SELECT checkout_id,status FROM asaas_card_checkouts WHERE order_id=?')
       .bind(order.id).first<{checkout_id:string;status:string}>();
+    if(!checkout&&order.status==='review'&&!order.first_paid_at){
+      // No checkout URL was delivered. Validate that the provider has no charge
+      // before freeing a failed order and the coupon reserved against it.
+      try{
+        const [payments,subscriptions]=await Promise.all([
+          asaasRequest<{data:unknown[]}>('/payments?externalReference='+encodeURIComponent(order.id)+'&limit=5'),
+          asaasRequest<{data:unknown[]}>('/subscriptions?externalReference='+encodeURIComponent(order.id)+'&limit=5')
+        ]);
+        if(!Array.isArray(payments.data)||!Array.isArray(subscriptions.data))
+          throw Error('Resposta de conciliação incompleta.');
+        if(payments.data.length||subscriptions.data.length)
+          return Response.json({error:'O Asaas encontrou registros ligados à tentativa. É preciso conferir a cobrança antes de liberar o cupom.'},{status:409});
+        const time=Math.floor(Date.now()/1000);
+        await env.DB!.batch([
+          env.DB!.prepare("UPDATE asaas_orders SET status='cancelled',cancelled_at=? WHERE id=? AND status='review' AND first_paid_at IS NULL AND provider_subscription_id IS NULL AND NOT EXISTS(SELECT 1 FROM asaas_hosted_pix_checkouts WHERE order_id=?) AND NOT EXISTS(SELECT 1 FROM asaas_card_checkouts WHERE order_id=?)")
+            .bind(time,order.id,order.id,order.id),
+          env.DB!.prepare("DELETE FROM asaas_coupon_uses WHERE order_id=? AND EXISTS(SELECT 1 FROM asaas_orders WHERE id=? AND status='cancelled' AND first_paid_at IS NULL)")
+            .bind(order.id,order.id)
+        ]);
+        return Response.json({message:'Tentativa com falha encerrada. O cupom foi liberado para nova compra. Nenhum plano foi ativado.'},{headers:{'Cache-Control':'no-store'}});
+      }catch{
+        return Response.json({error:'Não foi possível descartar a tentativa com segurança. O pedido continua em revisão para evitar cobrança duplicada.'},{status:503,headers:{'Cache-Control':'no-store'}});
+      }
+    }
     if(!checkout)return Response.json({error:'A contratação ainda não foi registrada no Asaas.'},{status:404});
     if(checkout.status==='PAID')return Response.json({error:'O cartão foi processado. Aguarde a confirmação da assinatura antes de cancelar a renovação.'},{status:409});
     if(checkout.status!=='ACTIVE')return Response.json({error:'Este checkout já foi encerrado.'},{status:409});
