@@ -3,6 +3,7 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Abrir aplicativo Meu Ritmo":["Open Meu Ritmo app","Abrir la aplicación Meu Ritmo"],
 "Arredondada":["Rounded","Redondeada"],
 "Traços abertos e legíveis":["Open, readable letterforms","Trazos abiertos y legibles"],
 "SEU DIA, SEU ESPAÇO":["YOUR DAY, YOUR SPACE","TU DÍA, TU ESPACIO"],
