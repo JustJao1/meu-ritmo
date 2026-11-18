@@ -1,104 +1,75 @@
 import type {Locale} from '../components/language-selector';
 
-const prompts:Record<Locale,{lead:string;starts:string[];ends:string[]}>={
-  'pt-BR':{
-    lead:'Para',
-    starts:[
-      'um pequeno passo já merece atenção.',
-      'começar é mais importante que acertar tudo.',
-      'o que cabe no seu dia já é suficiente.',
-      'organizar uma coisa pode trazer clareza ao resto.',
-      'um plano simples também ajuda a avançar.',
-      'você pode mudar o ritmo sem abandonar o caminho.',
-      'há valor em concluir o que estava pendente.',
-      'escolher uma prioridade já é progresso.',
-      'o descanso também faz parte dos planos.',
-      'um dia mais leve começa com escolhas possíveis.',
-      'cada compromisso concluído abre espaço para o próximo.'
-    ],
-    ends:[
-      'Dê atenção ao próximo passo.',
-      'Faça o possível, no seu tempo.',
-      'O importante é seguir com intenção.',
-      'O resto pode esperar um pouco.',
-      'Você não precisa resolver tudo de uma vez.',
-      'Comece pelo que está ao seu alcance.',
-      'Reconheça também as pequenas conquistas.',
-      'Ajustar os planos faz parte.',
-      'Guarde energia para o que realmente importa.',
-      'Deixe espaço para respirar.'
-    ]
-  },
-  en:{
-    lead:'For',
-    starts:[
-      'a small step is still worth noticing.',
-      'starting matters more than getting everything right.',
-      'what fits into today is enough.',
-      'organizing one thing can make the rest clearer.',
-      'a simple plan can help you move forward.',
-      'you can change your pace without losing direction.',
-      'there is value in finishing what you started.',
-      'choosing a priority is progress.',
-      'rest belongs in the plan, too.',
-      'a lighter day begins with realistic choices.',
-      'each finished task makes room for the next.'
-    ],
-    ends:[
-      'Focus on the next step.',
-      'Do what you can at your own pace.',
-      'Keep moving with intention.',
-      'The rest can wait a little.',
-      'You do not need to solve everything at once.',
-      'Start with what is within reach.',
-      'Notice the small wins as well.',
-      'Adjusting your plans is part of it.',
-      'Save energy for what matters.',
-      'Leave room to breathe.'
-    ]
-  },
-  es:{
-    lead:'Para el',
-    starts:[
-      'un pequeño paso también merece atención.',
-      'empezar importa más que hacerlo todo perfecto.',
-      'lo que cabe en tu día es suficiente.',
-      'organizar una cosa puede aclarar las demás.',
-      'un plan sencillo también ayuda a avanzar.',
-      'puedes cambiar el ritmo sin perder el rumbo.',
-      'terminar lo pendiente también tiene valor.',
-      'elegir una prioridad ya es progresar.',
-      'el descanso también forma parte del plan.',
-      'un día más ligero empieza con decisiones posibles.',
-      'cada tarea terminada deja espacio para la siguiente.'
-    ],
-    ends:[
-      'Presta atención al siguiente paso.',
-      'Haz lo posible a tu ritmo.',
-      'Sigue adelante con intención.',
-      'Lo demás puede esperar un poco.',
-      'No tienes que resolverlo todo a la vez.',
-      'Empieza por lo que tienes a tu alcance.',
-      'Reconoce también los pequeños logros.',
-      'Ajustar los planes es parte del camino.',
-      'Reserva energía para lo importante.',
-      'Deja espacio para respirar.'
-    ]
-  }
+/** Notas editoriais completas. Nenhum texto é montado combinando frases aleatórias. */
+const notes:Record<Locale,readonly string[]>={
+ 'pt-BR':[
+  'Confira a agenda antes de começar a primeira tarefa.',
+  'Se um compromisso mudou, atualize o horário para não se perder depois.',
+  'Escolha uma tarefa importante e deixe as outras em ordem de prioridade.',
+  'Anote os gastos pequenos também. Eles fazem diferença na soma do mês.',
+  'Revise as contas com vencimento próximo antes de planejar outros gastos.',
+  'Quando lembrar de algo, registre em uma nota e volte ao que estava fazendo.',
+  'Uma lista de compras organizada evita ter que voltar ao mercado.',
+  'Marque as tarefas concluídas para enxergar o que ainda está pendente.',
+  'Separe um horário livre entre compromissos que exigem deslocamento.',
+  'Se o dia ficou cheio, mova uma tarefa menos urgente para outra data.',
+  'Confira os compromissos de amanhã antes de encerrar o dia.',
+  'Um orçamento funciona melhor quando os valores estão atualizados.',
+  'Organize as notas por assunto para encontrá-las com facilidade.',
+  'Se compartilhar uma rotina, confira os horários antes de publicar.',
+  'Reserve algum tempo da agenda para descansar sem outras tarefas.',
+  'Reveja as pendências da semana antes de assumir um novo compromisso.'
+ ],
+ en:[
+  'Check your calendar before starting your first task.',
+  'If an appointment changes, update the time so it stays accurate.',
+  'Choose one important task and put the others in priority order.',
+  'Record small expenses too. They add up over the month.',
+  'Check upcoming bills before planning other expenses.',
+  'When an idea comes up, add a note and return to what you were doing.',
+  'A shopping list can save you an extra trip.',
+  'Check off completed tasks to see what is still pending.',
+  'Leave a little travel time between appointments.',
+  'If today is full, move a less urgent task to another date.',
+  'Check tomorrow’s calendar before wrapping up the day.',
+  'A budget is more useful when its numbers are up to date.',
+  'Group your notes by subject so you can find them later.',
+  'Before sharing a routine, double-check its times.',
+  'Leave some room on your calendar for rest.',
+  'Review this week’s pending tasks before taking on something else.'
+ ],
+ es:[
+  'Revisa tu agenda antes de empezar la primera tarea.',
+  'Si cambia una cita, actualiza la hora para no confundirte después.',
+  'Elige una tarea importante y ordena las demás por prioridad.',
+  'Anota también los gastos pequeños. Se acumulan a lo largo del mes.',
+  'Revisa las facturas próximas a vencer antes de planear otros gastos.',
+  'Cuando se te ocurra algo, apúntalo y vuelve a lo que estabas haciendo.',
+  'Una lista de compras puede evitarte otro viaje a la tienda.',
+  'Marca las tareas terminadas para ver cuáles siguen pendientes.',
+  'Deja tiempo para desplazarte entre compromisos.',
+  'Si hoy tienes demasiadas cosas, pasa una tarea menos urgente a otra fecha.',
+  'Revisa la agenda de mañana antes de terminar el día.',
+  'Un presupuesto sirve más cuando sus cantidades están al día.',
+  'Agrupa tus notas por tema para encontrarlas después.',
+  'Antes de compartir una rutina, comprueba sus horarios.',
+  'Reserva un momento de la agenda para descansar.',
+  'Revisa las tareas pendientes de la semana antes de asumir otra cosa.'
+ ]
 };
 
 export function dailyMotivation(dateKey:string,locale:Locale):string{
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey))return '';
-  const [y,m,d]=dateKey.split('-').map(Number);
-  const date=new Date(Date.UTC(y,m-1,d,12));
-  if(!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==dateKey)return '';
-  const day=Math.floor(date.getTime()/86400000);
-  const {lead,starts,ends}=prompts[locale]||prompts['pt-BR'];
-  const when=new Intl.DateTimeFormat(locale,{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);
-  // The date is part of the message, so its full text never repeats on another day.
-  return `${lead} ${when}, ${starts[((day%starts.length)+starts.length)%starts.length]} ${ends[Math.floor(day/starts.length)%ends.length]}`;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey))return '';
+ const [y,m,d]=dateKey.split('-').map(Number);
+ const date=new Date(Date.UTC(y,m-1,d,12));
+ if(!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==dateKey)return '';
+ const day=Math.floor(date.getTime()/86400000);
+ const language=notes[locale]||notes['pt-BR'];
+ const when=new Intl.DateTimeFormat(locale,{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);
+ const prefix=locale==='en'?'For':locale==='es'?'Para el':'Para';
+ return `${prefix} ${when}, ${language[((day%language.length)+language.length)%language.length]}`;
 }
 
-export function capitalizeMotivation(text:string,locale:Locale):string{
-  return text.replace(/\p{L}/u,letter=>letter.toLocaleUpperCase(locale));
+export function capitalizeMotivation(value:string,locale:Locale):string{
+ return value.replace(/\p{L}/u,letter=>letter.toLocaleUpperCase(locale));
 }

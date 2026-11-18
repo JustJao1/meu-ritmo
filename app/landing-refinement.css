@@ -14,11 +14,12 @@
 .landing #como>.eyebrow{grid-column:1;grid-row:1;margin:0 0 20px}
 .landing #como>h2{grid-column:1;grid-row:2;font-size:clamp(37px,3.3vw,51px);line-height:1.12;letter-spacing:-.055em;margin:0;max-width:430px}
 .landing #como .features{grid-column:2;grid-row:1 / span 3;display:grid;grid-template-columns:1fr;gap:0;margin:0}
-.landing #como .features article{display:grid;grid-template-columns:52px 1fr;column-gap:18px;align-items:start;border-top:1px solid var(--line);padding:23px 0 24px;min-width:0}
+.landing #como .features article{display:grid;grid-template-columns:clamp(104px,10vw,142px) minmax(0,1fr);grid-template-rows:auto auto;column-gap:clamp(18px,2vw,26px);row-gap:8px;align-items:center;border-top:1px solid color-mix(in srgb,var(--ink) 17%,transparent);padding:27px 0;min-width:0}
 .landing #como .features article:first-child{padding-top:0;border-top:0}
-.landing #como .featureicon{grid-column:1;grid-row:1 / span 2;width:42px;height:42px}
-.landing #como .features h3{grid-column:2;margin:0 0 7px;font-size:17px;line-height:1.35;letter-spacing:-.02em}
-.landing #como .features p{grid-column:2;margin:0;max-width:440px;font-size:13px;line-height:1.7;color:var(--public-subtle,var(--muted))}
+.landing #como .featureicon{display:none}
+.landing #como .features article>.organizing-illustration{grid-column:1;grid-row:1 / span 2;display:block;width:100%;height:auto;max-height:135px;margin:0;align-self:center}
+.landing #como .features h3{grid-column:2;grid-row:1;align-self:end;margin:0;font-size:clamp(17px,1.55vw,19px);line-height:1.35;letter-spacing:-.02em}
+.landing #como .features p{grid-column:2;grid-row:2;align-self:start;margin:0;max-width:440px;font-size:14px;line-height:1.7;color:var(--public-subtle,var(--muted))}
 .landing #planos{padding-top:clamp(70px,7vw,100px);border-top:1px solid var(--line)}
 .landing #planos>.eyebrow{display:block;margin-bottom:17px}
 .landing #planos>h2{max-width:660px;font-size:clamp(37px,4vw,55px);line-height:1.1;letter-spacing:-.055em;margin:0 0 30px}
@@ -41,7 +42,7 @@
 .landing .publicfooter{max-width:var(--landing-width);margin-inline:auto;padding:25px 0}
 @media(max-width:1220px){.landing .hero,.landing .publicsection,.landing .publicnav,.landing .publicfooter{margin-left:clamp(24px,5vw,65px);margin-right:clamp(24px,5vw,65px)}.landing .featurestrip{padding-inline:clamp(24px,5vw,65px)}}
 @media(max-width:900px){.landing #como{grid-template-columns:1fr;gap:0}.landing #como>.eyebrow,.landing #como>h2,.landing #como .features{grid-column:1;grid-row:auto}.landing #como>h2{max-width:640px;margin-bottom:30px}.landing #como .features{max-width:680px}.landing .featurestrip{flex-wrap:wrap;justify-content:center}.landing .hero{min-height:auto}.landing #planos .plans{grid-template-columns:1fr}.landing #planos .plancard{max-width:none}}
-@media(max-width:600px){.landing .hero,.landing .publicsection,.landing .publicnav,.landing .publicfooter{margin-left:20px;margin-right:20px}.landing .hero{padding-top:45px;padding-bottom:55px}.landing .herotext h1{font-size:clamp(52px,12vw,76px)}.landing .herotext>p{font-size:14px}.landing .featurestrip{padding:16px 20px;gap:12px 20px;justify-content:flex-start}.landing .featurestrip span{font-size:10px}.landing .publicsection{padding:65px 0}.landing #como>h2,.landing #planos>h2{font-size:37px}.landing #como .features article{grid-template-columns:44px 1fr;column-gap:14px}.landing #planos .planintro{align-items:flex-start;flex-direction:column}.landing #planos .plancard,.landing #planos .plancard.featured{padding:25px 23px}.landing .publicfooter{gap:15px;flex-wrap:wrap}}
+@media(max-width:600px){.landing .hero,.landing .publicsection,.landing .publicnav,.landing .publicfooter{margin-left:20px;margin-right:20px}.landing .hero{padding-top:45px;padding-bottom:55px}.landing .herotext h1{font-size:clamp(52px,12vw,76px)}.landing .herotext>p{font-size:14px}.landing .featurestrip{padding:16px 20px;gap:12px 20px;justify-content:flex-start}.landing .featurestrip span{font-size:10px}.landing .publicsection{padding:65px 0}.landing #como>h2,.landing #planos>h2{font-size:37px}.landing #como .features article{grid-template-columns:96px minmax(0,1fr);column-gap:15px;row-gap:7px}.landing #como .features article>.organizing-illustration{max-height:105px}.landing #planos .planintro{align-items:flex-start;flex-direction:column}.landing #planos .plancard,.landing #planos .plancard.featured{padding:25px 23px}.landing .publicfooter{gap:15px;flex-wrap:wrap}}
 
 /* Keep policy links visible and keyboard-accessible across public themes. */
 .landing .publicfooter{flex-wrap:wrap;gap:16px 24px}

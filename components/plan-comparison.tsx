@@ -13,7 +13,7 @@ const benefits:Record<Plan,string[]>={
  plus:[
   'Tudo do Gratuito',
   'Crie até 2 espaços compartilhados',
-  '9 temas adicionais, 6 cores e estilo editorial',
+  '9 temas adicionais, 6 cores e 6 fontes para títulos',
   'Distintivos e adesivos de notas',
   'Notas pautadas ou pontilhadas',
   '20 notas fixadas e 12 modelos prontos de rotina'
@@ -30,9 +30,9 @@ const benefits:Record<Plan,string[]>={
  ]
 };
 const descriptions:Record<Plan,string>={
- free:'Para usar todos os dias.',
- plus:'Para deixar com a sua cara.',
- pro:'Para organizar com mais detalhe.'
+ free:'Tarefas, agenda e gastos em um só lugar.',
+ plus:'Mais personalização e espaços compartilhados.',
+ pro:'Assistente, relatórios e modelos próprios.'
 };
 
 export default function PlanComparison({
@@ -52,8 +52,8 @@ export default function PlanComparison({
   <div className="planintro">
    <div>
     <span className="eyebrow">{tr('O ESSENCIAL CONTINUA GRATUITO')}</span>
-    <h3>{tr('Mais seu. Mais organizado.')}</h3>
-    <p>{tr('Plus cuida dos detalhes do seu espaço. Pro acrescenta o assistente inteligente, modelos próprios e relatórios.')}</p>
+    <h3>{tr('Encontre o plano certo para sua rotina.')}</h3>
+    <p>{tr('O Plus amplia a personalização e os espaços compartilhados. O Pro inclui assistente inteligente, relatórios e modelos próprios.')}</p>
    </div>
    <div className="billingtoggle">
     <button aria-pressed={!annual} className={!annual?'active':''} onClick={()=>onAnnual(false)}>{tr('Mensal')}</button>
@@ -79,8 +79,8 @@ export default function PlanComparison({
    </article>)}
   </div>
   <div className="planprinciples">
-   <div><Palette size={21}/><p><strong>{tr('Um visual que combina com você.')}</strong> {tr('Personalização sem bagunçar a navegação.')}</p></div>
-   <div><Layers size={21}/><p><strong>{tr('Seu conteúdo continua seu.')}</strong> {tr('Sem assinatura, seus dados ficam disponíveis para leitura, edição básica e exportação.')}</p></div>
+   <div><Palette size={21}/><p><strong>{tr('Personalize a aparência do seu espaço.')}</strong> {tr('Personalização sem bagunçar a navegação.')}</p></div>
+   <div><Layers size={21}/><p><strong>{tr('Seus registros continuam acessíveis.')}</strong> {tr('Sem assinatura, seus dados ficam disponíveis para leitura, edição básica e exportação.')}</p></div>
   </div>
   <p className="planfoot">{earlyAccess?tr('Acesso antecipado gratuito por tempo limitado, sem cobrança automática ao final da campanha. Os preços dos planos são apresentados para consulta; novas assinaturas estão temporariamente indisponíveis. Notas fixadas são recados no topo; distintivos são decorações do perfil.'):tr('Planos mensais e anuais. O Pix tem renovação manual, e o acesso só é liberado após confirmação do pagamento.')}</p>
  </div>;
