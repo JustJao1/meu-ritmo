@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS auth_login_challenges (
  id_hash TEXT PRIMARY KEY NOT NULL,
  user_id TEXT NOT NULL,
  email TEXT NOT NULL,
+ tokens TEXT NOT NULL,
  channel TEXT NOT NULL CHECK(channel IN ('email','whatsapp')),
  code_hash TEXT,
  expires_at INTEGER NOT NULL,
