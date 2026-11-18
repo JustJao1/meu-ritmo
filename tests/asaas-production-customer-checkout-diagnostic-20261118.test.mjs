@@ -15,7 +15,7 @@ test('diagnóstico usa somente a produção e nunca expõe dados de clientes em 
 test('cria um único checkout Pix técnico sem cartão e cancela antes de liberar pedido',()=>{
  assert.match(src,/billingTypes:\['PIX'\],chargeTypes:\['DETACHED'\]/);
  assert.match(src,/value:5\.00/);
- assert.match(src,/checkoutId\+'\/cancel'/);
+ assert.match(src,/encodeURIComponent\(checkoutId\)\+'\\/cancel'/);
  assert.match(src,/if\(!cancelOk\)throw Error/);
  assert.ok(src.indexOf("if(!cancelOk)throw Error")<src.indexOf("UPDATE asaas_orders SET status='cancelled'"));
 });
