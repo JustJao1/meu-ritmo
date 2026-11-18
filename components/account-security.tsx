@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {useLocale} from './language-selector';
-type Contact={phone:string;verified:boolean;preferredChannel:'email'|'whatsapp';whatsappAvailable:boolean};
+type Contact={phone:string;verified:boolean;preferredChannel:'email'|'whatsapp';whatsappAvailable:boolean;stepUpEnabled:boolean};
 export default function AccountSecurity(){
  const {t}=useLocale();
  const [contact,setContact]=useState<Contact|null>(null),[phone,setPhone]=useState(''),[password,setPassword]=useState(''),[channel,setChannel]=useState<'email'|'whatsapp'>('email');
@@ -18,7 +18,7 @@ export default function AccountSecurity(){
  <p className="muted">{contact?.verified?t('Telefone verificado'):t('Telefone não verificado')}</p>
  {contact?.whatsappAvailable?<div className="account-security-phone">{!contact.verified&&<button disabled={busy} onClick={async()=>{const v=await post({operation:'send'});if(v)setChallengeId(v.challengeId);}}>{t('Enviar código para verificar o WhatsApp')}</button>}
  {challengeId&&<form onSubmit={async e=>{e.preventDefault();if(await post({operation:'verify',challengeId,code})){setChallengeId('');setCode('');}}}><label>{t('Código recebido pelo WhatsApp')}<input inputMode="numeric" autoComplete="one-time-code" value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,'').slice(0,6))} maxLength={6} required/></label><button disabled={busy||code.length!==6}>{t('Confirmar telefone')}</button></form>}</div>:<p className="muted">{t('O canal WhatsApp ainda depende da ativação do serviço de envio. Enquanto isso, os códigos continuam disponíveis por e-mail.')}</p>}
- <form onSubmit={async e=>{e.preventDefault();await post({operation:'channel',channel});}}><label>{t('Canal preferido para confirmar seu login')}<select value={channel} onChange={e=>setChannel(e.target.value as 'email'|'whatsapp')}><option value="email">{t('E-mail')}</option><option value="whatsapp" disabled={!contact?.verified||!contact?.whatsappAvailable}>{t('WhatsApp')}</option></select></label><button disabled={busy}>{t('Salvar preferência')}</button></form>
- <p className="muted">{t('Uma nova confirmação é exigida quando sua conta fica desconectada por pelo menos 24 horas. Sessões existentes não são encerradas por essa configuração.')}</p>
+ {contact?.stepUpEnabled&&<form onSubmit={async e=>{e.preventDefault();await post({operation:'channel',channel});}}><label>{t('Canal preferido para confirmar seu login')}<select value={channel} onChange={e=>setChannel(e.target.value as 'email'|'whatsapp')}><option value="email">{t('E-mail')}</option><option value="whatsapp" disabled={!contact?.verified||!contact?.whatsappAvailable}>{t('WhatsApp')}</option></select></label><button disabled={busy}>{t('Salvar preferência')}</button></form>}
+ <p className="muted">{t(contact?.stepUpEnabled?'Uma nova confirmação é exigida quando sua conta fica desconectada por pelo menos 24 horas. Sessões existentes não são encerradas por essa configuração.':'A verificação adicional de login será disponibilizada após a homologação do envio de códigos. Seu acesso atual continua funcionando normalmente.')}</p>
  </section>;
 }
