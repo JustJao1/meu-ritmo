@@ -38,7 +38,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [loginChallenge,setLoginChallenge]=useState('');
   const [loginChallengeChannel,setLoginChallengeChannel]=useState<'email'|'whatsapp'>('email');
   const [loginCode,setLoginCode]=useState('');
-  useEffect(()=>{if(mode!=='login'&&mode!=='signup')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then(v=>setWhatsappAvailable(!!v.whatsapp)).catch(()=>{});},[mode]);
+  useEffect(()=>{if(mode!=='login'&&mode!=='signup')return;void fetch('/api/auth/channels',{cache:'no-store'}).then(r=>r.json()).then((v:{whatsapp?:boolean})=>setWhatsappAvailable(!!v.whatsapp)).catch(()=>{});},[mode]);
   useEffect(()=>{
     if(mode!=='verify')return;
     // Restore the previous email only on page entry; never overwrite user edits.
