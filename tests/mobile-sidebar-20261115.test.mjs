@@ -12,12 +12,12 @@ const translations=read('components/language-selector.tsx');
 test('daily message lives only in sidebar card, not the Hoje heading',()=>{
   const sidebar=app.slice(app.indexOf('<aside className="sidebar">'),app.indexOf('</aside>'));
   assert.match(sidebar,/className="planpitch daily-pitch"/);
-  assert.match(sidebar,/UMA FRASE PARA HOJE/);
+  assert.match(sidebar,/NOTA DO DIA/);
   assert.match(sidebar,/<DailyMotivation\/>/);
   assert.equal((app.match(/<DailyMotivation\/>/g)||[]).length,1);
   assert.doesNotMatch(app,/area==='Hoje'&&<DailyMotivation\/>/);
   assert.match(component,/setInterval\(\(\)=>setToday\(localDate\(\)\),60_000\)/);
-  assert.match(translations,/"UMA FRASE PARA HOJE":\["A THOUGHT FOR TODAY","UNA FRASE PARA HOY"\]/);
+  assert.match(translations,/"NOTA DO DIA":\["TODAY\x27S NOTE","NOTA DEL DÍA"\]/);
 });
 
 test('plans has one sidebar entry and the daily quote has no extra CTA',()=>{
