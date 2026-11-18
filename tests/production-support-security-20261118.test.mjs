@@ -19,7 +19,7 @@ test('cadastro não permite telefone inválido nem pula verificação de e-mail'
  assert.match(form,/Código por e-mail/);
 });
 test('sessão é liberada somente após código do login validado',()=>{
- assert.match(router,/if\(await shouldChallenge\(/);
+ assert.match(router,/LOGIN_STEP_UP_ENABLED==='true'&&await shouldChallenge\(/);
  assert.match(router,/challengeRequired:true/);
  assert.match(router,/completeLoginChallenge/);
  assert.match(auth,/attempts<5/);
@@ -31,6 +31,7 @@ test('sessão é liberada somente após código do login validado',()=>{
  assert.match(server,/disconnected_at=excluded\.disconnected_at/);
  assert.match(auth,/86400/);
  assert.match(migration,/CREATE TABLE IF NOT EXISTS auth_login_challenges/);
+ assert.match(file('.github/workflows/deploy.yml'),/LOGIN_STEP_UP_ENABLED/);
 });
 test('WhatsApp só pode ser escolhido quando telefone foi confirmado',()=>{
  assert.match(router,/!row\?\.phone_verified_at/);
