@@ -24,10 +24,11 @@ globalThis.__mockProvider=async(path,body,token,method)=>{
  return Response.json({access_token:'login-token',refresh_token:'refresh-token',user:testUser});
 };
 const mock={name:'mock-auth-dependencies',setup(buildApi){
- buildApi.onResolve({filter:/^\.\/(auth-server|auth-context|social)$/},args=>({path:args.path,namespace:'mock-auth'}));
+ buildApi.onResolve({filter:/^\.\/(auth-server|auth-context|social|auth-security)$/},args=>({path:args.path,namespace:'mock-auth'}));
  buildApi.onLoad({filter:/.*/,namespace:'mock-auth'},args=>{
   if(args.path==='./auth-context')return {contents:'export const identity=()=>globalThis.__authIdentity;',loader:'js'};
   if(args.path==='./social')return {contents:'export const profileInput={parse:v=>v};',loader:'js'};
+  if(args.path==='./auth-security')return {loader:'js',contents:`export const normalizePhone=v=>/^\\+[1-9]\\d{9,14}$/.test(String(v))?v:null; export const whatsappReady=()=>false; export const shouldChallenge=async()=>false; export const beginLoginChallenge=async()=>({}); export const completeLoginChallenge=async()=>null; export const beginPhoneVerification=async()=>({}); export const finishPhoneVerification=async()=>false;`};
   return {loader:'ts',contents:`
     export type AuthEnv=any;
     export const providerConfig=()=>({});
@@ -58,17 +59,17 @@ test('eight-character policy requires upper lower digit and symbol',()=>{
 });
 test('signup enforces new password policy on the server',async()=>{
  reset();
- let r=await authRoute(request('signup',{email:'person@example.test',password:'password1234',username:'tester',name:'Tester',accept:true,adult:true}),e);
+ let r=await authRoute(request('signup',{email:'person@example.test',password:'password1234',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
  assert.equal(r.status,400);
  assert.equal(providerCalls.length,0,'never send weak passwords to provider');
- r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',accept:true,adult:true}),e);
+ r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
  assert.equal(r.status,200);
  assert.equal(providerCalls[0].path,'/settings');
  assert.equal(providerCalls[1].path,'/signup');
 });
 test('disabled provider email confirmation fails before signup, without creating an unusable account',async()=>{
  reset();globalThis.__providerAutoConfirm=true;
- const r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',accept:true,adult:true}),e);
+ const r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
  assert.equal(r.status,503);
  assert.equal(providerCalls.length,1);
  assert.equal(providerCalls[0].path,'/settings');

@@ -32,7 +32,7 @@ test('responsive billing styles use existing theme tokens and do not modify othe
   assert.match(css,/@media\(max-width:1120px\)/);
   assert.match(css,/@media\(max-width:740px\)/);
   assert.match(css,/@media\(max-width:400px\)/);
-  assert.match(panel,/!\['Cobranças','Opiniões'\]\.includes\(tab\)&&<form className="adminsearch"/);
+  assert.match(panel,/!\['Cobranças','Opiniões','Atendimento'\]\.includes\(tab\)&&<form className="adminsearch"/);
   assert.match(panel,/tab==='Cobranças'&&<AdminBilling/);
 });
 test('new billing messages are translated in Portuguese, English and Spanish',()=>{

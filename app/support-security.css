@@ -1,0 +1,35 @@
+/* Atendimento e segurança seguem a mesma tipografia e paleta do Meu Ritmo. */
+.support-center,.admin-support,.account-security{display:grid;gap:18px;color:var(--ink)}
+.support-center>p,.account-security>p,.admin-support .adminsectionintro p{max-width:64ch;color:var(--theme-foreground-muted,var(--muted));line-height:1.7;font-size:14px}
+.support-center form,.account-security form,.admin-support label{display:grid;gap:12px}
+.support-center label,.admin-support label,.account-security label{display:grid;gap:7px;color:var(--ink);font-weight:600;font-size:13px}
+.support-center :is(input,textarea,select),.admin-support :is(input,textarea,select),.account-security :is(input,textarea,select){
+ width:100%;max-width:100%;padding:12px 14px;min-height:47px;
+ background:var(--paper);color:var(--ink);border:1px solid var(--theme-divider,var(--line));border-radius:10px;
+ font-family:inherit;font-size:14px;
+}
+.support-center textarea,.admin-support textarea,.account-security textarea{resize:vertical;min-height:90px;line-height:1.6}
+.support-center :is(button,.primary),.admin-support button,.account-security button{min-height:44px;border-radius:10px;font-size:13px}
+.support-ticket-list{display:grid;gap:10px}
+.support-ticket-list>button{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;
+ padding:15px 18px;background:color-mix(in srgb,var(--theme-banner,var(--paper)) 28%,var(--paper));
+ border:1px solid var(--theme-divider,var(--line));border-radius:11px;color:var(--ink)}
+.support-ticket-list>button:is(:hover,:focus-visible){background:var(--theme-raised,var(--paper));border-color:var(--ink)}
+.support-ticket-list>button strong{font-size:15px;line-height:1.4}
+.support-ticket-list>button span,.support-ticket-list>button small{font-size:12px;line-height:1.45;color:var(--theme-foreground-muted,var(--ink))}
+.support-ticket-list>button small{overflow-wrap:anywhere}
+.support-create{padding-top:19px;border-top:1px solid var(--theme-divider,var(--line))}
+.support-create>h3,.support-thread>h3{font-size:17px;line-height:1.3;margin:0}
+.support-thread{display:grid;gap:12px}
+.support-thread>small{overflow-wrap:anywhere;color:var(--theme-foreground-muted,var(--ink))}
+.support-message{padding:14px 16px;border-radius:11px;border:1px solid var(--theme-divider,var(--line));
+ background:var(--theme-raised,var(--paper))}
+.support-message strong{font-size:13px}
+.support-message p{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.support-message small{color:var(--theme-foreground-muted,var(--ink))}
+.support-metrics{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+.support-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.account-security form{border-top:1px solid var(--theme-divider,var(--line));padding-top:18px}
+.account-security p.muted,.support-center p.muted{font-size:13px;line-height:1.7}
+:is(.support-center,.admin-support,.account-security) :is(button,input,textarea,select):focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(max-width:600px){.support-ticket-list>button{padding:13px 14px}.support-pagination{flex-wrap:wrap}.support-center,.admin-support,.account-security{gap:15px}}
