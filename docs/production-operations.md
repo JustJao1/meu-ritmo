@@ -14,3 +14,5 @@ Autenticação: códigos adicionais após 24 horas de desconexão são exigidos 
 
 Variáveis necessárias à integração WhatsApp (ainda não configuradas automaticamente):
 `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_AUTH_TEMPLATE` e, opcionalmente, `WHATSAPP_TEMPLATE_LANGUAGE` (padrão `pt_BR`). Nenhum código secreto deve ser salvo no GitHub ou exposto ao cliente. Verifique testes reais de envio, expiração e entrega antes de liberar a escolha comercialmente.
+
+**Ativação em etapas:** o segundo fator foi colocado atrás de `LOGIN_STEP_UP_ENABLED` (padrão `false`) para evitar bloqueio de clientes existentes enquanto a configuração real do template *Magic Link* do Supabase não for validada. Configure o template de e-mail para incluir `{{ .Token }}` e teste emissão/validação, expiração e reenvio usando uma conta autorizada, antes de definir a variável GitHub Actions `LOGIN_STEP_UP_ENABLED=true`. O canal WhatsApp requer Meta habilitada, template de autenticação aprovado e telefone comprovadamente verificado. Sem essas etapas, somente a verificação de cadastro por e-mail permanece ativa, como antes.
