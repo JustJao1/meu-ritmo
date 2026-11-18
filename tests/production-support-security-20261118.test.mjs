@@ -37,7 +37,7 @@ test('WhatsApp só pode ser escolhido quando telefone foi confirmado',()=>{
  assert.match(auth,/whatsappReady\(e\)/);
  assert.match(auth,/phone_verified_at/);
  assert.match(router,/currentPassword/);
- assert.match(router,/contact-'+actionType/);
+ assert(router.includes("'contact-'+actionType"));
  assert.match(auth,/crypto\.subtle\.sign\('HMAC'/);
 });
 test('protocolos isolados por usuário e respostas autenticadas da equipe',()=>{
