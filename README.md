@@ -18,9 +18,9 @@ Verificações: `npm run typecheck`, `npm test` e `npm run build`.
 4. Gere SESSION_ENCRYPTION_KEY com `openssl rand -base64 32`. Guarde como segredo do Worker; não coloque a chave em código ou logs. Configure SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY e os demais segredos do `.env.example`.
 5. Para administrar, configure ADMIN_OWNER_EMAIL e ADMIN_OWNER_USER_ID com e-mail confirmado e UUID da sua conta no Supabase. Um nome de perfil ou e-mail enviado no formulário não concede administração.
 6. Publique com `npm run deploy` em ambiente autorizado, com as variáveis CLOUDFLARE_* configuradas. O script aplica migrações, compila e publica; depois grava os segredos no Worker. Durante o intervalo de configuração, o login falha fechado. Não anuncie o site antes de testar os fluxos reais.
-7. Para encerramento definitivo de login, configure SUPABASE_SERVICE_ROLE_KEY exclusivamente no servidor. Sem ela, a interface permite excluir dados ou solicitar atendimento, mas não afirma ter excluído o login. Configure Stripe e webhook assinado separadamente antes de ativar cobranças.
+7. Para encerramento definitivo de login, configure SUPABASE_SERVICE_ROLE_KEY exclusivamente no servidor. Sem ela, a interface permite excluir dados ou solicitar atendimento, mas não afirma ter excluído o login. As vendas comerciais atuais utilizam o Asaas: configure ambiente de produção, chave privada e webhook autenticado, e homologue todo o fluxo Pix antes de disponibilizar a contratação. Cartão continua bloqueado até homologação separada.
 
-O projeto pode começar nas franquias gratuitas dos provedores; limites de requisições, CPU, banco, armazenamento e e-mail continuam aplicáveis. Não há contratação de plano pago automática neste projeto.
+O projeto pode começar nas franquias gratuitas dos provedores; limites de requisições, CPU, banco, armazenamento e e-mail continuam aplicáveis. Os planos Plus e Pro podem ser contratados por Pix mediante escolha explícita do usuário; a renovação é manual e o acesso pago só é liberado após conciliação da cobrança confirmada pelo Asaas.
 
 ## Alarmes e lembretes
 

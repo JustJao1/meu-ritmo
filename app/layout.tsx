@@ -30,6 +30,7 @@ import './assistant-feedback.css';
 import './finance-income.css';
 import './sidebar-shared-polish.css';
 import './scheduled-notices.css';
+import './current-plan-highlight.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';

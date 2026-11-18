@@ -61,8 +61,11 @@ export default function PlanComparison({
    </div>
   </div>
   <div className="plans">{(Object.entries(planConfig) as [Plan,typeof planConfig.free][]).map(([id,p])=>
-   <article key={id} data-plan={id} className="plancard">
-    <span className="eyebrow">{tr(p.name)}</span>
+   <article key={id} data-plan={id} data-current={showCurrent&&current===id?'true':undefined} className={'plancard'+(showCurrent&&current===id?' plancard--current':'')}>
+    <div className="plan-card-heading">
+     <span className="eyebrow">{tr(p.name)}</span>
+     {showCurrent&&current===id&&<span className="currentplan" role="status"><Check size={15} strokeWidth={2.5} aria-hidden="true"/>{tr(demo?'Plano simulado':'Seu plano atual')}</span>}
+    </div>
     <p>{tr(descriptions[id])}</p>
     <div className="planprice">{money(annual?p.yearly:p.monthly)}<small>/{tr(id==='free'?'sempre':annual?'ano':'mês')}</small></div>
     {annual&&id!=='free'&&<small className="equivalent">{tr('Equivale a')} {money(p.yearly/12)} {tr('por mês.')}</small>}
@@ -73,7 +76,6 @@ export default function PlanComparison({
     {id!=='free'&&<button className="plantry" onClick={()=>onTry(id)}>
      {tr(demo?'Experimentar na demonstração':'Explorar na demonstração')+' '+p.name}<ArrowRight size={14}/>
     </button>}
-    {showCurrent&&current===id&&<span className="currentplan">{tr(demo?'Plano simulado':'Seu plano atual')}</span>}
    </article>)}
   </div>
   <div className="planprinciples">
