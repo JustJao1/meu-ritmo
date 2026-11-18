@@ -1,0 +1,62 @@
+/* Destaque do plano ativo sem alterar os demais cartões nem as cores do tema. */
+.plancomparison .plan-card-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px 12px;
+  min-height:35px;
+}
+.plancomparison .plan-card-heading > .eyebrow {
+  font-size:12px;
+  line-height:1.4;
+  letter-spacing:1.3px;
+  font-weight:750;
+  color:var(--ink);
+}
+.plancomparison .plancard.plancard--current {
+  border:2px solid color-mix(in srgb,var(--ink) 65%,var(--accent));
+  padding:calc(clamp(22px,2.4vw,34px) - 1px);
+  background:color-mix(in srgb,var(--theme-banner,var(--green)) 15%,var(--paper));
+  box-shadow:0 9px 25px color-mix(in srgb,var(--ink) 11%,transparent);
+}
+.plancomparison .plancard.plancard--current:hover {
+  border-color:var(--ink);
+  box-shadow:0 13px 28px color-mix(in srgb,var(--ink) 14%,transparent);
+}
+.plancomparison .currentplan {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  width:auto;
+  min-height:35px;
+  margin:0;
+  padding:8px 11px;
+  border-radius:8px;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:inherit;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:750;
+  letter-spacing:0;
+  text-transform:none;
+  white-space:nowrap;
+}
+.plancomparison .currentplan svg {
+  display:block;
+  flex:none;
+  color:var(--paper);
+  stroke-width:2.5;
+}
+@media(max-width:850px) {
+  .plancomparison .plancard.plancard--current {padding:24px}
+}
+@media(max-width:420px) {
+  .plancomparison .plan-card-heading {align-items:flex-start}
+  .plancomparison .currentplan {font-size:11px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .plancomparison .plancard.plancard--current {transition:none}
+}
