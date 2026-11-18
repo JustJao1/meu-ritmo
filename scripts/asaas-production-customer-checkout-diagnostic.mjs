@@ -23,11 +23,11 @@ async function provider(path,method='GET',body){
  const diagnostics=(Array.isArray(data.errors)?data.errors:[]).slice(0,4)
   .map(x=>({
     code:String(x.code||'unknown').replace(/[^a-zA-Z0-9_]/g,'').slice(0,55),
-    description:String(x.description||'').replace(/[\\w.+-]+@[\\w.-]+\\.[a-z]{2,}/gi,'[email]')
-      .replace(/https?:\\/\\/\\S+/g,'[url]')
-      .replace(/\\b\\d{5,}\\b/g,'[number]')
-      .replace(/\\$aact_\\S+/g,'[key]')
-      .replace(/[\\r\\n]/g,' ').slice(0,150)
+    description:String(x.description||'').replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,'[email]')
+      .replace(/https?:\/\/\S+/g,'[url]')
+      .replace(/\b\d{5,}\b/g,'[number]')
+      .replace(/\$aact_\S+/g,'[key]')
+      .replace(/[\r\n]/g,' ').slice(0,150)
   }));
  return {ok:res.ok,http:res.status,data,diagnostics};
 }
