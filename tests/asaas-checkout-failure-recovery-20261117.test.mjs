@@ -18,9 +18,9 @@ test('Asaas classifica rejeições definitivas sem expor mensagem ou credenciais
  assert.doesNotMatch(asaas,/throw new Error\(await response.text\(\)\)/);
 });
 test('falhas definitivas liberam o cupom; timeout e banco ambíguos permanecem em revisão',()=>{
- assert.match(checkout,/const rejectedCheckout=stage==='checkout_create'/);
+ assert.match(checkout,/const rejectedCheckout=\['checkout_create','card_checkout_create'\]\.includes\(stage\)/);
  assert.match(checkout,/httpStatus!==null&&\[400,401,403,404,422\]\.includes\(httpStatus\)/);
- assert.match(checkout,/const beforeCheckout=!\['checkout_create','checkout_record'\]\.includes\(stage\)/);
+ assert.match(checkout,/const beforeCheckout=!\['checkout_create','checkout_record','card_checkout_create','card_checkout_record'\]\.includes\(stage\)/);
  assert.match(checkout,/const safeToRelease=beforeCheckout\|\|rejectedCheckout/);
  assert.match(checkout,/UPDATE asaas_orders SET status='cancelled',cancelled_at=\?/);
  assert.match(checkout,/DELETE FROM asaas_coupon_uses WHERE order_id=\?/);
