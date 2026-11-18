@@ -107,7 +107,8 @@ test('contrast in profile notes routine cards and theme preview stays theme-awar
   ])assert.ok(css.includes(selector),'Missing specific contrast correction for '+selector);
   for(const hook of ['benefitnote','pinallowance','templatelibrary','templatedays','themelist','mockpaper','mocknote'])
     assert.ok(component.includes(hook),'Missing UI hook '+hook);
-  assert.match(css,/\.overlay \.premiumstudio \.mocknote,[\s\S]*?color:#5d522c;/);
+  assert.match(css,/\.overlay \.premiumstudio \.mocknote :is\(h4,p,span,svg\)\{\s*color:inherit;/);
+  assert.match(component,/backgroundColor:theme\.banner,color:theme\.ink/);
 });
 
 test('available balance label is readable in both Today and Expenses',()=>{
