@@ -133,10 +133,15 @@
 .overlay .premiumstudio .mocktask {
   color:inherit;
 }
-/* O bilhete amarelo possui uma cor de texto própria, inclusive nos títulos. */
-.overlay .premiumstudio .mocknote,
-.overlay .premiumstudio .mocknote :is(h4,p,span,svg) {
-  color:#5d522c;
+/* A nota da prévia pertence à paleta em edição: nada de amarelo e marrom fixos. */
+.overlay .premiumstudio .mocknote :is(h4,p,span,svg){
+  color:inherit;
+}
+.overlay .premiumstudio .mocknote.paper-lined{
+  background-image:repeating-linear-gradient(transparent,transparent 23px,color-mix(in srgb,currentColor 16%,transparent) 24px);
+}
+.overlay .premiumstudio .mocknote.paper-dots{
+  background-image:radial-gradient(color-mix(in srgb,currentColor 20%,transparent) .8px,transparent .8px);
 }
 
 /* O mesmo saldo aparece em Hoje e Gastos: a regra nao pode depender de .todayright. */
