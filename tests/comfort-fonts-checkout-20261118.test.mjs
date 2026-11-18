@@ -32,7 +32,7 @@ test('pagamento abre outra aba ao clicar, sem perder a sessão atual',()=>{
  assert.match(app,/checkoutTab\.opener=null/);
  assert.match(app,/checkoutTab\.location\.replace\(url\.href\)/);
  assert.match(app,/setPaymentOpenUrl\(url\.href\)/);
- assert.match(app,/target="_blank" rel="noopener noreferrer" href=\{paymentOpenUrl\}/);
+ assert.match(app,/href=\{paymentOpenUrl\} target="_blank" rel="noopener noreferrer"/);
  assert.doesNotMatch(app,/location\.href=url\.href/);
  assert.match(app,/if\(!asaasHosted&&/);
  assert.match(app,/mr_pix_hosted_pending/);
