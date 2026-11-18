@@ -40,7 +40,7 @@ export function hostedCardCheckoutPayload(input:CardCheckoutOptions){
   externalReference:input.orderId,
   ...(input.customerId?{customer:input.customerId}:{}),
   callback,
-  items:[{name:'MR: Meu Ritmo '+label,description:'Assinatura '+(cycle==='YEARLY'?'anual':'mensal'),quantity:1,value:input.amountCents/100}],
+  items:[{name:'Meu Ritmo '+label,description:'Assinatura '+(cycle==='YEARLY'?'anual':'mensal'),quantity:1,value:input.amountCents/100}],
   subscription:{cycle,nextDueDate:input.nextDueDate}
  };
 }

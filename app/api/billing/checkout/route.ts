@@ -166,7 +166,7 @@ export async function POST(req:Request){
       customer:customer.customer_id,billingType:data.paymentMethod,value:first/100,
       nextDueDate:new Date().toISOString().slice(0,10),
       cycle:plan.endsWith('_year')?'YEARLY':'MONTHLY',externalReference:id,
-      description:'MR: Meu Ritmo - '+plan,
+      description:'Meu Ritmo - '+plan,
       callback:{successUrl:new URL('/app?billing=awaiting_webhook',req.url).toString(),autoRedirect:false}
     }});
     if(!sub.id)throw Error('O Asaas não confirmou a assinatura.');

@@ -23,7 +23,7 @@ export function hostedPixCheckoutPayload(input:{
  return {
   billingTypes:['PIX'] as const,chargeTypes:['DETACHED'] as const,
   minutesToExpire:60,customer:input.customerId,externalReference:input.orderId,
-  items:[{name:'MR: Meu Ritmo '+label,description:(annual?'Acesso anual':'Acesso mensal')+' com renovação manual',quantity:1,value:input.amountCents/100}],
+  items:[{name:'Meu Ritmo '+label,description:(annual?'Acesso anual':'Acesso mensal')+' com renovação manual',quantity:1,value:input.amountCents/100}],
   callback:{
    successUrl:new URL('/app?billing=awaiting_webhook',url).toString(),
    cancelUrl:new URL('/app?billing=canceled',url).toString(),

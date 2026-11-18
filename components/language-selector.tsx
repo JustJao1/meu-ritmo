@@ -1106,7 +1106,7 @@ const translations:Record<string,[string,string]>={
 "Acima do orçamento":["Over budget","Por encima del presupuesto"],
 "Notas fixadas são recados no topo; distintivos são decorações do perfil.":["Pinned notes stay at the top; badges are profile decorations.","Las notas fijadas quedan arriba; los distintivos decoran el perfil."],
 "Deseja excluir este item?":["Delete this item?","¿Eliminar este elemento?"],
-"Acessar MR: Meu Ritmo App":["Open MR: Meu Ritmo App","Abrir MR: Meu Ritmo App"],
+"Acessar Meu Ritmo App":["Open Meu Ritmo App","Abrir Meu Ritmo App"],
 "Fechar aviso":["Close notice","Cerrar aviso"],
 "Fechar aviso de acesso antecipado":["Dismiss early access notice","Cerrar aviso de acceso anticipado"],
 "Sair da demonstração":["Exit demo","Salir de la demostración"],

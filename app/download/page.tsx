@@ -40,7 +40,7 @@ export default function DownloadPage(){
  }
  return <div className="downloadpage">
   <header className="downloadheader">
-   <a className="downloadbrand" href="/"><img src="/favicon-mr-v3.svg" width={36} height={36} alt=""/>MR: Meu Ritmo</a>
+   <a className="downloadbrand" href="/"><img src="/favicon-mr-v3.svg" width={36} height={36} alt=""/>Meu Ritmo<span className="branddot">®</span></a>
    <LanguageSelector className="mr-language-download"/>
   </header>
   <main className="downloadmain"><QuietIllustration kind="devices"/>
