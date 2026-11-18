@@ -32,6 +32,8 @@ test('sessão é liberada somente após código do login validado',()=>{
  assert.match(auth,/86400/);
  assert.match(migration,/CREATE TABLE IF NOT EXISTS auth_login_challenges/);
  assert.match(file('.github/workflows/deploy.yml'),/LOGIN_STEP_UP_ENABLED/);
+ assert.match(router,/stepUpEnabled:securityEnv.LOGIN_STEP_UP_ENABLED==='true'/);
+ assert.match(form,/mode==='login'&&stepUpEnabled/);
 });
 test('WhatsApp só pode ser escolhido quando telefone foi confirmado',()=>{
  assert.match(router,/!row\?\.phone_verified_at/);
