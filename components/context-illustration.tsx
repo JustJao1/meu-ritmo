@@ -5,7 +5,7 @@ export default function ContextIllustration({context}:{context:string}){
  :/perfil|contas|membro/.test(key)?'profile'
  :/histórico|auditoria|lançamento/.test(key)?'records'
  :/cobran|gasto|orçamento|excesso|reembolso|pix|relatório/.test(key)?'finance'
- :/código|acesso|desconto|plano|benefício|promo/.test(key)?'plans'
+ :/assinatura|código|acesso|desconto|plano|benefício|promo/.test(key)?'plans'
  :/opini|respost|comunidade|espaço/.test(key)?'community'
  :/alarme|aviso|lembrete/.test(key)?'alerts'
  :/estilo|configura|crédito/.test(key)?'style'

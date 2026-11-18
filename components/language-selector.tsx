@@ -3,6 +3,31 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Dados para pagamento":["Payment details","Datos para el pago"],
+"São os dados usados na emissão da cobrança pelo Asaas.":["These details are used to create your Asaas payment.","Estos datos se utilizan para crear el pago en Asaas."],
+"Forma de pagamento e desconto":["Payment method and discount","Método de pago y descuento"],
+"Confira sua assinatura":["Review your subscription","Revisa tu suscripción"],
+"Veja o total antes de seguir para o pagamento.":["Check the total before proceeding to payment.","Comprueba el total antes de continuar con el pago."],
+"O pagamento abre em outra aba e seu espaço continua disponível aqui.":["Payment opens in a new tab while your space stays open here.","El pago se abre en otra pestaña y tu espacio permanece abierto aquí."],
+"Preparando sua página de pagamento…":["Preparing your payment page…","Preparando la página de pago…"],
+"Pagamento aberto em outra aba. O Meu Ritmo continua aqui.":["Payment opened in a new tab. Meu Ritmo remains open here.","El pago se abrió en otra pestaña. Meu Ritmo permanece abierto aquí."],
+"Seu navegador bloqueou a nova aba. Use o botão Abrir pagamento em nova aba.":["Your browser blocked the new tab. Use Open payment in new tab.","Tu navegador bloqueó la nueva pestaña. Usa Abrir pago en otra pestaña."],
+"Abrir pagamento em nova aba":["Open payment in new tab","Abrir pago en otra pestaña"],
+
+"Fontes dos títulos":["Heading fonts","Fuentes para títulos"],
+"Dê personalidade aos títulos sem mudar a leitura das tarefas e dos seus dados.":["Make headings your own while keeping tasks and data easy to read.","Personaliza los títulos sin dificultar la lectura de tareas y datos."],
+"Acolhedora":["Warm","Acogedora"],
+"Leve e próxima":["Soft and familiar","Suave y cercana"],
+"Contemporânea":["Contemporary","Contemporánea"],
+"Simples e arejada":["Simple and spacious","Sencilla y aireada"],
+"Clássica":["Classic","Clásica"],
+"Traços de livro":["Book-inspired shapes","Trazos de libro"],
+"Leitura":["Reading","Lectura"],
+"Serena e confortável":["Calm and comfortable","Serena y cómoda"],
+"Limpa e familiar":["Clean and familiar","Limpia y familiar"],
+"Elegante e discreta":["Elegant and understated","Elegante y discreta"],
+"Títulos personalizados. Os textos continuam fáceis de ler.":["Personalized headings. Body text stays easy to read.","Títulos personalizados. El texto sigue siendo fácil de leer."],
+
 "Telefone com DDD":["Phone with area code","Teléfono con código de área"],
 "CEP do pagador":["Payer's postal code","Código postal del pagador"],
 "Endereço (rua ou avenida)":["Street address","Dirección (calle o avenida)"],
