@@ -1,4 +1,4 @@
-import {hash,provider,verifiedUser,issueSession,type AuthEnv} from './auth-server';
+import {hash,provider,verifiedUser,issueSession,seal,unseal,type AuthEnv} from './auth-server';
 const now=()=>Math.floor(Date.now()/1000);
 const encoder=new TextEncoder();
 export type SecureEnv=AuthEnv&{
@@ -46,7 +46,7 @@ export async function shouldChallenge(e:SecureEnv,userId:string){
  // On an unknown historical state, require the additional code rather than silently bypass it.
  return last?.last==null||current-last.last>=86400;
 }
-export async function beginLoginChallenge(e:SecureEnv,userId:string,email:string,channel:'email'|'whatsapp'){
+export async function beginLoginChallenge(e:SecureEnv,userId:string,email:string,channel:'email'|'whatsapp',passwordSession:any){
  const id=opaque(),idHash=await hash(id),time=now(),expiry=time+600;
  const contact=await e.DB!.prepare('SELECT phone,phone_verified_at FROM auth_contact_methods WHERE user_id=?').bind(userId).first<{phone:string|null;phone_verified_at:number|null}>();
  if(channel==='whatsapp'&&(!whatsappReady(e)||!contact?.phone||!contact.phone_verified_at))
@@ -54,7 +54,7 @@ export async function beginLoginChallenge(e:SecureEnv,userId:string,email:string
  const code=channel==='whatsapp'?otpCode():'';
  const codeHash=code?await secureCodeHash(e,id,code):null;
  await e.DB!.prepare('DELETE FROM auth_login_challenges WHERE user_id=? OR expires_at<?').bind(userId,time).run();
- await e.DB!.prepare('INSERT INTO auth_login_challenges(id_hash,user_id,email,channel,code_hash,expires_at,last_sent_at,attempts) VALUES (?,?,?,?,?,?,?,0)').bind(idHash,userId,email,channel,codeHash,expiry,time).run();
+ await e.DB!.prepare('INSERT INTO auth_login_challenges(id_hash,user_id,email,tokens,channel,code_hash,expires_at,last_sent_at,attempts) VALUES (?,?,?,?,?,?,?,?,0)').bind(idHash,userId,email,await seal(e,{access_token:passwordSession.access_token,refresh_token:passwordSession.refresh_token}),channel,codeHash,expiry,time).run();
  try{
   if(channel==='whatsapp')await sendWhatsAppCode(e,contact!.phone!,code);
   else{
@@ -70,7 +70,7 @@ export async function beginLoginChallenge(e:SecureEnv,userId:string,email:string
 }
 export async function completeLoginChallenge(e:SecureEnv,id:string,code:string){
  const idHash=await hash(id),time=now();
- const row=await e.DB!.prepare('SELECT * FROM auth_login_challenges WHERE id_hash=? AND expires_at>? AND attempts<5').bind(idHash,time).first<{user_id:string;email:string;channel:string;code_hash:string|null;attempts:number}>();
+ const row=await e.DB!.prepare('SELECT * FROM auth_login_challenges WHERE id_hash=? AND expires_at>? AND attempts<5').bind(idHash,time).first<{user_id:string;email:string;channel:string;code_hash:string|null;tokens:string;attempts:number}>();
  if(!row)return null;
  const attempt=await e.DB!.prepare('UPDATE auth_login_challenges SET attempts=attempts+1 WHERE id_hash=? AND attempts<5 AND expires_at>?').bind(idHash,time).run();
  if(!attempt.meta.changes)return null;
@@ -84,9 +84,10 @@ export async function completeLoginChallenge(e:SecureEnv,id:string,code:string){
   if(!row.code_hash||expected.length!==row.code_hash.length)return null;
   let diff=0;for(let i=0;i<expected.length;i++)diff|=expected.charCodeAt(i)^row.code_hash.charCodeAt(i);
   if(diff)return null;
-  // Password was verified before challenge creation. Preserve its tokens
-  // using a short-lived encrypted D1 row rather than creating a new Supabase sign-in.
-  throw Error('whatsapp_requires_session_tokens');
+  verified=await unseal(e,row.tokens);
+  const r=await provider(e,'/user',undefined,verified.access_token);
+  if(!r.ok)return null;
+  verified.user=await r.json();
  }
  const user=verifiedUser(verified.user);
  if(user.userId!==row.user_id||user.email.toLowerCase()!==row.email.toLowerCase())return null;
