@@ -3,6 +3,12 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Telefone com DDD":["Phone with area code","Teléfono con código de área"],
+"CEP do pagador":["Payer's postal code","Código postal del pagador"],
+"Endereço (rua ou avenida)":["Street address","Dirección (calle o avenida)"],
+"Número do endereço":["Street number","Número de la dirección"],
+"Bairro do pagador":["Payer's neighborhood","Barrio del pagador"],
+"Preencha seus dados, telefone e endereço e aceite os termos para continuar.":["Complete your details, phone number and address, then accept the terms to continue.","Completa tus datos, teléfono y dirección y acepta los términos para continuar."],
 "Sua tentativa anterior não gerou um link de Pix. Encerre a tentativa após a conferência no Asaas para liberar o cupom e tentar novamente.":["Your previous attempt did not generate a Pix checkout link. After checking with Asaas, close the attempt to release the coupon and try again.","Tu intento anterior no generó un enlace de pago Pix. Después de verificarlo con Asaas, cierra el intento para liberar el cupón y probar de nuevo."],
 "Encerrar tentativa com falha e liberar cupom":["Close failed attempt and release coupon","Cerrar intento fallido y liberar cupón"],
 "Encerrar tentativa com falha?":["Close the failed attempt?","¿Cerrar el intento fallido?"],
