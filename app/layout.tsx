@@ -32,6 +32,7 @@ import './sidebar-shared-polish.css';
 import './scheduled-notices.css';
 import './current-plan-highlight.css';
 import './comfort-polish.css';
+import './studio-action-theme.css';
 import Analytics from '../components/analytics';
 import {AppDialogProvider} from '../components/app-dialog-provider';
 import CookieConsent from '../components/cookie-consent';
