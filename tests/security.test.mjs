@@ -8,4 +8,16 @@ test('requisições de outro site e CORS não autorizam alterações',async()=>{
 test('limite de tentativas funciona no banco e conta encerrada perde acesso',async()=>{const realNow=Date.now;Date.now=()=>1794790800000;let response;try{for(let i=0;i<181;i++)response=await requestGuard(req('/api/profile',{user:'rate'}),store);}finally{Date.now=realNow;}assert.equal(response.status,429);assert.equal(response.headers.get('retry-after'),'60');db.prepare('INSERT INTO closed_accounts VALUES (?,?)').run('complete',1);assert.equal((await requestGuard(req('/api/admin',{user:'complete'}),store)).status,403);assert.equal(await requestGuard(req('/api/privacy',{user:'complete'}),store),null);});
 test('corpo transmitido sem Content-Length também tem limite',async()=>{const request=req('/api/profile',{method:'PUT',body:'x'.repeat(100)});await assert.rejects(()=>boundedRequest(request,99),/body_limit/);const valid=await boundedRequest(req('/api/profile',{method:'PUT',body:'{}'}),99);assert.equal(await valid.text(),'{}');});
 test('respostas privadas não são cacheadas nem expostas por CORS',()=>{const r=secureResponse(Response.json({ok:true},{headers:{'Access-Control-Allow-Origin':'*','X-Powered-By':'debug'}}),'/api/state');assert.match(r.headers.get('cache-control'),/no-store/);assert.equal(r.headers.get('access-control-allow-origin'),null);assert.equal(r.headers.get('x-powered-by'),null);assert.equal(r.headers.get('x-content-type-options'),'nosniff');assert.match(r.headers.get('content-security-policy'),/object-src 'none'/);assert.equal(r.headers.get('x-frame-options'),'DENY');assert.match(r.headers.get('content-security-policy'),/frame-ancestors 'none'/);assert(!r.headers.get('content-security-policy').includes('frame-ancestors *'));});
+test('signup and recovery pages allow Turnstile without relaxing protections',()=>{
+ for(const path of ['/criar-conta','/recuperar-senha']){
+  const headers=secureResponse(new Response('ok'),path).headers;
+  const csp=headers.get('content-security-policy');
+  assert.match(csp,/script-src[^;]*https:\/\/challenges\.cloudflare\.com;/);
+  assert.match(csp,/frame-src[^;]*https:\/\/challenges\.cloudflare\.com;/);
+  assert.match(csp,/connect-src[^;]*https:\/\/challenges\.cloudflare\.com/);
+  assert.match(csp,/frame-ancestors 'none'/);
+  assert.match(csp,/object-src 'none'/);
+  assert.equal(headers.get('cache-control'),'no-store, private');
+ }
+});
 after(async()=>{db.close();await rm(folder,{recursive:true,force:true})});
