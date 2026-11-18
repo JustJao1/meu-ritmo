@@ -1,8 +1,8 @@
 {
   "available": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minAndroid": "8.0",
-  "url": "https://github.com/JustJao1/meu-ritmo-app/releases/download/v1.0.1/Meu-Ritmo-1.0.1.apk",
-  "sha256": "7c2ac22c23a35ca451dc8ca1389cf0a1e6a0a6cc504d4ff8d294080a97d0e6e3",
-  "size": 438545
+  "url": "https://github.com/JustJao1/meu-ritmo-app/releases/download/v1.0.2/Meu-Ritmo-1.0.2.apk",
+  "sha256": "2b7ef8cb1923938a6eb1b0a49dd00ca827dacdcb221e941bd7b7c4572fe89396",
+  "size": 440157
 }
