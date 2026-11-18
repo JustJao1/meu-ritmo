@@ -1,0 +1,220 @@
+/* Revisão visual do Meu Ritmo: conforto, legibilidade e consistência.
+   Só usa cores de tema e fontes disponíveis no dispositivo. */
+:root {
+ --font-ui:"Segoe UI Variable","Segoe UI","Meu Ritmo UI",Arial,sans-serif;
+ --comfort-line:color-mix(in srgb,var(--ink) 18%,transparent);
+ --comfort-muted:color-mix(in srgb,var(--ink) 76%,var(--paper));
+ --comfort-soft:color-mix(in srgb,var(--paper) 94%,var(--ink));
+}
+html body{font-weight:400;line-height:1.65}
+html body :is(.landing,.appframe,.authpage,.adminshell,.legalpage) :is(p,li){line-height:1.7}
+html body :is(.landing,.appframe,.authpage,.adminshell,.legalpage) :is(button,input,select,textarea){letter-spacing:0}
+html body :is(.landing,.appframe,.authpage,.adminshell,.legalpage) :is(h1,h2,h3){text-wrap:balance}
+html body :is(.appframe,.adminshell) :is(.muted,.description,.hint){color:var(--comfort-muted)}
+/* O título muda; o texto das tarefas, entradas, preços e botões continua estável. */
+html[data-title-style="sans"]{--font-headings:"Meu Ritmo UI","Segoe UI",Arial,sans-serif}
+html[data-title-style="humanist"]{--font-headings:"Trebuchet MS","Segoe UI",Arial,sans-serif}
+html[data-title-style="modern"]{--font-headings:"Segoe UI","Helvetica Neue",Arial,sans-serif}
+html[data-title-style="editorial"]{--font-headings:Georgia,"Times New Roman",serif}
+html[data-title-style="classic"]{--font-headings:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif}
+html[data-title-style="reading"]{--font-headings:Cambria,"Hoefler Text",Georgia,serif}
+html[data-title-style] body .appframe :is(h1,h2,h3,h4,h5,h6),
+html[data-title-style] body .appframe :is(h1,h2,h3,h4,h5,h6) :is(span,strong,em,b) {
+ font-family:var(--font-headings)!important;
+ letter-spacing:-.025em;
+}
+html[data-title-style] body .appframe :is(.brand,.brand *,.planprice,.eyebrow,.statvalue,.moneylarge){
+ font-family:var(--font-ui)!important;
+}
+/* Galeria de fontes dentro de Meu estilo. */
+.premiumstudio .font-gallery-intro{
+ font-size:13px;line-height:1.65;color:var(--comfort-muted);margin:0 0 15px;
+}
+.premiumstudio .font-gallery{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 20px;
+}
+.premiumstudio .font-option{
+ display:flex;flex-direction:column;align-items:stretch;gap:9px;
+ min-width:0;min-height:132px;text-align:left;padding:15px 16px;
+ border:1px solid var(--comfort-line);border-radius:12px;
+ background:var(--paper);color:var(--ink);transition:border-color .16s,background .16s;
+}
+.premiumstudio .font-option:hover{
+ background:var(--comfort-soft);border-color:color-mix(in srgb,var(--ink) 45%,transparent);
+}
+.premiumstudio .font-option.selected{
+ border:2px solid var(--ink);padding:14px 15px;
+ background:color-mix(in srgb,var(--theme-banner,var(--paper)) 32%,var(--paper));
+}
+.premiumstudio .font-option-heading{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ font-size:13px;font-weight:700;line-height:1.4;
+}
+.premiumstudio .font-option-heading svg{color:var(--ink)}
+html body .premiumstudio .font-sample,
+html body .premiumstudio .mockpaper h3.studio-custom-title,
+html body .premiumstudio .mockpaper h3.studio-custom-title span {
+ font-family:var(--font-sample,"Meu Ritmo UI",sans-serif)!important;
+}
+.premiumstudio .font-option .font-sample{
+ font-size:clamp(17px,1.7vw,22px);font-weight:600;line-height:1.25;
+ color:var(--ink);letter-spacing:-.025em;overflow-wrap:anywhere;
+}
+.premiumstudio .font-option small{font-size:12px;line-height:1.45;color:var(--comfort-muted)}
+.premiumstudio .titlefontpreview{
+ padding:22px 24px;border:1px solid var(--comfort-line);
+ border-radius:12px;background:var(--comfort-soft);gap:11px;
+}
+.premiumstudio .titlefontpreview .font-sample{font-size:clamp(25px,3vw,36px);font-weight:600}
+.premiumstudio .studiocontrols>h4{margin-top:28px;margin-bottom:12px;font-size:15px}
+.premiumstudio .studiointro{gap:18px}
+.premiumstudio .studiopreview{border-radius:14px}
+.premiumstudio .themelist>button{min-height:69px}
+.premiumstudio .themelist small{font-size:12px;line-height:1.5}
+/* Conteúdo público: ilustrações existentes respiram e acompanham o texto. */
+.landing .hero{column-gap:clamp(35px,5vw,75px)}
+.landing .herotext>p{font-size:clamp(14px,1.2vw,16px);line-height:1.8}
+.landing .features{gap:clamp(22px,3vw,44px)}
+.landing .features article{min-width:0;padding-block:8px}
+.landing .features .organizing-illustration{
+ display:block;width:min(100%,220px);height:auto;max-height:134px;
+ margin:0 auto 16px;opacity:.9;
+}
+.landing .features article h3{font-size:clamp(17px,1.7vw,20px);line-height:1.32;margin:12px 0}
+.landing .features article p{font-size:14px;line-height:1.72}
+.landing .publicsection{margin-block:clamp(65px,7vw,105px)}
+.landing .plancard{box-shadow:0 8px 25px color-mix(in srgb,var(--ink) 5%,transparent)}
+/* Espaços internos: um ritmo de leitura sem transformar tudo em cartões. */
+.appframe .content{line-height:1.65}
+.appframe .pageheading{margin-bottom:30px}
+.appframe .pageheading p{max-width:64ch;line-height:1.7}
+.appframe .sectionheading h2{font-size:clamp(18px,1.7vw,21px)}
+.appframe .daybanner{border-radius:13px;padding:clamp(25px,3vw,38px)}
+.appframe .empty{line-height:1.7}
+.appframe .notesgrid .note{border-radius:12px}
+.appframe :is(.settingspanel,.privacycenter,.profileeditor) :is(p,small){line-height:1.7}
+/* Telas de entrada, administração e políticas: leitura confortável. */
+.authpage .authsheet{border-radius:14px;padding-block:clamp(24px,3vw,38px)}
+.authpage .authsheet form{gap:18px}
+.authpage .authsheet :is(input,select,textarea){border-radius:9px}
+.adminshell .adminmain{line-height:1.65}
+.adminshell .adminheading p{max-width:65ch}
+.adminshell :is(.adminscope,.adminidentity,.adminsectionintro){line-height:1.7}
+.legalpage{max-width:900px}
+.legalpage>h1{line-height:1.14}
+.legalpage>h2{margin-top:32px}
+.legalpage p{max-width:78ch;line-height:1.85;font-size:15px}
+/* Contratação: seções claras, sem cartão dentro de cartão. */
+.appframe .dialog.billing-dialog{
+ width:min(100%,685px);max-height:calc(100dvh - 28px);
+ padding:clamp(22px,3.2vw,36px);
+ border-radius:17px;
+}
+.appframe .billing-dialog>header{margin-bottom:22px}
+.appframe .billing-dialog>.billing-header-meta{margin-bottom:20px}
+.appframe .billing-dialog>.benefittitle{
+ font-size:clamp(25px,3vw,34px);line-height:1.2;margin:6px 0 9px;
+}
+.appframe .billing-dialog>.benefittitle+p{font-size:14px;line-height:1.7;color:var(--comfort-muted);margin-bottom:23px}
+.appframe .billing-dialog .billing-group{
+ padding:24px 0 25px;border-top:1px solid var(--comfort-line);
+}
+.appframe .billing-dialog .billing-section-heading{
+ display:flex;gap:12px;align-items:flex-start;margin:0 0 18px;
+}
+.appframe .billing-dialog .billing-section-heading>span{
+ display:inline-flex;align-items:center;justify-content:center;
+ flex:0 0 29px;width:29px;height:29px;border-radius:9px;
+ background:var(--theme-banner,var(--comfort-soft));color:var(--ink);
+ font-size:12px;font-weight:700;
+}
+.appframe .billing-dialog .billing-section-heading h4{
+ margin:1px 0 5px;font-size:16px;line-height:1.3;color:var(--ink);
+}
+.appframe .billing-dialog .billing-section-heading p{
+ font-size:13px;line-height:1.55;color:var(--comfort-muted);margin:0;
+}
+.appframe .billing-dialog .billing-payer>label,
+.appframe .billing-dialog .billing-payer .formrow>label,
+.appframe .billing-dialog .billing-method-section>label{
+ display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:600;
+ margin:0 0 16px;line-height:1.45;
+}
+.appframe .billing-dialog .billing-payer :is(input,select),
+.appframe .billing-dialog .billing-method-section input:not([type=radio]){
+ min-height:48px;padding:11px 14px;border-radius:10px;
+ font-size:14px;border-color:var(--comfort-line);
+}
+.appframe .billing-dialog .billing-payer .formrow{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
+}
+.appframe .billing-dialog .billing-method-choice{
+ display:grid;grid-template-columns:1fr;gap:0;
+ padding:0;margin:0 0 20px;border:0;
+}
+.appframe .billing-dialog .billing-method-choice legend{
+ margin:0 0 10px;font-size:13px;font-weight:650;
+}
+.appframe .billing-dialog .billing-method-choice label{
+ display:flex;align-items:center;gap:13px;
+ min-height:75px;padding:15px 17px;border-radius:11px;
+ background:var(--comfort-soft);border:1px solid var(--comfort-line);
+}
+.appframe .billing-dialog .billing-method-choice label.selected{
+ border:2px solid var(--ink);padding:14px 16px;
+ background:color-mix(in srgb,var(--theme-banner,var(--paper)) 33%,var(--paper));
+ box-shadow:none;
+}
+.appframe .billing-dialog .billing-method-choice input[type=radio]{margin:0;flex:0 0 18px}
+.appframe .billing-dialog .billing-method-choice small{font-size:13px;opacity:.85}
+.appframe .billing-dialog .billing-method-section>.muted{margin:4px 0;font-size:13px}
+.appframe .billing-dialog .billing-summary-section>.billing-quote{
+ padding:20px;border-radius:12px;background:var(--comfort-soft);
+ border:1px solid var(--comfort-line);margin:0 0 18px;
+}
+.appframe .billing-dialog .billing-quote>div{gap:12px;line-height:1.4}
+.appframe .billing-dialog .billing-quote strong{font-size:clamp(16px,2vw,19px)}
+.appframe .billing-dialog .billing-quote span{font-size:13px}
+.appframe .billing-dialog .billing-quote p{font-size:13px}
+.appframe .billing-dialog .billing-safe-note{margin:10px 0 19px;font-size:13px;line-height:1.7}
+.appframe .billing-dialog label.checkline{
+ margin:15px 0;gap:12px;line-height:1.6;
+}
+.appframe .billing-dialog label.checkline>span{font-size:13px;line-height:1.65}
+.appframe .billing-dialog .dialogactions{
+ position:sticky;bottom:-36px;z-index:2;
+ display:flex;align-items:stretch;justify-content:flex-end;
+ flex-wrap:wrap;gap:10px;margin-top:8px;padding:17px 0 9px;
+ background:var(--paper);border-top:1px solid var(--comfort-line);
+}
+.appframe .billing-dialog .dialogactions button{
+ min-height:48px;padding:12px 17px;font-size:13px;
+}
+.appframe .billing-dialog .dialogactions .primary{flex:1 1 225px}
+.appframe .billing-dialog .billing-open-link{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;margin-top:15px;min-height:50px;
+ background:var(--theme-banner,var(--comfort-soft));border:1px solid var(--comfort-line);
+ border-radius:11px;font-size:13px;font-weight:650;color:var(--ink);
+}
+@media(max-width:850px){
+ .landing .hero{column-gap:25px}
+ .landing .features{gap:22px}
+}
+@media(max-width:650px){
+ .premiumstudio .font-gallery{grid-template-columns:1fr;gap:10px}
+ .premiumstudio .font-option{min-height:108px;padding:13px 15px}
+ .premiumstudio .font-option.selected{padding:12px 14px}
+ .landing .publicsection{margin-block:60px}
+ .landing .features .organizing-illustration{width:min(100%,195px)}
+ .appframe .dialog.billing-dialog{padding:22px 18px;border-radius:14px}
+ .appframe .billing-dialog .billing-group{padding-block:20px}
+ .appframe .billing-dialog .billing-payer .formrow{grid-template-columns:1fr;gap:0}
+ .appframe .billing-dialog .billing-method-choice label{min-height:72px}
+ .appframe .billing-dialog .dialogactions{position:static;flex-direction:column-reverse}
+ .appframe .billing-dialog .dialogactions button{width:100%;flex:auto}
+ .legalpage p{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ .premiumstudio .font-option{transition:none}
+}
