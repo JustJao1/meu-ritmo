@@ -18,7 +18,7 @@ export const whatsappReady=(e:SecureEnv)=>Boolean(
 const opaque=()=>btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(36)))).replaceAll('+','-').replaceAll('/','_').replace(/=+$/g,'');
 const otpCode=()=>String(crypto.getRandomValues(new Uint32Array(1))[0]%1000000).padStart(6,'0');
 export async function secureCodeHash(e:SecureEnv,challenge:string,code:string){
- const key=await crypto.subtle.importKey('raw',encoder.encode(e.SESSION_ENCRYPTION_KEY||''),'HMAC',{hash:'SHA-256'},false,['sign']);
+ const key=await crypto.subtle.importKey('raw',encoder.encode(e.SESSION_ENCRYPTION_KEY||''),{name:'HMAC',hash:'SHA-256'},false,['sign']);
  const sig=await crypto.subtle.sign('HMAC',key,encoder.encode(challenge+':'+code));
  return Array.from(new Uint8Array(sig)).map(n=>n.toString(16).padStart(2,'0')).join('');
 }
