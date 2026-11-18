@@ -11,6 +11,7 @@ const icons:Record<string,LucideIcon>={
  'Planos':Ticket,
  'Administração':ShieldCheck,
  'Meu Ritmo App':Smartphone,
+ 'Atendimento':MessageSquareText,
  'Opiniões e respostas':MessageSquareText,
  'Alarmes e lembretes':Bell,
  'Guia e ajuda':BookOpen,
