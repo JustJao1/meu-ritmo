@@ -333,3 +333,35 @@
 @media(prefers-reduced-motion:reduce){
   :is(.appframe,.landing #planos) .plancomparison .plancard{transition:none}
 }
+
+/* Cupons do painel: informação legível em temas claros e escuros. */
+.adminshell .adminextras .promolist article > :is(p,small){
+  color:color-mix(in srgb,var(--ink) 82%,var(--paper));
+  font-size:12px;
+  line-height:1.65;
+  opacity:1;
+}
+.adminshell .adminextras .promolist article > h3{color:var(--ink)}
+.adminshell .adminextras .promolist article .accesspill{
+  background:var(--theme-banner,var(--paper));
+  border:1px solid color-mix(in srgb,var(--ink) 21%,transparent);
+  color:var(--ink);
+  font-size:11px;
+  line-height:1.5;
+}
+.adminshell .adminextras .promolist .promocode{
+  background:var(--theme-raised,var(--paper));
+  border-color:color-mix(in srgb,var(--ink) 25%,transparent);
+  color:var(--ink);
+}
+.adminshell .adminextras .promolist .promocode code{
+  color:var(--ink);
+  font-size:12px;
+}
+.adminshell .adminextras .promolist .promotoggle{
+  color:var(--ink);
+  font-size:13px;
+}
+.adminshell .adminextras .promolist .promotoggle:hover{
+  color:var(--theme-accent-readable,var(--ink));
+}
