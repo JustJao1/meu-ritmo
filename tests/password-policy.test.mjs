@@ -20,7 +20,7 @@ globalThis.__mockProvider=async(path,body,token,method)=>{
    return Response.json({access_token:'recent-token',user:testUser});
  }
  if(path==='/user'&&method==='PUT')return Response.json(testUser);
- if(path==='/signup')return Response.json({user:testUser});
+ if(path==='/signup')return Response.json(globalThis.__providerAutoConfirm?{user:testUser,access_token:'signup-access',refresh_token:'signup-refresh'}:{user:testUser});
  return Response.json({access_token:'login-token',refresh_token:'refresh-token',user:testUser});
 };
 const mock={name:'mock-auth-dependencies',setup(buildApi){
@@ -67,13 +67,15 @@ test('signup enforces new password policy on the server',async()=>{
  assert.equal(providerCalls[0].path,'/settings');
  assert.equal(providerCalls[1].path,'/signup');
 });
-test('disabled provider email confirmation fails before signup, without creating an unusable account',async()=>{
+test('when provider confirmation is disabled, signup finishes without an OTP email',async()=>{
  reset();globalThis.__providerAutoConfirm=true;
  const r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
- assert.equal(r.status,503);
- assert.equal(providerCalls.length,1);
+ assert.equal(r.status,200);
+ assert.equal(r.headers.get('set-cookie'),'secure-test-cookie');
+ assert.equal((await r.json()).emailConfirmationRequired,false);
+ assert.equal(providerCalls.length,2);
  assert.equal(providerCalls[0].path,'/settings');
- assert(!providerCalls.some(call=>call.path==='/signup'));
+ assert.equal(providerCalls[1].path,'/signup');
  reset();
 });
 test('legacy account passwords remain accepted at login',async()=>{

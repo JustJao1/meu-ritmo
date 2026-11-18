@@ -12,11 +12,11 @@ const supportAdmin=file('app/api/admin/support/route.ts');
 const health=file('app/api/health/route.ts');
 const monitor=file('.github/workflows/monitor-production.yml');
 
-test('cadastro não permite telefone inválido nem pula verificação de e-mail',()=>{
+test('cadastro exige telefone válido e respeita a política do Supabase para e-mail',()=>{
  assert.match(router,/normalizePhone\(b\.phone\)/);
- assert.match(router,/mailer_autoconfirm!==false/);
+ assert.match(router,/requiresEmailConfirmation=settings\.mailer_autoconfirm===false/);
  assert.match(form,/name="phone"/);
- assert.match(form,/A verificação da conta é feita por e-mail/);
+ assert.match(form,/O telefone será mantido como dado de contato e não receberá códigos de segurança/);
 });
 test('sessão é liberada somente após código do login validado',()=>{
  assert.match(router,/LOGIN_STEP_UP_ENABLED==='true'&&await shouldChallenge\(/);
@@ -29,7 +29,7 @@ test('sessão é liberada somente após código do login validado',()=>{
  assert.match(auth,/return issueSession\(e,verified\)/);
  assert.match(server,/disconnected_at=NULL/);
  assert.match(server,/disconnected_at=excluded\.disconnected_at/);
- assert.match(auth,/86400/);
+ assert.match(auth,/604800/);
  assert.match(migration,/CREATE TABLE IF NOT EXISTS auth_login_challenges/);
  assert.match(file('.github/workflows/deploy.yml'),/LOGIN_STEP_UP_ENABLED/);
  assert.match(router,/stepUpEnabled:securityEnv.LOGIN_STEP_UP_ENABLED==='true'/);
