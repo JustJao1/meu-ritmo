@@ -14,6 +14,11 @@ const inputSchema=z.object({
   paymentMethod:z.enum(['PIX','CREDIT_CARD']),
   name:z.string().trim().min(3).max(120),
   cpfCnpj:z.string().trim().min(11).max(18),
+  phone:z.string().trim().min(10).max(20),
+  postalCode:z.string().trim().min(8).max(10),
+  address:z.string().trim().min(4).max(150),
+  addressNumber:z.string().trim().min(1).max(20),
+  province:z.string().trim().min(2).max(70),
   discountCode:z.string().trim().max(32).optional(),
   acceptTerms:z.literal(true),
   acceptRefundPolicy:z.literal(true)
@@ -27,6 +32,17 @@ export async function POST(req:Request){
   const parsed=inputSchema.safeParse(await req.json().catch(()=>null));
   if(!parsed.success)return Response.json({error:'Confira o plano, os dados do titular, os termos e a política de cancelamento e reembolso.'},{status:400});
   const data=parsed.data,cpfCnpj=data.cpfCnpj.replace(/\D/g,'');
+  const phone=data.phone.replace(/\D/g,''),postalCode=data.postalCode.replace(/\D/g,'');
+  if(!/^\d{10,11}$/.test(phone)||!/^\d{8}$/.test(postalCode)||!/[\p{L}]{3,}/u.test(data.address))
+    return Response.json({error:'Confira telefone com DDD, CEP e endereço completo.'},{status:400});
+  if(!/[\p{L}\d]/u.test(data.addressNumber)||!/[\p{L}]{2,}/u.test(data.province))
+    return Response.json({error:'Informe o número do endereço e o bairro.'},{status:400});
+  const customerDetails={
+    name:data.name,cpfCnpj,
+    phone,mobilePhone:phone.length===11?phone:undefined,
+    postalCode,address:data.address,addressNumber:data.addressNumber,
+    province:data.province
+  };
   if(data.paymentMethod==='CREDIT_CARD'&&!asaasCardCheckoutReady())
     return Response.json({error:'Cartão de crédito indisponível até a homologação do provedor.'},{status:503});
   if(!validBrazilTaxId(cpfCnpj))return Response.json({error:'CPF ou CNPJ inválido. Confira os dígitos informados.'},{status:400});
@@ -88,12 +104,18 @@ export async function POST(req:Request){
       stage='customer_lookup';
       const list=await asaasRequest<{data:{id:string}[]}>('/customers?externalReference='+encodeURIComponent(user.userId));
       let customerId=list.data?.[0]?.id;
-      if(!customerId){stage='customer_create';const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{name:data.name,cpfCnpj,email:user.email,externalReference:user.userId}});customerId=remote.id;}
+      if(!customerId){stage='customer_create';const remote=await asaasRequest<{id:string}>('/customers',{method:'POST',body:{...customerDetails,email:user.email,externalReference:user.userId}});customerId=remote.id;}
       if(!customerId)throw Error('Cliente não localizado.');
       stage='customer_store';
       await env.DB!.prepare('INSERT INTO asaas_customers(user_id,customer_id,created_at) VALUES (?,?,?) ON CONFLICT(user_id) DO NOTHING').bind(user.userId,customerId,now).run();
       customer={customer_id:customerId};
     }
+    // The hosted Asaas checkout requires a complete, up-to-date customer record.
+    // Keep the same customer ID to preserve verified payment/customer matching.
+    stage='customer_update';
+    await asaasRequest('/customers/'+encodeURIComponent(customer.customer_id),{
+      method:'PUT',body:customerDetails
+    });
     if(data.paymentMethod==='PIX'){
       // Redirect to the actual Asaas Pix hosted checkout instead of relying on
       // the sandbox account's broken per-invoice dynamic Pix QR endpoint.
