@@ -117,13 +117,16 @@ export async function POST(req:Request){
         {headers:{'Cache-Control':'no-store'}});
     }
     if(data.paymentMethod==='CREDIT_CARD'){
+      stage='card_checkout_payload';
       // Card data stays entirely on the Asaas hosted payment form.
       const nextDueDate=new Date(Date.now()+600000).toISOString().slice(0,19).replace('T',' ');
       const payload=hostedCardCheckoutPayload({
         orderId:id,customerId:customer.customer_id,plan,amountCents:first,
         nextDueDate,siteOrigin:new URL(req.url).origin+'/'
       });
+      stage='card_checkout_create';
       const remote=await asaasRequest<{id:string}>('/checkouts',{method:'POST',body:payload});
+      stage='card_checkout_record';
       if(!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(remote.id||''))
         throw Error('Asaas não forneceu identificador válido do checkout.');
       await env.DB!.batch([
@@ -183,9 +186,9 @@ export async function POST(req:Request){
     // Before POST /checkouts no checkout exists. A definite 4xx rejection
     // also guarantees the checkout was not created. Timeouts and 5xx are
     // ambiguous: never release a coupon or create another checkout blindly.
-    const rejectedCheckout=stage==='checkout_create'&&
+    const rejectedCheckout=['checkout_create','card_checkout_create'].includes(stage)&&
       httpStatus!==null&&[400,401,403,404,422].includes(httpStatus);
-    const beforeCheckout=!['checkout_create','checkout_record'].includes(stage);
+    const beforeCheckout=!['checkout_create','checkout_record','card_checkout_create','card_checkout_record'].includes(stage);
     const safeToRelease=beforeCheckout||rejectedCheckout;
     const time=Math.floor(Date.now()/1000);
     console.warn('Asaas checkout failure',JSON.stringify({
