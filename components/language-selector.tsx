@@ -3,6 +3,12 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Sua tentativa anterior não gerou um link de Pix. Encerre a tentativa após a conferência no Asaas para liberar o cupom e tentar novamente.":["Your previous attempt did not generate a Pix checkout link. After checking with Asaas, close the attempt to release the coupon and try again.","Tu intento anterior no generó un enlace de pago Pix. Después de verificarlo con Asaas, cierra el intento para liberar el cupón y probar de nuevo."],
+"Encerrar tentativa com falha e liberar cupom":["Close failed attempt and release coupon","Cerrar intento fallido y liberar cupón"],
+"Encerrar tentativa com falha?":["Close the failed attempt?","¿Cerrar el intento fallido?"],
+"O Meu Ritmo consultará o Asaas para confirmar que não existe pagamento vinculado. A reserva do cupom só será liberada se for seguro encerrar a tentativa.":["Meu Ritmo will check with Asaas that no payment is linked to this attempt. The coupon will be released only if it is safe to close the attempt.","Meu Ritmo consultará con Asaas que no haya pagos vinculados. El cupón solo se liberará si es seguro cerrar el intento."],
+"Conferir e encerrar tentativa":["Check and close attempt","Verificar y cerrar intento"],
+"Não foi possível iniciar o pagamento.":["Could not start payment.","No se pudo iniciar el pago."],
 "Remover cupom e continuar sem desconto":["Remove coupon and continue without a discount","Quitar cupón y continuar sin descuento"],
 "A consulta demorou demais. Confira sua conexão e tente novamente.":["The price check took too long. Check your connection and try again.","La consulta de precios tardó demasiado. Revisa tu conexión e inténtalo de nuevo."],
 "O pagamento demorou a responder. Confira sua cobrança antes de tentar outra vez.":["The payment request timed out. Check your existing charge before trying again.","La solicitud de pago tardó demasiado. Revisa tu cobro antes de intentarlo de nuevo."],
