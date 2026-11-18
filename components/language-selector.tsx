@@ -3,6 +3,21 @@ import {useEffect,useState} from 'react';
 export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
+"Remover cupom e continuar sem desconto":["Remove coupon and continue without a discount","Quitar cupón y continuar sin descuento"],
+"A consulta demorou demais. Confira sua conexão e tente novamente.":["The price check took too long. Check your connection and try again.","La consulta de precios tardó demasiado. Revisa tu conexión e inténtalo de nuevo."],
+"O pagamento demorou a responder. Confira sua cobrança antes de tentar outra vez.":["The payment request timed out. Check your existing charge before trying again.","La solicitud de pago tardó demasiado. Revisa tu cobro antes de intentarlo de nuevo."],
+"Não foi possível abrir o pagamento.":["Could not open the payment checkout.","No se pudo abrir el pago."],
+"Continuar para pagamento":["Continue to payment","Continuar al pago"],
+"Abrindo…":["Opening…","Abriendo…"],
+"Abrir checkout de teste":["Open test checkout","Abrir pago de prueba"],
+"Valor do plano:":["Plan price:","Precio del plan:"],
+"O valor final, incluindo descontos, será exibido antes da confirmação.":["The final price, including discounts, will be shown before you confirm.","El precio final, con descuentos incluidos, se mostrará antes de confirmar."],
+"mensal":["monthly","mensual"],
+"anual":["yearly","anual"],
+"COMPRAS AINDA NÃO ATIVADAS":["PURCHASES NOT YET ENABLED","COMPRAS AÚN NO HABILITADAS"],
+"AMBIENTE DE TESTE":["TEST ENVIRONMENT","ENTORNO DE PRUEBA"],
+"Preencha seus dados e aceite os termos para continuar.":["Enter your details and accept the terms to continue.","Completa tus datos y acepta los términos para continuar."],
+"Informe o cupom para a primeira cobrança":["Enter a coupon for this purchase","Introduce un cupón para esta compra"],
 "sempre":["forever","siempre"],
 "Equivale a":["Equivalent to","Equivale a"],
 "por mês.":["per month.","al mes."],
