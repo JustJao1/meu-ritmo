@@ -69,7 +69,3 @@ jobs:
           ASAAS_PRODUCTION_CARD_APPROVED: 'false'
           # Enable only after verifying the Supabase Magic Link template sends a numeric OTP.
           LOGIN_STEP_UP_ENABLED: ${{ vars.LOGIN_STEP_UP_ENABLED || 'false' }}
-          WHATSAPP_ACCESS_TOKEN: ${{ secrets.WHATSAPP_ACCESS_TOKEN }}
-          WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
-          WHATSAPP_AUTH_TEMPLATE: ${{ vars.WHATSAPP_AUTH_TEMPLATE }}
-          WHATSAPP_TEMPLATE_LANGUAGE: ${{ vars.WHATSAPP_TEMPLATE_LANGUAGE || 'pt_BR' }}
