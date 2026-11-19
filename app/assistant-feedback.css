@@ -24,7 +24,7 @@
 /* Decorative category drawings remain outside reading and editing surfaces. */
 .category-illustration{display:inline-block;flex-shrink:0;vertical-align:middle;overflow:visible;pointer-events:none}
 .sidebar nav>button .category-illustration,.sideutility .category-illustration{width:24px;height:24px;min-width:24px}
-.sidebar nav>button.active .category-illustration rect{opacity:.19}
+/* Manter todos os traços dos ícones visíveis, também no item selecionado. */
 .context-illustration{display:block;flex:0 0 auto;width:108px;height:65px;pointer-events:none;user-select:none}
 .context-illustration>.quiet-illustration{width:100%;height:100%;margin:0;float:none;opacity:.8}
 .dialog>header>.context-illustration{width:78px;height:47px;margin:0 18px 0 auto;flex:0 0 78px}

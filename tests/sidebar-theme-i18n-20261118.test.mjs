@@ -39,3 +39,18 @@ test('ícones e nomes não mudam de posição quando o item Agenda é selecionad
  assert.doesNotMatch(active,/padding|gap|margin|transform/);
  assert.match(css,/\.sidebar nav>button.active::before\{\s*content:none;\s*display:none;/);
 });
+
+test('ícone de Agenda mantém o mesmo desenho, borda e fundo entre estados normal e ativo',()=>{
+ const base=css.match(/\.appframe \.sidebar nav>button>\.mr-nav-icon\{([\s\S]*?)\}/)?.[1];
+ const selected=css.match(/\.appframe \.sidebar nav>button:is\(:hover,\.active\)>\.mr-nav-icon\{([\s\S]*?)\}/)?.[1];
+ assert(base&&selected);
+ const style=(body,key)=>body.match(new RegExp(key+':([^;]+);'))?.[1]?.trim();
+ for(const key of ['background','border-color']) {
+  const normal=key==='border-color'?style(base,'border').replace(/^1px solid /,''):style(base,key);
+  assert.equal(style(selected,key),normal,key);
+ }
+ const assistantStyles=readFileSync('app/assistant-feedback.css','utf8');
+ assert.doesNotMatch(assistantStyles,/\.sidebar nav>button\.active \.category-illustration rect\s*\{\s*opacity:\s*\.19/);
+ assert.match(css,/\.sidebar nav>button:is\(:hover,\.active\) \.category-illustration rect\{\s*opacity:1;/);
+ assert.match(app,/<CategoryIllustration name=\{n\.name\} size=\{21\}\/>/);
+});

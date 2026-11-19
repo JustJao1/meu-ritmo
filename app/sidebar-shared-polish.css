@@ -33,9 +33,19 @@
 .appframe .sidebar nav>button>.mr-nav-icon .category-illustration{
   display:block;width:21px;height:21px;min-width:21px;flex:0 0 21px;
 }
+/* A seleção muda somente o cartão do menu: o ícone mantém traço, moldura e fundo idênticos. */
 .appframe .sidebar nav>button:is(:hover,.active)>.mr-nav-icon{
-  background:color-mix(in srgb,var(--theme-banner,var(--paper)) 76%,var(--theme-side,var(--paper)));
-  border-color:color-mix(in srgb,var(--ink) 23%,transparent);
+  background:color-mix(in srgb,var(--theme-banner,var(--paper)) 32%,var(--theme-side,var(--paper)));
+  border-color:color-mix(in srgb,var(--ink) 14%,transparent);
+}
+.appframe .sidebar nav>button .category-illustration,
+.appframe .sidebar nav>button:is(:hover,.active) .category-illustration{
+  opacity:1;
+  stroke:currentColor;
+}
+.appframe .sidebar nav>button .category-illustration rect,
+.appframe .sidebar nav>button:is(:hover,.active) .category-illustration rect{
+  opacity:1;
 }
 .appframe .sidebar nav>button.active{
   border-radius:11px;
