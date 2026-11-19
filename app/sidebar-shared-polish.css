@@ -1,11 +1,24 @@
 /* Sidebar icons follow the theme variables instead of using baked-in SVG backgrounds. */
 .appframe .sidebar nav>button{
-  gap:11px;
-  min-height:46px;
-  padding:7px 11px;
+  display:flex;
+  align-items:center;
+  width:100%;
+  box-sizing:border-box;
+  gap:12px;
+  min-height:50px;
+  margin:0;
+  padding:8px 12px;
+  border:1px solid transparent;
   border-radius:11px;
+  line-height:1.35;
+  text-align:left;
   transition:background-color .16s ease,border-color .16s ease;
   transform:none;
+}
+.appframe .sidebar nav>button>span:last-child{
+  display:block;
+  flex:1 1 auto;
+  min-width:0;
 }
 .appframe .sidebar nav>button:hover{transform:none}
 .appframe .sidebar nav>button>.mr-nav-icon{
@@ -32,9 +45,10 @@
 .appframe .sidebar nav>button:focus-visible{
   outline:2px solid var(--ink);outline-offset:2px;
 }
+/* A seleção é indicada pelo cartão inteiro, sem uma barra sobreposta à borda. */
 .appframe .sidebar nav>button.active::before{
-  top:12px;bottom:12px;width:3px;border-radius:3px;
-  background:var(--ink);
+  content:none;
+  display:none;
 }
 .appframe .bottomnav .category-illustration{
   width:23px;height:23px;min-width:23px;
