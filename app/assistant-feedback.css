@@ -138,3 +138,37 @@
   .smart-assistant .assistant-examples > summary,
   .smart-assistant .assistant-disclosure-chevron{transition:none}
 }
+
+
+/* Disponibilidade do assistente: campos de hora com respiro e largura real no celular. */
+.smart-assistant .assistant-setting-details > .assistant-availability{
+  column-gap:16px;
+  row-gap:15px;
+}
+.smart-assistant .assistant-setting-details > .assistant-availability > label{
+  min-width:0;
+  gap:9px;
+}
+.smart-assistant .assistant-setting-details > .assistant-availability input{
+  display:block;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  min-height:48px;
+  box-sizing:border-box;
+  padding:12px 14px;
+  font-size:16px;
+}
+@media(max-width:520px){
+  .smart-assistant .assistant-setting-details > .assistant-availability{
+    grid-template-columns:minmax(0,1fr);
+    row-gap:17px;
+    margin:16px 16px 14px;
+  }
+  .smart-assistant .assistant-setting-details > .assistant-availability label:last-child{
+    grid-column:auto;
+  }
+  .smart-assistant .assistant-setting-details > small{
+    margin:0 16px 18px;
+  }
+}
