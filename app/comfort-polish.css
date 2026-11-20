@@ -312,3 +312,145 @@ html body .premiumstudio .mockpaper h3.studio-custom-title span {
  .appframe .dialog:not(.billing-dialog){padding:22px 19px}
  .adminshell .admintabbar nav button{min-height:44px}
 }
+
+
+/* Editor de itens: respiro entre campos e layout responsivo. */
+.appframe .overlay > .dialog:has(> form > .typepicker) > form{
+ display:flex;
+ flex-direction:column;
+ gap:20px;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) > form > label{
+ margin:0;
+ gap:10px;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) .typepicker{
+ gap:9px;
+ margin:0 0 4px;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) .typepicker button{
+ min-height:43px;
+ padding:10px 13px;
+ border-radius:8px;
+ font-size:13px;
+ line-height:1.3;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > .formrow{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:18px;
+ align-items:start;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > .formrow > label{
+ min-width:0;
+ width:100%;
+ margin:0;
+ gap:10px;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+ min-width:0;
+ max-width:100%;
+ box-sizing:border-box;
+ min-height:49px;
+ padding:12px 14px;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > label.checkline{
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ gap:12px;
+ min-height:34px;
+ font-size:14px;
+ line-height:1.45;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form .checkline input[type="checkbox"]{
+ width:22px;
+ height:22px;
+ min-width:22px;
+ min-height:22px;
+ flex:0 0 22px;
+ margin:0;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > p.muted{
+ margin:0;
+ font-size:13px;
+ line-height:1.6;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > details{
+ margin:3px 0 0;
+ padding-top:19px;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > details > summary{
+ padding:4px 0;
+ font-size:13px;
+ line-height:1.5;
+}
+.appframe .overlay > .dialog:has(> form > .typepicker) form > .dialogactions{
+ margin-top:2px;
+ padding-top:20px;
+}
+@media(max-width:650px){
+ .appframe .overlay > .dialog:has(> form > .typepicker){
+  width:min(100%,520px);
+  max-height:calc(100dvh - 28px);
+  overflow-x:hidden;
+  overflow-y:auto;
+  padding:23px 20px 22px;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) > header{
+  margin-bottom:21px;
+  padding-bottom:18px;
+  gap:12px;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) > form{
+  gap:21px;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) .typepicker{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:0 0 2px;
+  overflow:visible;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) .typepicker button{
+  min-width:0;
+  width:100%;
+  min-height:48px;
+  padding:11px 9px;
+  font-size:13px;
+  white-space:normal;
+  overflow-wrap:break-word;
+  text-align:center;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) form > .formrow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:20px;
+  width:100%;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) form > .formrow > label{
+  flex:none;
+  width:100%;
+  font-size:14px;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) form :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+  width:100%;
+  min-height:51px;
+  font-size:16px;
+  padding:12px 14px;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) form > .dialogactions{
+  display:flex;
+  flex-direction:column-reverse;
+  gap:11px;
+  align-items:stretch;
+ }
+ .appframe .overlay > .dialog:has(> form > .typepicker) form > .dialogactions > button{
+  width:100%;
+  flex:none;
+  min-height:49px;
+  margin:0;
+  justify-content:center;
+  font-size:14px;
+ }
+}
