@@ -4,7 +4,6 @@ export type Locale='pt-BR'|'en'|'es';
 export const languageNames:Record<Locale,string>={'pt-BR':'Português (Brasil)',en:'English',es:'Español'};
 const translations:Record<string,[string,string]>={
 "País e código internacional":["Country and calling code","País y código internacional"],
-"Telefone com DDD":["Phone number with area code","Número con prefijo"],
 "Verificação de segurança":["Security check","Verificación de seguridad"],
 "Não foi possível carregar a verificação de segurança. Atualize a página.":["Could not load the security check. Refresh the page.","No se pudo cargar la verificación de seguridad. Actualiza la página."],
 "O CAPTCHA está sendo configurado. Tente novamente mais tarde.":["CAPTCHA is being configured. Try again later.","Se está configurando CAPTCHA. Inténtalo más tarde."],
