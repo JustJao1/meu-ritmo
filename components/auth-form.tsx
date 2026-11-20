@@ -1,6 +1,7 @@
 'use client';
 import ContextIllustration from './context-illustration';
-import {useEffect,useState,type FormEvent} from 'react';
+import {useEffect,useMemo,useState,type FormEvent} from 'react';
+import {countryCallingCodes} from './country-calling-codes';
 import {safeReturnPath} from '../lib/return-path';
 import {passwordMeetsPolicy,PASSWORD_GUIDANCE} from '../lib/password-policy';
 import LanguageSelector,{useLocale} from './language-selector';
@@ -20,7 +21,12 @@ const descriptions:Partial<Record<AuthMode,string>>={
   password:'Escolha uma nova senha para voltar a acessar sua conta.'
 };
 export default function AuthForm({mode}:{mode:AuthMode}){
-  const {t}=useLocale();
+  const {t,locale}=useLocale();
+  const dialingCountries=useMemo(()=>{
+    const countryNames=new Intl.DisplayNames([locale],{type:'region'});
+    return countryCallingCodes.map(([iso,dial])=>({iso,dial,name:countryNames.of(iso)||iso}))
+      .sort((a,b)=>a.iso==='BR'?-1:b.iso==='BR'?1:a.name.localeCompare(b.name,locale));
+  },[locale]);
   const [recoveryReady,setRecoveryReady]=useState(false);
   const [recoveryEmail,setRecoveryEmail]=useState('');
   const [pendingEmail,setPendingEmail]=useState('');
@@ -34,6 +40,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   const [error,setError]=useState('');
   const [pendingSignup,setPendingSignup]=useState(false);
   const [phone,setPhone]=useState('');
+  const [phoneCountry,setPhoneCountry]=useState('BR');
   const [stepUpEnabled,setStepUpEnabled]=useState(false);
   const [loginChallenge,setLoginChallenge]=useState('');
   const [loginCode,setLoginCode]=useState('');
@@ -110,6 +117,10 @@ export default function AuthForm({mode}:{mode:AuthMode}){
   async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();
     const form=new FormData(e.currentTarget),b=Object.fromEntries(form);
+    if(mode==='signup'){
+      const dialCode=countryCallingCodes.find(([iso])=>iso===phoneCountry)?.[1]||'55';
+      b.phone='+'+dialCode+phone.replace(/\D/g,'');
+    }
     if(mode==='password')b.email=recoveryEmail;
     delete b.passwordConfirmation;
     if(mode==='signup'||mode==='password'){
@@ -179,7 +190,16 @@ export default function AuthForm({mode}:{mode:AuthMode}){
             onChange={e=>setPasswordConfirmation(e.target.value)} required/>
         </label>}
         {mode==='signup'&&<>
-          <label>{t('Número de contato com DDD')}<input type="tel" inputMode="tel" name="phone" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+55 16 99999-9999" minLength={12} maxLength={24} required/><small>{t('O telefone será mantido como dado de contato e não receberá códigos de segurança.')}</small></label>
+          <div className="signup-phone-field">
+            <label htmlFor="signup-phone">{t('Número de contato com DDD')}</label>
+            <div className="signup-phone-row">
+              <select aria-label={t('País e código internacional')} value={phoneCountry} onChange={e=>setPhoneCountry(e.target.value)}>
+                {dialingCountries.map(country=><option key={country.iso} value={country.iso}>+{country.dial} · {country.name}</option>)}
+              </select>
+              <input id="signup-phone" type="tel" inputMode="tel" name="phone" autoComplete="tel-national" aria-label={t('Telefone com DDD')} value={phone} onChange={e=>setPhone(e.target.value.replace(/[^0-9()\s-]/g,''))} placeholder={phoneCountry==='BR'?'(16) 99999-9999':t('Telefone com DDD')} minLength={7} maxLength={24} required/>
+            </div>
+            <small>{t('O telefone será mantido como dado de contato e não receberá códigos de segurança.')}</small>
+          </div>
           <label>{t('Nome de usuário')}<input name="username" autoComplete="username" required
             pattern="[a-z][a-z0-9_]{2,23}" minLength={3} maxLength={24} value={signupUsername} onChange={e=>setSignupUsername(e.target.value.toLowerCase())}/>
             <small>{t('Comece com uma letra. Use minúsculas, números ou _. Pode mudar a cada 30 dias.')}</small><small>{t('O @usuário é exclusivo. Duas contas não podem usar o mesmo identificador.')}</small>

@@ -30,3 +30,42 @@
 
 .authsheet .authpendinglink{display:inline-block;justify-self:start;color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px;margin-top:2px;}
 .authsheet .authpendinglink:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+/* Registration phone: country calling code and national number side by side. */
+.authsheet .signup-phone-field{display:grid;gap:9px;min-width:0}
+.authsheet .signup-phone-field>label{display:block;margin:0;font-size:14px;font-weight:600}
+.authsheet .signup-phone-field>small{display:block;line-height:1.55}
+.authsheet .signup-phone-row{
+ display:grid;
+ grid-template-columns:minmax(121px,142px) minmax(0,1fr);
+ gap:10px;
+ align-items:stretch;
+ min-width:0;
+ width:100%;
+}
+.authsheet .signup-phone-row>select,
+.authsheet .signup-phone-row>input{
+ display:block;
+ box-sizing:border-box;
+ width:100%;
+ min-width:0;
+ min-height:49px;
+ border:1px solid var(--theme-field-border,var(--line));
+ border-radius:9px;
+ background:var(--paper);
+ color:var(--ink);
+ font-size:16px;
+ padding:10px 11px;
+}
+.authsheet .signup-phone-row>select{
+ cursor:pointer;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+ padding-right:6px;
+}
+.authsheet .signup-phone-row>input{padding-inline:12px}
+@media(max-width:370px){
+ .authsheet .signup-phone-row{grid-template-columns:minmax(108px,118px) minmax(0,1fr);gap:8px}
+ .authsheet .signup-phone-row>select{padding-inline:8px 1px}
+ .authsheet .signup-phone-row>input{padding-inline:9px}
+}
