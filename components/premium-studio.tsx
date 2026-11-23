@@ -52,7 +52,7 @@ function FinancialReport({data,plan,demo,date,onUpgrade,onToast}:{data:Data;plan
   if(plan!=='pro'){onUpgrade();return;}
   if(demo){setReport(localReport());return;}
   setLoading(true);
-  try{const r=await fetch('/api/reports?month='+labelMonth,{cache:'no-store'});const v=await r.json();if(!r.ok)throw Error(v.error);setReport(v);}
+  try{const r=await fetch('/api/reports?month='+labelMonth,{cache:'no-store'});const v=await r.json() as FinanceReportData & {error?:string};if(!r.ok)throw Error(v.error||'Não foi possível gerar o relatório.');setReport(v);}
   catch(e){onToast(e instanceof Error?e.message:'Não foi possível gerar o relatório.');}
   finally{setLoading(false);}
  }
