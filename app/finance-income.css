@@ -71,3 +71,23 @@
 /* Os estados de excesso continuam usando seus próprios alertas. */
 .appframe .financecontent.budget-over .progress > i{background:#bc4d3d}
 .appframe .financecontent.budget-reviewed .progress > i{background:#bd9342}
+
+/* Financial forecast, budget alerts, and month-specific budget editor. */
+.appframe .finance-today-summary{display:grid;gap:7px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--ink)}
+.appframe .finance-today-summary>span{display:flex;gap:10px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.appframe .finance-today-summary .balance-negative,.appframe .finance-totals .balance-negative{color:var(--ink);font-weight:750}
+.appframe .finance-date-note{margin:-8px 0 20px;color:var(--muted);font-size:12px;line-height:1.6}
+.appframe .budget-editor{display:grid;gap:19px}
+.appframe .budget-editor>label{margin:0;display:grid;gap:9px}
+.appframe .budget-editor .dialogactions{margin-top:4px}
+.appframe .budgetalert{overflow-wrap:anywhere}
+.appframe .finance-totals strong{font-variant-numeric:tabular-nums}
+@media(max-width:700px){.appframe .finance-date-note{margin-top:0}.appframe .budget-editor .dialogactions{flex-direction:column-reverse}.appframe .budget-editor .dialogactions button{min-height:46px;width:100%}}
+
+/* Report consistency across income, expenses, and monthly budgets. */
+.appframe .report-comparison-scroll{max-width:100%;overflow-x:auto;margin:18px 0 22px;overscroll-behavior-inline:contain}
+.appframe .report-comparison{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;min-width:520px}
+.appframe .report-comparison :is(td,th){text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.appframe .report-comparison thead th{font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--theme-banner) 38%,var(--paper))}
+.appframe .report-comparison tbody td{color:var(--ink)}
+.appframe .report-comparison .balance-negative{font-weight:700}

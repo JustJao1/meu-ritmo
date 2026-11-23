@@ -28,6 +28,7 @@ export type Item = {
 export type Data = {
     items: Item[];
     budget: number;
+    monthlyBudgets?: Record<string,number>;
     onboarded: boolean;
     timezone: string;
     appearance?: Appearance;

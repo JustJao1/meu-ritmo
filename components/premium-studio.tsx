@@ -1,11 +1,12 @@
 'use client';
 import QuietIllustration from './quiet-illustration';
-import {useState,type CSSProperties} from 'react';
+import {useEffect,useState,type CSSProperties} from 'react';
 import {useLocale} from './language-selector';
 import {useAppDialog} from './app-dialog-provider';
 import {Sun,Leaf,Moon,Sparkles,Coffee,Lock,Check,ArrowUpRight,ArrowRight,Palette,NotebookPen,LayoutTemplate,BarChart3,UserRound,Download,Plus,Trash2} from 'lucide-react';
 import {accentPalette,defaultAppearance,effectiveAppearance,isFreeTheme,isProExclusiveTheme,isPlusAccentAllowed,planConfig,routineLibrary,themes,titleFonts,type Appearance,type Plan} from '../lib/plans';
-import {type Data,type Item,occurs,monthExpenses} from '../lib/ritmo-domain';
+import {type Data,type Item,occurs,monthExpenses,monthIncome} from '../lib/ritmo-domain';
+import {budgetState} from '../lib/budget';
 export function ProfileMark({badge,initial}:{badge:string;initial:string}){const icons:Record<string,typeof Sun>={sun:Sun,leaf:Leaf,moon:Moon,spark:Sparkles,coffee:Coffee};const Icon=icons[badge];return Icon?<Icon size={18} aria-hidden="true"/>:<>{initial}</>}
 export function PlanTag({plan='plus'}:{plan?:'plus'|'pro'}){return <span className={'plantag '+plan}><Lock size={10}/>{planConfig[plan].name}</span>}
 export default function PremiumStudio({data,plan,demo,onDemoPlan,onChange,onUpgrade,onToast,initialTab='Aparência',date,onApplyTemplate}:{data:Data;plan:Plan;demo:boolean;onDemoPlan:(p:Plan)=>void;onChange:(d:Data)=>void;onUpgrade:(p:Plan)=>void;onToast:(s:string)=>void;initialTab?:string;date:string;onApplyTemplate:(items:{title:string;time:string}[],days:string[])=>void}){
@@ -30,4 +31,69 @@ return <div className="premiumstudio">{demo&&<div className="demoplanbar"><div><
 tab==='Rotinas'?<><div className="studiointro"><QuietIllustration kind={tab==='Rotinas'?'routine':tab==='Relatórios'?'finance':'style'}/><div><span className="eyebrow">{translateTab("UM PONTO DE PARTIDA")}</span><h3>{translateTab("Modelos que poupam alguns cliques.")}</h3><p>{translateTab("Revise as tarefas e escolha os dias. Nada entra na sua rotina sem você pedir.")}</p></div><PlanTag/></div><fieldset className="templatedays"><legend>Repetir nos dias escolhidos · a partir de {date.split('-').reverse().join('/')}</legend>{['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map((d,i)=><label key={d}><input type="checkbox" checked={days.includes(String(i))} onChange={()=>setDays(days.includes(String(i))?days.filter(v=>v!==String(i)):[...days,String(i)])}/>{d}</label>)}</fieldset><p className="muted">{translateTab("Sem dias marcados, as tarefas são criadas apenas nessa data. Horários podem ser editados depois.")}</p><div className="routine-library-filters" role="group" aria-label={translateTab('Filtrar modelos por categoria')}>{['Todas','Dia a dia','Estudos e trabalho','Saúde e treino','Casa e finanças'].map(cat=><button key={cat} className={libraryCategory===cat?'selected':''} aria-pressed={libraryCategory===cat} onClick={()=>setLibraryCategory(cat)}>{translateTab(cat)}</button>)}</div><div className="templatelibrary">{routineLibrary.filter(t=>libraryCategory==='Todas'||t.category===libraryCategory).map(t=><article key={t.id}><div className="routine-library-cardhead"><LayoutTemplate size={23}/><span className="routine-library-badge">{translateTab(t.category)}</span></div><h4>{translateTab(t.name)}</h4><p>{translateTab(t.description)}</p><small className="routine-library-count">{t.items.length} {translateTab('tarefas planejadas')}</small><ul>{t.items.map((i,index)=><li key={t.id+'-'+index}><span className="checkbox"/><span>{translateTab(i.title)}{i.time&&<small>{i.time}</small>}</span></li>)}</ul><button onClick={()=>addTemplate(t.items)}>{paid?translateTab('Usar este modelo'):translateTab('Ver benefício Plus')}<Plus size={16}/></button></article>)}</div><p className="routine-social-tip">{translateTab("No Social, assinantes Pro podem montar e publicar rotinas personalizadas para outras pessoas copiarem.")}</p><div className="personaltemplates"><div className="sectionheading"><h3>{translateTab("Seus próprios modelos")}</h3><PlanTag plan="pro"/></div><p>{translateTab("Transforme até 30 tarefas da data selecionada em um modelo reutilizável. O Pro guarda até 20 modelos.")}</p><div className="modelsummary">{currentTasks.length?currentTasks.map(x=><span key={x.id}>{x.title}</span>):<span>{translateTab("Nenhuma tarefa nessa data. Adicione tarefas na Rotina primeiro.")}</span>}</div><div className="modelcreate"><label>{translateTab("Nome do modelo")}<input maxLength={80} value={modelName} onChange={e=>setModelName(e.target.value)} placeholder="Ex.: Minha segunda-feira"/></label><button className="primary" onClick={saveModel}>{translateTab("Salvar modelo")}</button></div>{data.routineTemplates?.map(t=><div className="savedmodel" key={t.id}><div><strong>{t.name}</strong><small>{t.items.length} tarefas</small></div><button onClick={()=>pro?onApplyTemplate(t.items,days):onUpgrade('pro')}>{translateTab("Usar modelo")} <ArrowUpRight size={15}/></button><button aria-label={'Excluir modelo '+t.name} onClick={async()=>{if(await dialogs.confirm({title:translateTab('Excluir modelo'),description:translateTab('O modelo será excluído, mas suas tarefas existentes serão mantidas.')+' “'+t.name+'”',confirmText:translateTab('Excluir'),intent:'danger'}))onChange({...data,routineTemplates:data.routineTemplates?.filter(x=>x.id!==t.id)})}}><Trash2 size={15}/></button></div>)}</div></>:
 <FinancialReport data={data} plan={plan} demo={demo} date={date} onUpgrade={()=>onUpgrade('pro')} onToast={onToast}/>}
 </div>}
-function FinancialReport({data,plan,demo,date,onUpgrade,onToast}:{data:Data;plan:Plan;demo:boolean;date:string;onUpgrade:()=>void;onToast:(s:string)=>void}){const {t,locale}=useLocale();const [report,setReport]=useState<{months:{month:string;total:number}[];categories:{name:string;total:number}[]}|null>(null),[loading,setLoading]=useState(false);const current=monthExpenses(data.items,date.slice(0,7));const localReport=()=>({months:Array.from({length:6},(_,i)=>{const d=new Date(date+'T12:00:00');d.setDate(1);d.setMonth(d.getMonth()-5+i);const m=d.toISOString().slice(0,7);return {month:m,total:monthExpenses(data.items,m).reduce((s,x)=>s+x.amount,0)}}),categories:Array.from(new Set(current.map(x=>x.category))).map(name=>({name,total:current.filter(x=>x.category===name).reduce((s,x)=>s+x.amount,0)}))});async function load(){if(plan!=='pro'){onUpgrade();return;}if(demo){setReport(localReport());return}setLoading(true);try{const r=await fetch('/api/reports?month='+date.slice(0,7));const v:any=await r.json();if(!r.ok)throw Error(v.error);setReport(v)}catch(e:any){onToast(e.message)}finally{setLoading(false)}}async function download(){if(plan!=='pro'){onUpgrade();return;}let csv:string;if(demo){csv='Mês;Total (R$)\n'+localReport().months.map(x=>x.month+';'+x.total.toFixed(2).replace('.',',')).join('\n')+'\n\nCategoria;Total do mês (R$)\n'+localReport().categories.map(x=>x.name+';'+x.total.toFixed(2).replace('.',',')).join('\n')}else{const r=await fetch('/api/reports?month='+date.slice(0,7)+'&format=csv');if(!r.ok){onToast('Não foi possível exportar o relatório. Confira sua assinatura e a conexão.');return}csv=await r.text()}const u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='meu-ritmo-relatorio.csv';a.click();URL.revokeObjectURL(u)}return <><div className="studiointro"><QuietIllustration kind="finance"/><div><span className="eyebrow">{t('ENTENDER O MÊS')}</span><h3>{t('Veja os gastos com mais distância.')}</h3><p>{t('Uma comparação dos últimos seis meses e as categorias do mês selecionado. Gastos recorrentes entram como projeções da série.')}</p></div><PlanTag plan="pro"/></div><div className="reportcover"><BarChart3 size={40}/><div><h4>{t('Seis meses, lado a lado.')}</h4><p>{t('Encontre diferenças entre os meses sem transformar sua página Hoje em um painel de gráficos.')}</p></div><button className="primary" disabled={loading} onClick={load}>{loading?t('Carregando…'):plan==='pro'?t('Gerar relatório'):t('Conhecer o Pro')}<ArrowRight size={16}/></button></div>{report&&plan==='pro'&&<><div className="reportchart">{report.months.map(x=><div key={x.month}><strong>{x.total.toLocaleString(locale,{style:'currency',currency:'BRL'})}</strong><div><i style={{height:(Math.max(...report.months.map(m=>m.total))?x.total/Math.max(...report.months.map(m=>m.total))*100:0)+'%'}}/></div><span>{new Date(x.month+'-01T12:00:00').toLocaleDateString(locale,{month:'short',year:'2-digit'})}</span></div>)}</div><h4>{t('Distribuição em')} {new Date(date.slice(0,7)+'-01T12:00:00').toLocaleDateString(locale,{month:'long',year:'numeric'})}</h4>{report.categories.length?report.categories.map(c=><div className="reportcategory" key={c.name}><span>{c.name}</span><strong>{c.total.toLocaleString(locale,{style:'currency',currency:'BRL'})}</strong></div>):<p className="muted">{t('Nenhum gasto registrado nesse mês.')}</p>}<button className="secondary" onClick={download}><Download size={16}/>{t('Baixar relatório CSV')}</button></>}<p className="reportdisclosure">{t('A exportação completa dos dados em JSON permanece gratuita. Este relatório é uma forma adicional de organizar os mesmos dados.')}</p></>}
+type FinanceReportData={months:{month:string;total:number;income:number;balance:number;budget:number}[];categories:{name:string;total:number}[];incomeCategories:{name:string;total:number}[]};
+function FinancialReport({data,plan,demo,date,onUpgrade,onToast}:{data:Data;plan:Plan;demo:boolean;date:string;onUpgrade:()=>void;onToast:(s:string)=>void}){
+ const {t,locale}=useLocale();
+ const [report,setReport]=useState<FinanceReportData|null>(null),[loading,setLoading]=useState(false);
+ const labelMonth=date.slice(0,7);
+ useEffect(()=>{setReport(null);},[date,data.items,data.budget,data.monthlyBudgets]);
+ const groups=(items:Item[])=>Array.from(new Set(items.map(x=>x.category))).map(name=>({
+  name,total:Math.round(items.filter(x=>x.category===name).reduce((s,x)=>s+x.amount,0)*100)/100
+ })).sort((a,b)=>b.total-a.total);
+ const localReport=():FinanceReportData=>({
+  months:Array.from({length:6},(_,i)=>{
+   const d=new Date(labelMonth+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()-5+i);
+   const m=d.toISOString().slice(0,7),summary=budgetState(data,m);
+   return {month:m,total:summary.total,income:summary.incomeTotal,balance:summary.balance,budget:summary.budget};
+  }),
+  categories:groups(monthExpenses(data.items,labelMonth)),incomeCategories:groups(monthIncome(data.items,labelMonth))
+ });
+ async function load(){
+  if(plan!=='pro'){onUpgrade();return;}
+  if(demo){setReport(localReport());return;}
+  setLoading(true);
+  try{const r=await fetch('/api/reports?month='+labelMonth,{cache:'no-store'});const v=await r.json();if(!r.ok)throw Error(v.error);setReport(v);}
+  catch(e){onToast(e instanceof Error?e.message:'Não foi possível gerar o relatório.');}
+  finally{setLoading(false);}
+ }
+ async function download(){
+  if(plan!=='pro'){onUpgrade();return;}
+  let csv:string;
+  if(demo){
+   const value=localReport(),money=(n:number)=>n.toFixed(2).replace('.',',');
+   csv=['Mês;Ganhos previstos (R$);Gastos previstos (R$);Saldo previsto (R$);Orçamento (R$)',
+    ...value.months.map(x=>[x.month,money(x.income),money(x.total),money(x.balance),money(x.budget)].join(';')),
+    '', 'Categoria de gasto;Total previsto (R$)',...value.categories.map(x=>x.name+';'+money(x.total)),
+    '', 'Categoria de ganho;Total previsto (R$)',...value.incomeCategories.map(x=>x.name+';'+money(x.total))].join('\r\n');
+  }else{
+   const r=await fetch('/api/reports?month='+labelMonth+'&format=csv',{cache:'no-store'});
+   if(!r.ok){onToast('Não foi possível exportar o relatório. Confira sua assinatura e a conexão.');return;}
+   csv=await r.text();
+  }
+  const u=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=u;a.download='meu-ritmo-relatorio.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+ }
+ const format=(value:number)=>value.toLocaleString(locale,{style:'currency',currency:'BRL'});
+ return <>
+  <div className="studiointro"><QuietIllustration kind="finance"/><div><span className="eyebrow">{t('ENTENDER O MÊS')}</span><h3>{t('Ganhos, gastos e saldo lado a lado.')}</h3>
+    <p>{t('Compare a previsão dos últimos seis meses. Recorrências entram como previsões, sem confirmação de pagamento.')}</p></div><PlanTag plan="pro"/></div>
+  <div className="reportcover"><BarChart3 size={40}/><div><h4>{t('Seis meses, lado a lado.')}</h4><p>{t('Os gráficos representam despesas previstas; a tabela compara ganhos, gastos, saldo e limite de gastos.')}</p></div>
+    <button className="primary" disabled={loading} onClick={load}>{loading?t('Carregando…'):plan==='pro'?t('Gerar relatório'):t('Conhecer o Pro')}<ArrowRight size={16}/></button></div>
+  {report&&plan==='pro'&&<>
+   <div className="reportchart" aria-label={t('Gastos previstos nos últimos seis meses')}>
+    {report.months.map(x=><div key={x.month}><strong>{format(x.total)}</strong><div><i style={{height:(Math.max(...report.months.map(m=>m.total))?x.total/Math.max(...report.months.map(m=>m.total))*100:0)+'%'}}/></div><span>{new Date(x.month+'-01T12:00:00').toLocaleDateString(locale,{month:'short',year:'2-digit'})}</span></div>)}
+   </div>
+   <div className="report-comparison-scroll"><table className="report-comparison">
+    <thead><tr><th>{t('Mês')}</th><th>{t('Ganhos previstos')}</th><th>{t('Gastos previstos')}</th><th>{t('Saldo previsto')}</th><th>{t('Limite de gastos')}</th></tr></thead>
+    <tbody>{report.months.map(x=><tr key={x.month}><th scope="row">{new Date(x.month+'-01T12:00:00').toLocaleDateString(locale,{month:'short',year:'numeric'})}</th>
+      <td>{format(x.income)}</td><td>{format(x.total)}</td><td className={x.balance<0?'balance-negative':'income-value'}>{format(x.balance)}</td><td>{format(x.budget)}</td></tr>)}</tbody>
+   </table></div>
+   <h4>{t('Gastos por categoria em')} {new Date(labelMonth+'-01T12:00:00').toLocaleDateString(locale,{month:'long',year:'numeric'})}</h4>
+   {report.categories.length?report.categories.map(c=><div className="reportcategory" key={c.name}><span>{t(c.name)}</span><strong>{format(c.total)}</strong></div>):<p className="muted">{t('Nenhum gasto registrado nesse mês.')}</p>}
+   <h4>{t('Ganhos por categoria')}</h4>
+   {report.incomeCategories.length?report.incomeCategories.map(c=><div className="reportcategory" key={c.name}><span>{t(c.name)}</span><strong className="income-value">{format(c.total)}</strong></div>):<p className="muted">{t('Nenhum ganho registrado nesse mês.')}</p>}
+   <button className="secondary" onClick={download}><Download size={16}/>{t('Baixar relatório CSV')}</button>
+  </>}
+  <p className="reportdisclosure">{t('O CSV mostra previsões com base nos lançamentos e recorrências cadastrados; não é um extrato bancário.')}</p>
+ </>;
+}
