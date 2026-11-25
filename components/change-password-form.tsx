@@ -38,12 +38,12 @@ export default function ChangePasswordForm(){
     </label>
     <label>{t('Nova senha')}
       <input type={visible?'text':'password'} autoComplete="new-password"
-        minLength={8} maxLength={128} required value={newPassword} onChange={e=>setNewPassword(e.target.value)}/>
+        maxLength={128} required value={newPassword} onChange={e=>setNewPassword(e.target.value)}/>
       <small>{t(PASSWORD_GUIDANCE)}</small>
     </label>
     <label>{t('Confirme a nova senha')}
       <input type={visible?'text':'password'} autoComplete="new-password"
-        minLength={8} maxLength={128} required value={confirmation} onChange={e=>setConfirmation(e.target.value)}/>
+        maxLength={128} required value={confirmation} onChange={e=>setConfirmation(e.target.value)}/>
     </label>
     <button type="button" className="secondary" onClick={()=>setVisible(v=>!v)} aria-pressed={visible}>
       {t(visible?'Ocultar todas as senhas':'Mostrar todas as senhas')}
