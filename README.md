@@ -1,5 +1,22 @@
 # Meu Ritmo
 
+**Personal organization and financial management SaaS**
+
+[Live product](https://meuritmo.net) · [Android app](https://github.com/JustJao1/meu-ritmo-app) · [Developer portfolio](https://github.com/JustJao1/meu-ritmo/blob/main/PORTFOLIO.md)
+
+Meu Ritmo brings daily planning, personal finances, reminders and shared organization into one application. Built with React, Next.js, TypeScript and Cloudflare Workers, with D1 for application data and Supabase for authentication.
+
+### Product highlights
+
+- Calendar, routines, reminders, notes and personal financial management.
+- Account permissions, shared spaces, community and administration.
+- Paid plans, Pix checkout through Asaas and promotional coupons.
+- Automated tests and independent deployment.
+
+---
+
+## Documentação técnica (Português)
+
 Seu dia, suas contas e suas ideias em um lugar só. Desenvolvido por João Victor.
 
 Aplicação independente de organização pessoal com Hoje, agenda, rotina, gastos, notas, recados, lembretes, alarmes, comunidade, planos e administração. Login por e-mail e senha no Supabase, servidor Cloudflare Workers e dados de organização em D1. Não usa serviços de IA, identidade externa da ferramenta de desenvolvimento nem hospedagem vinculada a ela.
@@ -24,7 +41,7 @@ O projeto pode começar nas franquias gratuitas dos provedores; limites de requi
 
 ## Alarmes e lembretes
 
-Alarmes independentes, lembretes com som opcional, pausa, recorrência e adiamento de dez minutos. Ative o som em cada aba. No navegador, a aba precisa estar aberta e o dispositivo ativo. Não há push agendado no servidor; a central explica essa limitação. O [APK Lite](https://github.com/JustJao1/meu-ritmo-lite/releases/tag/v0.1.1-dev) mantém alarmes nativos do Android e funciona offline, sem login.
+Alarmes independentes, lembretes com som opcional, pausa, recorrência e adiamento de dez minutos. Ative o som em cada aba. No navegador, a aba precisa estar aberta e o dispositivo ativo. Não há push agendado no servidor; a central explica essa limitação. O [Meu Ritmo App](https://github.com/JustJao1/meu-ritmo-app/releases) mantém alarmes nativos do Android e funciona offline, sem login.
 
 ## Migração e validação
 
