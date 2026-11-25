@@ -52,24 +52,28 @@ function request(action,data={}){
  return new Request('https://site.example/api/auth/'+action,{method:'POST',headers:{'Content-Type':'application/json','origin':'https://site.example'},body:JSON.stringify(data)});
 }
 function reset(){statements=[];providerCalls.length=0;globalThis.__authIdentity=null;globalThis.__providerAutoConfirm=false;}
-test('eight-character policy requires upper lower digit and symbol',()=>{
- assert(passwordMeetsPolicy('Abcdef1!'));
- for(const password of ['Abcde1!','abcdefgh1!','ABCDEFGH1!','Abcdefgh!','Abcdefg12','abcdefgh1234','ABCdef1 ','Abcd1!'])assert.equal(passwordMeetsPolicy(password),false,password);
- assert(passwordMeetsPolicy('My Longer Password 4#'));
+test('only a letter and a symbol are required, without digit, case or minimum length',()=>{
+ for(const value of ['a!','A#','á@','b?','abcdef!','ABCDEFG$','a1!','longer passphrase!'])
+  assert.equal(passwordMeetsPolicy(value),true,value);
+ for(const value of ['', 'abcde', '123456!', '!!@@', '12345678', 'a','!', 'abc 123'])
+  assert.equal(passwordMeetsPolicy(value),false,value);
+ assert.equal(passwordMeetsPolicy(undefined),false);
+ assert.equal(passwordMeetsPolicy(null),false);
+ assert.equal(passwordMeetsPolicy('a'.repeat(128)+'!'),false,'technical maximum');
 });
 test('signup enforces new password policy on the server',async()=>{
  reset();
  let r=await authRoute(request('signup',{email:'person@example.test',password:'password1234',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
  assert.equal(r.status,400);
  assert.equal(providerCalls.length,0,'never send weak passwords to provider');
- r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
+ r=await authRoute(request('signup',{email:'person@example.test',password:'a!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
  assert.equal(r.status,200);
  assert.equal(providerCalls[0].path,'/settings');
  assert.equal(providerCalls[1].path,'/signup');
 });
 test('when provider confirmation is disabled, signup finishes without an OTP email',async()=>{
  reset();globalThis.__providerAutoConfirm=true;
- const r=await authRoute(request('signup',{email:'person@example.test',password:'Abcdef1!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
+ const r=await authRoute(request('signup',{email:'person@example.test',password:'a!',username:'tester',name:'Tester',phone:'+5516999999999',accept:true,adult:true}),e);
  assert.equal(r.status,200);
  assert.equal(r.headers.get('set-cookie'),'secure-test-cookie');
  assert.equal((await r.json()).emailConfirmationRequired,false);
@@ -86,7 +90,7 @@ test('legacy account passwords remain accepted at login',async()=>{
 });
 test('changing password requires logged-in identity and old password',async()=>{
  reset();
- const data={currentPassword:'Current1!',newPassword:'NewPass2@'};
+ const data={currentPassword:'Current1!',newPassword:'a!'};
  assert.equal((await authRoute(request('change-password',data),e)).status,401);
  globalThis.__authIdentity={purpose:'login',user:{userId:testUserId,email:'person@example.test'},accessToken:'existing-token'};
  const wrong=await authRoute(request('change-password',{...data,currentPassword:'Wrong1!'}),e);

@@ -175,7 +175,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         {needPassword&&<label>{t(mode==='password'?'Nova senha':'Senha')}
           <input type={showPassword?'text':'password'} name="password"
             autoComplete={mode==='login'?'current-password':'new-password'}
-            minLength={mode==='login'?1:8} maxLength={128}
+            maxLength={128}
             value={newPasswordMode?newPassword:undefined}
             onChange={newPasswordMode?e=>setNewPassword(e.target.value):undefined}
             required/>
@@ -186,7 +186,7 @@ export default function AuthForm({mode}:{mode:AuthMode}){
         </label>}
         {newPasswordMode&&<label>{t('Confirme a nova senha')}
           <input type={showPassword?'text':'password'} name="passwordConfirmation" autoComplete="new-password"
-            minLength={8} maxLength={128} value={passwordConfirmation}
+            maxLength={128} value={passwordConfirmation}
             onChange={e=>setPasswordConfirmation(e.target.value)} required/>
         </label>}
         {mode==='signup'&&<>
