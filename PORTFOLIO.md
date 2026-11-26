@@ -54,7 +54,9 @@ A full-stack portfolio project for property managers, rental businesses and shor
 
 **Creator and project lead:** [João Victor da Silva (JustJao1)](https://github.com/JustJao1). Independent personal project with AI-assisted development.
 
-A lightweight desktop application for researching physical-product offers across marketplaces and preparing an affiliate workflow. The project explores API integration, guided authentication and AI-assisted product selection on hardware without a dedicated GPU.
+**Status: Experimental — testing and ongoing development (v0.7.1).** This unfinished software may contain bugs, crash or fail to work. Some features and integrations may be unavailable or produce incorrect results. It is intended for evaluation, not production use.
+
+LinkPilot is a lightweight Windows desktop project designed to automate affiliate marketing for non-food physical products: discovering offers, generating affiliate links, creating promotional messages with AI and publishing to authorized WhatsApp groups. The project explores API integration, guided authentication and AI-assisted product selection on hardware without a dedicated GPU. The complete autonomous workflow is a development goal, not a verified capability.
 
 - Guided Mercado Livre OAuth setup with session token renewal.
 - Amazon Creators API, experimental Shopee integration and authorized Awin catalog support.
@@ -64,7 +66,7 @@ A lightweight desktop application for researching physical-product offers across
 
 **Stack:** Go, HTML, CSS, JavaScript, REST APIs, OAuth 2.0, Gemini.
 
-[Project overview and verification notes](portfolio/linkpilot/README.md) · Windows x64 v0.7.1 development release. Live affiliate-link generation and WhatsApp publishing still require end-to-end validation.
+[Project overview and verification notes](portfolio/linkpilot/README.md) · Windows x64 v0.7.1 experimental release. Live affiliate-link generation and WhatsApp publishing still require end-to-end validation. Successful local tests do not guarantee that the software or external integrations will function in real-world use.
 
 ## Technical focus
 
