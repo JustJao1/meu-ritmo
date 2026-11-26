@@ -1,6 +1,6 @@
 # Meu Ritmo
 
-**Project owner and maintainer:** [João Victor da Silva (JustJao1)](https://github.com/JustJao1).
+**Project owner and maintainer:** [João Victor da Silva (JustJao1)](https://github.com/JustJao1). [Ownership and maintenance](OWNERSHIP.md).
 
 **Personal organization and financial management SaaS**
 
