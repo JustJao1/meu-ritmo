@@ -52,6 +52,8 @@ A full-stack portfolio project for property managers, rental businesses and shor
 
 ### [LinkPilot](portfolio/linkpilot/README.md) — Windows affiliate automation project
 
+**Creator and project lead:** [João Victor da Silva (JustJao1)](https://github.com/JustJao1). Independent personal project with AI-assisted development.
+
 A lightweight desktop application for researching physical-product offers across marketplaces and preparing an affiliate workflow. The project explores API integration, guided authentication and AI-assisted product selection on hardware without a dedicated GPU.
 
 - Guided Mercado Livre OAuth setup with session token renewal.
@@ -62,7 +64,7 @@ A lightweight desktop application for researching physical-product offers across
 
 **Stack:** Go, HTML, CSS, JavaScript, REST APIs, OAuth 2.0, Gemini.
 
-[Project overview and verification notes](portfolio/linkpilot/README.md) · Windows x64 v0.7.0 development release. Live affiliate-link generation and WhatsApp publishing still require end-to-end validation.
+[Project overview and verification notes](portfolio/linkpilot/README.md) · Windows x64 v0.7.1 development release. Live affiliate-link generation and WhatsApp publishing still require end-to-end validation.
 
 ## Technical focus
 
