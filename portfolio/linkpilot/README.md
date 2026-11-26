@@ -1,6 +1,10 @@
 # LinkPilot
 
-**Windows desktop application for affiliate offer discovery** · v0.7.0 · Personal project / development release
+**Project creator, owner and maintainer:** [João Victor da Silva (JustJao1)](https://github.com/JustJao1).
+
+An independent personal project conceived and directed by João Victor da Silva, with AI-assisted development. Product requirements, design decisions and release direction are his responsibility.
+
+**Windows desktop application for affiliate offer discovery** · v0.7.1 · Personal project / development release
 
 LinkPilot brings marketplace product research, account authorization and AI-assisted offer selection into a single local application. It was designed for modest Windows laptops without a dedicated GPU.
 
@@ -23,7 +27,7 @@ The project is intended for an Intel Core i5 laptop with integrated graphics. AI
 
 All 16 central application tests passed when rerun on November 26, 2026. They cover catalog parsing, price and availability filters, link checks, non-food filtering, local request guards, marketplace connector responses and OAuth callback validation. External responses were controlled test fixtures, not authenticated production accounts.
 
-A Windows x64 PE executable was produced (v0.7.0). Its SHA-256 is `14115598fb1668a346db1c24385a6d6e4c10272941fe0495e62de75ad5fec346`.
+A Windows x64 PE executable was produced (v0.7.1). This attribution-only update adds the creator's name in the sidebar and About section, corrects the displayed version, and preserves the existing functionality. The local Go test suite passed again. Its SHA-256 is `ff5554632d4a3664565fa20ec61224e45a129c0b24cf7dd9394705afdb773ab7`.
 
 ## Current limitations
 
