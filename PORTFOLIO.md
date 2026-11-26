@@ -50,14 +50,28 @@ A full-stack portfolio project for property managers, rental businesses and shor
 
 [Explore the interactive demo](https://imovel-em-dia-portfolio.vercel.app) · [Source code](https://github.com/JustJao1/imovance) · No account required. The hosted demo uses fictional data stored in the browser; the Python backend runs locally. Live payments and external AI are not enabled in the demo.
 
+### [LinkPilot](portfolio/linkpilot/README.md) — Windows affiliate automation project
+
+A lightweight desktop application for researching physical-product offers across marketplaces and preparing an affiliate workflow. The project explores API integration, guided authentication and AI-assisted product selection on hardware without a dedicated GPU.
+
+- Guided Mercado Livre OAuth setup with session token renewal.
+- Amazon Creators API, experimental Shopee integration and authorized Awin catalog support.
+- Price, availability, affiliate-link and non-food product filters.
+- External Gemini integration, local diagnostics and an embedded desktop interface.
+- 16 passing automated tests covering validation, catalog handling and controlled integration responses.
+
+**Stack:** Go, HTML, CSS, JavaScript, REST APIs, OAuth 2.0, Gemini.
+
+[Project overview and verification notes](portfolio/linkpilot/README.md) · Windows x64 v0.7.0 development release. Live affiliate-link generation and WhatsApp publishing still require end-to-end validation.
+
 ## Technical focus
 
 | Area | Technologies and experience |
 | --- | --- |
 | Frontend | TypeScript, JavaScript, React, Next.js, Tailwind CSS |
-| Backend & data | Node.js, APIs, Supabase Auth, Cloudflare Workers, D1, Python, SQLite, SQL |
+| Backend & data | Node.js, Go, REST APIs, OAuth 2.0, Supabase Auth, Cloudflare Workers, D1, Python, SQLite, SQL |
 | Product development | Authentication, payment integration, subscription access, admin tools |
-| Delivery | Git, GitHub, automated tests, deployment and Android release workflows |
+| Delivery | Git, GitHub, automated tests, deployment, Android and Windows build workflows |
 
 ## About my work
 
