@@ -36,12 +36,25 @@ An Android application that extends Meu Ritmo with access to the online platform
 
 [View application](https://meuritmo.net/app) · [Source code](https://github.com/JustJao1/meu-ritmo-app) · [APK releases](https://github.com/JustJao1/meu-ritmo-app/releases)
 
+### [Imóvel em Dia](https://imovel-em-dia-portfolio.vercel.app) — Property operations platform
+
+A Brazilian Portuguese property-management application that connects inventory, maintenance, purchasing, reservations and financial records.
+
+- Property-level dashboards and automated inventory shortage tracking.
+- Reservation conflict prevention and transactional receivable settlement.
+- Organization-scoped SQLite data, session authentication and audit history.
+- 15 automated backend tests covering business rules, HTTP APIs and mocked integrations.
+
+**Stack:** Python, SQLite, JavaScript, HTML, CSS.
+
+[Interactive demo](https://imovel-em-dia-portfolio.vercel.app) · The public demo uses fictional browser-local data; the Python backend runs locally. Live payments and external AI are not enabled. A standalone source repository is pending publication.
+
 ## Technical focus
 
 | Area | Technologies and experience |
 | --- | --- |
 | Frontend | TypeScript, JavaScript, React, Next.js, Tailwind CSS |
-| Backend & data | Node.js, APIs, Supabase Auth, Cloudflare Workers, D1, SQL |
+| Backend & data | Node.js, APIs, Supabase Auth, Cloudflare Workers, D1, Python, SQLite, SQL |
 | Product development | Authentication, payment integration, subscription access, admin tools |
 | Delivery | Git, GitHub, automated tests, deployment and Android release workflows |
 
