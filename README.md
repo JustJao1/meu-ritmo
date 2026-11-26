@@ -1,5 +1,7 @@
 # Meu Ritmo
 
+**Project owner and maintainer:** [João Victor da Silva (JustJao1)](https://github.com/JustJao1).
+
 **Personal organization and financial management SaaS**
 
 [Live product](https://meuritmo.net) · [Android app](https://github.com/JustJao1/meu-ritmo-app) · [Developer portfolio](https://github.com/JustJao1/meu-ritmo/blob/main/PORTFOLIO.md)
@@ -17,7 +19,7 @@ Meu Ritmo brings daily planning, personal finances, reminders and shared organiz
 
 ## Documentação técnica (Português)
 
-Seu dia, suas contas e suas ideias em um lugar só. Desenvolvido por João Victor.
+Seu dia, suas contas e suas ideias em um lugar só. Desenvolvido por João Victor da Silva.
 
 Aplicação independente de organização pessoal com Hoje, agenda, rotina, gastos, notas, recados, lembretes, alarmes, comunidade, planos e administração. Login por e-mail e senha no Supabase, servidor Cloudflare Workers e dados de organização em D1. Não usa serviços de IA, identidade externa da ferramenta de desenvolvimento nem hospedagem vinculada a ela.
 
