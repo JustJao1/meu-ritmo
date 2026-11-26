@@ -4,7 +4,7 @@
 
 **Personal organization and financial management SaaS**
 
-[Live product](https://meuritmo.net) · [Android app](https://github.com/JustJao1/meu-ritmo-app) · [Developer portfolio](https://github.com/JustJao1/meu-ritmo/blob/main/PORTFOLIO.md)
+[Live product](https://meuritmo.net) · [Android app](https://github.com/JustJao1/meu-ritmo-app)
 
 Meu Ritmo brings daily planning, personal finances, reminders and shared organization into one application. Built with React, Next.js, TypeScript and Cloudflare Workers, with D1 for application data and Supabase for authentication.
 
