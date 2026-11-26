@@ -48,7 +48,7 @@ A full-stack portfolio project for property managers, rental businesses and shor
 
 **Stack:** Python, SQLite, JavaScript, HTML, CSS.
 
-[Explore the interactive demo](https://imovel-em-dia-portfolio.vercel.app) · No account required. The hosted demo uses fictional data stored in the browser; the Python backend runs locally. Live payments and external AI are not enabled in the demo. The standalone source repository is pending publication.
+[Explore the interactive demo](https://imovel-em-dia-portfolio.vercel.app) · [Source code](https://github.com/JustJao1/imovance) · No account required. The hosted demo uses fictional data stored in the browser; the Python backend runs locally. Live payments and external AI are not enabled in the demo.
 
 ## Technical focus
 
