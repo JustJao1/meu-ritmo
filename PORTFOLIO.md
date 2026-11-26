@@ -36,12 +36,26 @@ An Android application that extends Meu Ritmo with access to the online platform
 
 [View application](https://meuritmo.net/app) · [Source code](https://github.com/JustJao1/meu-ritmo-app) · [APK releases](https://github.com/JustJao1/meu-ritmo-app/releases)
 
+### [Imovance](https://imovel-em-dia-portfolio.vercel.app) — Property management platform
+
+A full-stack portfolio project for property managers, rental businesses and short-stay operators. It connects property records, room-level inventory, maintenance, purchasing, reservations and financial tracking in a single responsive workspace.
+
+- Property dashboards, operational priorities, inventory shortage tracking and purchasing workflows.
+- Reservation conflict validation and receivables settlement linked to the financial ledger.
+- Organization-scoped SQLite records, password authentication, session management and audit history in the local backend.
+- 15 passing automated backend tests, including domain rules, HTTP integration and mocked external providers.
+- Responsive dark interface, keyboard-accessible module search and dedicated property views.
+
+**Stack:** Python, SQLite, JavaScript, HTML, CSS.
+
+[Explore the interactive demo](https://imovel-em-dia-portfolio.vercel.app) · No account required. The hosted demo uses fictional data stored in the browser; the Python backend runs locally. Live payments and external AI are not enabled in the demo. The standalone source repository is pending publication.
+
 ## Technical focus
 
 | Area | Technologies and experience |
 | --- | --- |
 | Frontend | TypeScript, JavaScript, React, Next.js, Tailwind CSS |
-| Backend & data | Node.js, APIs, Supabase Auth, Cloudflare Workers, D1, SQL |
+| Backend & data | Node.js, APIs, Supabase Auth, Cloudflare Workers, D1, Python, SQLite, SQL |
 | Product development | Authentication, payment integration, subscription access, admin tools |
 | Delivery | Git, GitHub, automated tests, deployment and Android release workflows |
 
