@@ -1,0 +1,3579 @@
+{
+  "schema": 1,
+  "repository": "JustJao1/meu-ritmo",
+  "commit": "a0cfcc5ec9e585bf3abb7c12ffe1e9e7e78a2d37",
+  "git_tree": "14f14aa03d430b5bd3c003952ab68a7abb1e9d5a",
+  "sha256_git_inventory": "ced8bddcb7d3ac37676280f62e3d9efc6d9df0b10eee620af2ec28039a7af9bd",
+  "sha256_file_manifest": "4167f2aa87be5f07cf6dd3ed381b89d4f7cec656459d0bb7ad6687554eb3a7bc",
+  "files": [
+    {
+      "path": ".env.example",
+      "mode": "100644",
+      "git_object": "7b80863e65b4d814afd2535315a70d51d409f696",
+      "bytes": 674,
+      "sha256": "4cf8ad8c835e29d2e9f5bcee9261ae549715296be596673e52804f2fbab01dde",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/import-completed.json",
+      "mode": "100644",
+      "git_object": "d43e0935f2857a7fcd892239042714e7a36568ca",
+      "bytes": 137,
+      "sha256": "6f0ac71a7d580f1d35a9eb4eb3f60f3af97ab003f88759c5d9e54c44f780caa8",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-card-readback.yml",
+      "mode": "100644",
+      "git_object": "5d3008a651fccdd02fcc7f5b638e16ea67addb48",
+      "bytes": 717,
+      "sha256": "970e32bec75d8cd043d33a9029e2daac0760a9a772e15b7f46fb915e6e87c116",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-check.yml",
+      "mode": "100644",
+      "git_object": "7eee33e14aea05108b16adc152049d454cb786c0",
+      "bytes": 475,
+      "sha256": "2729b3d973aa9d5d6e29af6a978c05b9db180cc5a5627e9d1bc332e48b8d5fe9",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-homologacao.yml",
+      "mode": "100644",
+      "git_object": "caed2f3536bd000b8a61557dec49f395b5ed29f1",
+      "bytes": 1959,
+      "sha256": "52d4c0cfd2d2daa1b8e3d1462ae9b5322845aab4ab8953488e87b15f9f123465",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-hosted-pix-sandbox.yml",
+      "mode": "100644",
+      "git_object": "6b5f2f6fd165ededf83cf9cf08113b52284cca5a",
+      "bytes": 714,
+      "sha256": "f209a64ac74e03a8fc3bde4da77248e7d0db45e9b7183916dfd381a46140a1f3",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-pix-keys-readonly.yml",
+      "mode": "100644",
+      "git_object": "9ba32c4d04802af9e04f2ec411e9dc64efd0a8c0",
+      "bytes": 1640,
+      "sha256": "e93507d7d012b6959859fddd003e6cb174e239d870494510a188ac627a6c5cdd",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-pix-production-readiness.yml",
+      "mode": "100644",
+      "git_object": "b6ebf0fe4b4071a93b275aeb5f90921c8c58dd7c",
+      "bytes": 718,
+      "sha256": "3b7675740ddcde1050c78f4c518a4b4b23bc1d1e708fc4ac61abbb2eec43a5c0",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-pix-sandbox.yml",
+      "mode": "100644",
+      "git_object": "08f23bc6592820b5c2ddeed50095f6ee6d93bb85",
+      "bytes": 698,
+      "sha256": "07b481181bce2f555de9a3374899ad66b493d84eca5e40af3b5a4ead33eeb049",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-production-audit.yml",
+      "mode": "100644",
+      "git_object": "ca9e15d07d9ff10e30f61089c253023462197e21",
+      "bytes": 1117,
+      "sha256": "e78d4ccdcee6dff06770094d9ef16b5f5f6ecf35affdf70996227e092b5140ab",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-production-card-checkout-smoke.yml",
+      "mode": "100644",
+      "git_object": "8a52c93284f98e307c907b8b05bed3894e54d760",
+      "bytes": 750,
+      "sha256": "ecbaa03c7ef3881cfd566aa6dd513e65c4e65a0062d0ee1fc87f83f10c213aef",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-production-customer-checkout-diagnostic.yml",
+      "mode": "100644",
+      "git_object": "3bd29ab82da82015467a10229b20ee47677f8c2a",
+      "bytes": 1088,
+      "sha256": "14265bac84acc8ad59b6ecc2ab4c1fd8c00e2c6a50617e2c3174f3e2486bbc0c",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-production-ledger-audit.yml",
+      "mode": "100644",
+      "git_object": "3239bf81bef119139481dbc47d879c2af572759a",
+      "bytes": 976,
+      "sha256": "ad23ed4750f31764ad9a4e7691855586ae9b011e30f981282a6dc005ab94dc09",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-production-pix-checkout-smoke.yml",
+      "mode": "100644",
+      "git_object": "5aa9c4ecb50dc47ee92c7a6877772800274a9fcb",
+      "bytes": 754,
+      "sha256": "790ba88301a48a752529dd1fda458f7eb64057e1ad7696846a853be35fdb7987",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-production-repair-webhook.yml",
+      "mode": "100644",
+      "git_object": "d0e43397446f24f02add9be2131b1ba53b8f3bf8",
+      "bytes": 837,
+      "sha256": "4292d78d7b44ca337d231bfcf30c7aa0471d6ad8a87ce9d57bca4ab961bc2539",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-register-production-pix-key.yml",
+      "mode": "100644",
+      "git_object": "0f37f08cf061c69c80b3244f0a10279561423695",
+      "bytes": 737,
+      "sha256": "70cac45275dd12f3e63bce1ac339400e44aa7843b18f44aeabe963f1b251b6e8",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-reparar-webhook.yml",
+      "mode": "100644",
+      "git_object": "b00e87f7998eb7ef04a0280f6b3d27b8c47aaace",
+      "bytes": 703,
+      "sha256": "acc28c9ef5d74760ef1468d7dfac078af792fe5ad0771652aa92ba423801868c",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-sandbox-refresh-pix-key.yml",
+      "mode": "100644",
+      "git_object": "a32ac3e7046a7b0ff3fae6eaba0a14d63ec92ed5",
+      "bytes": 952,
+      "sha256": "6bd591a0400b05a079cbe2cd6cfed385a15136a0f43813273ea80d2378795a38",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-sandbox-resume-webhook.yml",
+      "mode": "100644",
+      "git_object": "7b449b4ba7bfe17db7f7584fbc417a8f9cfb0b3b",
+      "bytes": 1183,
+      "sha256": "fb3a03027aed11b94b15fc0338ed9181682410dff1eff27c08b503cc19c5a7df",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-sandbox.yml",
+      "mode": "100644",
+      "git_object": "35ec688190366375e68d8c1ba635a82379ba0d99",
+      "bytes": 2081,
+      "sha256": "ba0d2b40294d8a21cff2250bbf0d6cc2cacffc71c38f81c9fff999b5eb3391d0",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/asaas-webhook-d1-audit.yml",
+      "mode": "100644",
+      "git_object": "700f2429aeb32fdf3d6e28dd8b5ce73751727783",
+      "bytes": 927,
+      "sha256": "2d2f4481e03313250a9bf9f397ce3e4182099a59d2bfb1a619ee9d7cd4ae09c5",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/deploy-sandbox.yml",
+      "mode": "100644",
+      "git_object": "d71e0f0d1f276683e905aff4d9e096f38e734280",
+      "bytes": 2008,
+      "sha256": "238a8ec68391dfacfa675cfc64899ebf388ff65e1bf509e0fb10584404ff598d",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "mode": "100644",
+      "git_object": "5c795057f6b5191a8976ec8e9c9d49ce40606eb2",
+      "bytes": 3371,
+      "sha256": "792c97288ed04d6de82a6c94376978b542866b5aa348a3ee6a00dd1f9e16b604",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/monitor-production.yml",
+      "mode": "100644",
+      "git_object": "558b759660403083751fb756de65ec7ba3f8e984",
+      "bytes": 2737,
+      "sha256": "f5a633faa3c65d94c30c0d3b3a7f425e0ed3583f34ee021156cb3e4e26d1ddc3",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "mode": "100644",
+      "git_object": "7f4008c4717d413208241f37b67b69e18bfe9e14",
+      "bytes": 438,
+      "sha256": "ced9bede140e6fe58e1e1b3ce950dcc5c6f20818e37a6316a65867a5d1400d98",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".github/workflows/visual-site.yml",
+      "mode": "100644",
+      "git_object": "3532c652def54e99052dea994982fcde2339688f",
+      "bytes": 960,
+      "sha256": "c0fc0af3a6884cc168f2c1158cc998f11b13b3168583c3500f9822656ae12d79",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "git_object": "0c7fce7de8475a4904db7c541ddcdf4317970714",
+      "bytes": 646,
+      "sha256": "16e7167b072f036fa7bfe668930edcb26ffad578c8ec99c6f8db1b20ac61b655",
+      "lfs_pointer": false
+    },
+    {
+      "path": ".npmrc",
+      "mode": "100644",
+      "git_object": "9f274d6425b9792ae0a70cb0b96a29fd98ec6ed6",
+      "bytes": 45,
+      "sha256": "a3909ac0447c469fda12c57374993be70f47ce73e49fd3124678c7c047f2214d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "ASAAS_INTEGRATION.md",
+      "mode": "100644",
+      "git_object": "6ce060ad37b5639e00b957fe70c651c4a76c07b9",
+      "bytes": 2814,
+      "sha256": "3d674064540d5418fc3d4352cda0c77dc578629bcc1756e59804f785571816da",
+      "lfs_pointer": false
+    },
+    {
+      "path": "OWNERSHIP.md",
+      "mode": "100644",
+      "git_object": "585eb063822cffe8618cbe4b2f15ce75d9a0d1b4",
+      "bytes": 761,
+      "sha256": "5e0afc5aa0502767af699042e1a3388f220a9531f8153771e37c5fab205c7ca6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "git_object": "d09e7d76f90da1f147a5606726545d219294b500",
+      "bytes": 5456,
+      "sha256": "4b0417f24958b73a6d76cf907d367cedb66390af488d894a9cd51fecc22cd962",
+      "lfs_pointer": false
+    },
+    {
+      "path": "SECURITY_REVIEW.md",
+      "mode": "100644",
+      "git_object": "8933dba783786c2b896fef4327068e876b0bde62",
+      "bytes": 5638,
+      "sha256": "51b18eefc64358873b4dd1cdc686707312c1a39f8ba83cb35975e5c90e36d891",
+      "lfs_pointer": false
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "mode": "100644",
+      "git_object": "a4dea078a34d567fea169337478ac31ba90df6c4",
+      "bytes": 917,
+      "sha256": "8bd78a3d32895658a650f4d555544c58e4b9ea3a4a52b9da46fdcc842672d9f4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/admin-audit-history.css",
+      "mode": "100644",
+      "git_object": "d9cfed46902ea4750eeb38d0c41c67c4d4b60ac2",
+      "bytes": 8001,
+      "sha256": "607d424784a8f0ce28b1fcb57102358a7b6d1216e9dae6231eab1e1710bdd7d8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/admin-billing-layout.css",
+      "mode": "100644",
+      "git_object": "07ac85e4d1f671ddc4b067ebf730a5da0a089ba3",
+      "bytes": 9612,
+      "sha256": "54dc9fe9e6071d73413a213b3db90e5b781c5047fd20d84e9a666e3a08c107a5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/admin-coupon-controls.css",
+      "mode": "100644",
+      "git_object": "eef30eb6129e3c66b2c38113571f8647871cafb8",
+      "bytes": 2964,
+      "sha256": "1351952d9c4c226aa5cf158aa2a1f532a3869aa7fba046b078d50f09bd84d4e1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/admin-theme-spacing.css",
+      "mode": "100644",
+      "git_object": "68408dd4c30ee47351abfedbbb65d11d76f67dc7",
+      "bytes": 18606,
+      "sha256": "720d2ee7dacc9f783673eaa352a3be7ed8c2b6ee5d9f2370d0067eac4a282f66",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/admin/page.tsx",
+      "mode": "100644",
+      "git_object": "4a69cec6e2f8635f6e0942b6bdf70e0a793a215d",
+      "bytes": 723,
+      "sha256": "0a3332dd8862535c4482a9c123e98df83529b089f5a23051b3f790341cc1a093",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/account/route.ts",
+      "mode": "100644",
+      "git_object": "b11cd529c3230667c107407776d0b08f6b7ffce8",
+      "bytes": 645,
+      "sha256": "8cae444f9ba26c3f2b1d4005e1d43ffcf8d14dbf73a87e1bd21a6747a210bfd6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/admin/billing/route.ts",
+      "mode": "100644",
+      "git_object": "e2092cc0cc751425fac2657137f0c8c428648a86",
+      "bytes": 1756,
+      "sha256": "26d217cb36a68d5a8d599700feb0e997a750d40cd1c6f0bd71845844b702e65c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/admin/discounts/route.ts",
+      "mode": "100644",
+      "git_object": "845dcff80edcc11cfd4f1bd0070f07680813f19d",
+      "bytes": 5477,
+      "sha256": "dcd9f27bc1b6ddd273f1d616c2dae3fcbf32ed33885d4ceb19f5976681dc2b17",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/admin/feedback/route.ts",
+      "mode": "100644",
+      "git_object": "e3ef7a319f07de4e87ffb5fa1f885542a8bfcc86",
+      "bytes": 3622,
+      "sha256": "e60a7474a73a991dbc104d06016c604b89c05356b0ed871822fb0343bb77dfd5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/admin/operations/route.ts",
+      "mode": "100644",
+      "git_object": "5d0414644eeb5059f5fbf070ceac12e700ea2483",
+      "bytes": 3059,
+      "sha256": "d18cbc5861b52337824568d6cdc7e4f154b8aa0eb0d1acf46a8da41550e5fb6c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/admin/route.ts",
+      "mode": "100644",
+      "git_object": "6598bfb517874321e4539733e4136ba975527768",
+      "bytes": 8984,
+      "sha256": "1f036e1647ac6bd16231541c3777b5ed0a664aebc1d259eb6d618ee2efbce80f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/admin/support/route.ts",
+      "mode": "100644",
+      "git_object": "69842f0df22190b8e58697dbff376bd8d79aa13a",
+      "bytes": 3361,
+      "sha256": "4d4e1fd8744560f08cd37ab430354851e1315ff6acd060ed9dd9c005bba3bd82",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/analytics/route.ts",
+      "mode": "100644",
+      "git_object": "358566711edad4cf35cb0f65245207d6ef151ede",
+      "bytes": 277,
+      "sha256": "dc149936c59d8bf0250430b8877fc22a9ee77a4e96972f39aa6aa0579378cef7",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/appearance-sync/route.ts",
+      "mode": "100644",
+      "git_object": "93fbc3d4a98330213d61d3407f08fbed0da9d667",
+      "bytes": 3075,
+      "sha256": "96c3d3822017a066d19cc193adb8659face1d557c72b79f02ddd6191d504eb4b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/assistant/route.ts",
+      "mode": "100644",
+      "git_object": "49041368ac8a64cdd53d74cf7e278d2efad0f77b",
+      "bytes": 2335,
+      "sha256": "5eb41a25cf7b8fe5c06d8e13f59737ae276c0dfb33df8b66a55ee72be8cb19ac",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/avatar/route.ts",
+      "mode": "100644",
+      "git_object": "386f6453278b6821278677238fbcc1829a69c5c0",
+      "bytes": 3382,
+      "sha256": "6e627525c5110f4ce15125d8febb776e601f2ce4b4ba44aa94a2e54fe2cd815a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/cancel/route.ts",
+      "mode": "100644",
+      "git_object": "343478483efc5ce133f902fd0d9d31fdf86f6eca",
+      "bytes": 6516,
+      "sha256": "bad38801554ea6dd6541b000f7353bf4fb6986831df2a73c30271960465b20bd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/checkout/route.ts",
+      "mode": "100644",
+      "git_object": "a849954904ce1f639cb83dec4e3202453a7454d7",
+      "bytes": 16683,
+      "sha256": "6026eb8c04334b7fe135aa29611186828f7fa690b3ce3fd351316987f4db95b2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/pix/route.ts",
+      "mode": "100644",
+      "git_object": "26973f972cdc1abdb1480ce1a2b067833e586433",
+      "bytes": 5645,
+      "sha256": "1ad3bb60b767bd79bfdc3523a438d657b08a794832e6ac99c695327313d48b92",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/portal/route.ts",
+      "mode": "100644",
+      "git_object": "b810b7a0f1832801534035ea62697280713240fe",
+      "bytes": 2424,
+      "sha256": "b34f230c14249a02b4f6cfb721de61c0962adc5c3d16de5329b7165f56fd6fd0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/quote/route.ts",
+      "mode": "100644",
+      "git_object": "9e2f16245e597ae06fd22b6c69ec9cd049944113",
+      "bytes": 2706,
+      "sha256": "1d971c8901b8f60737212c73f4e495e4953cdb87ab57d73432cb39223950b602",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/reconcile/route.ts",
+      "mode": "100644",
+      "git_object": "ec91055d5c596fc4ccbc7dfeb41a466c02bbd900",
+      "bytes": 1263,
+      "sha256": "54b1491da9259becf058a9f8df8eb25584ff8e4ef87d46736286835d8f0aec9f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/status/route.ts",
+      "mode": "100644",
+      "git_object": "2a75e8bebf8d02161c52b2a2ac160d22d05ed195",
+      "bytes": 3898,
+      "sha256": "18d4dc41b8cce90301f1c439d07b7b931820ce80cfef5b219caae466564364ff",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/webhook/asaas/route.ts",
+      "mode": "100644",
+      "git_object": "8fc80c935d183522123f9ad4296a9172b32eabf8",
+      "bytes": 10305,
+      "sha256": "94af262cf51251393c4025ef86bf8b3f392203ee2ff0810819487ffcbaff9a11",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/billing/webhook/route.ts",
+      "mode": "100644",
+      "git_object": "2d7d74f13e9c947cc90daa81a7f34b745f470d46",
+      "bytes": 2400,
+      "sha256": "8e4b0a0d93aa6e58abdf6dd6d8c4860e5a60f3b1fdb85ef8cd228210d2320ab3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/feedback/route.ts",
+      "mode": "100644",
+      "git_object": "a736e16e6af321eeb6f1c744cb29975390aed469",
+      "bytes": 3737,
+      "sha256": "6fff17b6409a03ba14c0d5546f4dbc0bebdcd733818639cccc5c857790d75b15",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "mode": "100644",
+      "git_object": "e032241c5f4e33ee2747e9def4329572e1043004",
+      "bytes": 863,
+      "sha256": "b916982bf57c1726e48d641cb671c08200fb6da2bfaccad009dbbc21b971fcd8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/privacy/route.ts",
+      "mode": "100644",
+      "git_object": "25015cd656cd121c648c959ec2416a7743f92008",
+      "bytes": 6156,
+      "sha256": "db09a75c8907db343e306725a3609c9454a07d21002789995bf6dad0e1ae9791",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/profile/route.ts",
+      "mode": "100644",
+      "git_object": "0569df52a4a377e89389ddec1d103d4a1bf8cbd2",
+      "bytes": 3398,
+      "sha256": "f68b13a24e220ef948801676702bbcd367a461c1fb7fe6262090a2055320e0b8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/promotions/redeem/route.ts",
+      "mode": "100644",
+      "git_object": "b4d1d470a5f5d18d90cd608a4a33ea7ca8c504c2",
+      "bytes": 3271,
+      "sha256": "08caca7e5716dfab35d79a78d3234933ceb2c6c5f1a08e210e5f578436f5963a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/reports/route.ts",
+      "mode": "100644",
+      "git_object": "ec1d7bdc4a06a4afad7c61004a844ff347122d81",
+      "bytes": 2705,
+      "sha256": "154eb5fd0cf6c073a421b6a342909f67fcccf4f9e88be5534c5b0b81d4ddebb6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/social/route.ts",
+      "mode": "100644",
+      "git_object": "f37e538f4484ea855992ffa6e127681289c09bba",
+      "bytes": 12393,
+      "sha256": "4732698bd85bc8dad6cbccfc2c47515e1755b1638721266c0878b9ba92a8a52e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/spaces/notifications/route.ts",
+      "mode": "100644",
+      "git_object": "219ce752c1072fa98bb31997b119ada41e5f8c38",
+      "bytes": 3976,
+      "sha256": "59ec7255f9425e88845910b42e7f470f13bfcff4596d72b557dece29a544b585",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/spaces/route.ts",
+      "mode": "100644",
+      "git_object": "a332ffd4cef3f9692343478febd3829704de5f6f",
+      "bytes": 12131,
+      "sha256": "954dc2834702261eaf1f800c66160f2491d90db6dfeca327e69218354468717f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/state/route.ts",
+      "mode": "100644",
+      "git_object": "c6fd3a51475bf3b106cfc8485c5242632e95381a",
+      "bytes": 2876,
+      "sha256": "812e21c789008476064fd1c355eea067a38e9f29f8c2fcc4db648cba2667aeac",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/support/route.ts",
+      "mode": "100644",
+      "git_object": "96d8c6b5f5db358992490316cccf327f28801104",
+      "bytes": 3975,
+      "sha256": "8d709b55dd92790e56bd7c08d8617bfcb9021f5fb12ce92db00b4fef1c8538b4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/api/weather/route.ts",
+      "mode": "100644",
+      "git_object": "e814c36019d9ae10d7d530e7cbd1f1d6735448db",
+      "bytes": 1994,
+      "sha256": "39f4e9e69c3cc7b5c943a6e7d367767048941d88c547aef1f6ad753ccbdc2eeb",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/app-dialogs.css",
+      "mode": "100644",
+      "git_object": "fc687b6f94cc18aca9daa05825fcf0b7194ed6a8",
+      "bytes": 4759,
+      "sha256": "f8c47d2690584f4b822791e39e8a96a4db2cd3f24ce9cb78bb40949793a84830",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/app-visual-consistency.css",
+      "mode": "100644",
+      "git_object": "da07f106c6d40d74fd864f9162962746f9d7fd9f",
+      "bytes": 4074,
+      "sha256": "f75050ea437bb3c3d6798b48aa1a22d990a8d7b5059aefbffe6e6b4f165dd80a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/app/page.tsx",
+      "mode": "100644",
+      "git_object": "20d803de993e4f4633ca5a66f2aba7851048e3ac",
+      "bytes": 519,
+      "sha256": "27ed65e35bf359af6bbb6ed6bf32ab787b138dc80f8487fff0e1c678e44c12f5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/assistant-feedback.css",
+      "mode": "100644",
+      "git_object": "6e0a1d4ea792a2d7cf60edba7d53cb4095fb14cb",
+      "bytes": 19528,
+      "sha256": "1b4685c604a7379b54ca4181d38bd6b609b79c61213e0a23e94664df264c909f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/auth-forms.css",
+      "mode": "100644",
+      "git_object": "b3494c1b4447fb2c93797e323aad71847076cea5",
+      "bytes": 2394,
+      "sha256": "0ef645ada32ea39afa75999921c8e9c11aa750c0188037507d6490faca31c184",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/billing-quote.css",
+      "mode": "100644",
+      "git_object": "7ebc30736ed3a7d4b79b0bc9bc9e817c81a582a4",
+      "bytes": 5434,
+      "sha256": "188a26d9121caf4c6a9c5cf7596054d73f78fead01745079fc1011527732ba97",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/cadastro/page.tsx",
+      "mode": "100644",
+      "git_object": "6229ba93057404ecaade6ce423c4b9381cc220fa",
+      "bytes": 1017,
+      "sha256": "2c41d804145c84efaa425fa0083eaca152c7337edfde60fc2c341106ed9f5cb2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/comfort-polish.css",
+      "mode": "100644",
+      "git_object": "32e7b995d7c274d818c4ee063e29161d0588d181",
+      "bytes": 19967,
+      "sha256": "1f68b98ceed56a1b52fa0ced7f9c583b640943a828ed2cb2321802a2401c5891",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/confirmar-email/page.tsx",
+      "mode": "100644",
+      "git_object": "50a02eaa0f886b9e0b4f34c3866b7592e7e4736c",
+      "bytes": 116,
+      "sha256": "0a70d19abba54c12e41af55462afa4e8879bce1b90c28753784cdb1c1b963e7e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/creditos/page.tsx",
+      "mode": "100644",
+      "git_object": "0fecaaec6844fe82cccfa027615e6a9a77e66e2b",
+      "bytes": 1028,
+      "sha256": "0e190256a5991ad094e2fbac7a632645b7f4d895ab81e410ddf28ad89d7b7a2e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/criar-conta/page.tsx",
+      "mode": "100644",
+      "git_object": "d4489fe50ee4c4d7d94e19d26c6ae5ba43782fbe",
+      "bytes": 116,
+      "sha256": "840b331e6deaabbaa473c941f0e1da58ba9576917e5b1bad60666d6c45909aa2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/current-plan-highlight.css",
+      "mode": "100644",
+      "git_object": "334491d74ef2865b6f30b0a0a0792c7d5d617b44",
+      "bytes": 1700,
+      "sha256": "00d89e76cb629ea38a49c9df03fe9175b451735dae30e28c1e7337912e711d1b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/daily-motivation.css",
+      "mode": "100644",
+      "git_object": "f471040a7a39aa2cae751c9c50b9517517e822c4",
+      "bytes": 2245,
+      "sha256": "0b46a53e6c7d4085ddceb07cb86e54f09cbfe33efd51176abfcc3286746f5667",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/download-page.css",
+      "mode": "100644",
+      "git_object": "fc3d30abe47f0b6737322aba6935d4740d1df7ef",
+      "bytes": 4030,
+      "sha256": "7c2d7b9be6b262d0c6ffed5d948ffc1316dcbb5db11fbaa071bd8205659768ae",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/download/page.tsx",
+      "mode": "100644",
+      "git_object": "3d138e70be2d29567d5932b95313ef03438075d7",
+      "bytes": 4271,
+      "sha256": "76fb45637e8d95efac059b00e58f1e3bbd96a3514d5fcb18bd0447ecc6f7fdf6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/downloads/page.tsx",
+      "mode": "100644",
+      "git_object": "548dab28360a35625c35f9a634d6d0c9c3372bec",
+      "bytes": 185,
+      "sha256": "ae3c62f61c4b41f8f766999c1268141e1ffe316654e180261c26f83a94609259",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/entrar/page.tsx",
+      "mode": "100644",
+      "git_object": "f3bb8de1d35acfb5a823049ccb971e934f451117",
+      "bytes": 115,
+      "sha256": "178ef51d604275fafa90c8d0eba30606961226354a4b8f8185355ebc3cbf6579",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/error.tsx",
+      "mode": "100644",
+      "git_object": "4da7f7557c5695dc0e7c20adaeb86ecd82439756",
+      "bytes": 488,
+      "sha256": "19f58e6ef4fb743e5632c224deb087a7cad1e474efb4ebaef803d03e88708564",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/finance-income.css",
+      "mode": "100644",
+      "git_object": "7e83dce535a6b9b68ebfff44c23fa191ad711b07",
+      "bytes": 7095,
+      "sha256": "1372bffbae011cc3d5b796d31433527cc55746f077e24a96d242034461163972",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/font-global-fix.css",
+      "mode": "100644",
+      "git_object": "769bdc32ff2ae38c149344947b70575994a6c051",
+      "bytes": 2179,
+      "sha256": "62eba4c69f047b1f5efddb58fa93643c73ae09b546a9b3eba6ad3cc5f67ff259",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/forms-dialogs-audit.css",
+      "mode": "100644",
+      "git_object": "4ba57d254a6d6fe02c6767f787183a818dd5c29b",
+      "bytes": 5182,
+      "sha256": "d9a5b702bc6ae2b00a89941bdcd410d65d079e0f2103ec43dcc7eb3464513524",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/globals.css",
+      "mode": "100644",
+      "git_object": "6754ace6e1ef44040d0c7102564f3f1ccf56aafb",
+      "bytes": 339773,
+      "sha256": "2b18195531a52e176729dd915f5c0975a6db78bde72ace867c44b02aa3347bc4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/internal-pages-audit.css",
+      "mode": "100644",
+      "git_object": "8a89a0367cf97f434685d43a6d2d4457849f4a49",
+      "bytes": 7815,
+      "sha256": "d08b5d403b3936c02c7f025ec9754c6be40eb8cc9b392153b9655fcc8d5a8245",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/landing-refinement.css",
+      "mode": "100644",
+      "git_object": "c44e5e87b25854e688a2a1b3736d35ada7cd11b5",
+      "bytes": 6025,
+      "sha256": "28c3a07000ff888de83550144bf14e1fbd77cc1ebd8b0cc0e5b366229bbe40ef",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/language-selector.css",
+      "mode": "100644",
+      "git_object": "9e2fe03eee81ff07e6171bb7b9223011ecb3595f",
+      "bytes": 2334,
+      "sha256": "2f1dd3521d498a807d1ce3eb0f1bbd79a9a1cdf6b4ed278f88104a10c118884c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/layout.tsx",
+      "mode": "100644",
+      "git_object": "a0b8dadc889d07f1b7600170e8d054d719ef010e",
+      "bytes": 2742,
+      "sha256": "6953ad7268f131805c1df6bfeaeff1979348e9af2c9bd921b559f8c0040c9054",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/legal-i18n.css",
+      "mode": "100644",
+      "git_object": "3ffc28931c1a60e8fad61848b7414709b95afd79",
+      "bytes": 1985,
+      "sha256": "427fe1ebc1a12a5f137ff7d26ca6933ad3c004920e80d6353246c632151cbcf0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/mobile-usability.css",
+      "mode": "100644",
+      "git_object": "230364f29d845af1fade2b8881ef43a8008dd4a0",
+      "bytes": 5090,
+      "sha256": "3aaca196a1533e382d0a7328a1adb49aceec94ba9e64ddfe4fbc629e567a40d5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/nova-senha/page.tsx",
+      "mode": "100644",
+      "git_object": "f296235f1f5370cc2ff7792cc5eedb83bfb7d736",
+      "bytes": 118,
+      "sha256": "fec92b2d9fe0ebc46577c72a1fc6eee0a4d399a8be33d56b69f98f1a138e31d5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/opengraph-image.tsx",
+      "mode": "100644",
+      "git_object": "e34bff6b51a6f5da25a1323661ea1481ead0c540",
+      "bytes": 2261,
+      "sha256": "c13575c39a7cead5ef0b3cdde09b4bee5b37484dabd3dbebc25f34cd7d10c24e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/pagar/page.tsx",
+      "mode": "100644",
+      "git_object": "2003578f8496f37b7dfb2fcab116b73b838797b9",
+      "bytes": 4765,
+      "sha256": "b254aa66234d61068ea4b887caf1fe27da56c7439c0998cab82349335524bd03",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/pagar/pix.css",
+      "mode": "100644",
+      "git_object": "61f65327ec38e84a1f49edd232f546ed5eba30ce",
+      "bytes": 3007,
+      "sha256": "f4f7a0187d348875aac827c751c1f7432d654f991162d63d154474559325173b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/page.tsx",
+      "mode": "100644",
+      "git_object": "3fd0211131d8743f66cdba81446c9579e47ad305",
+      "bytes": 86,
+      "sha256": "e39cade9224ea1b3de6c7138755247c005690b25f59beb72109b0807b4042ca9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/plan-footer-admin-contrast.css",
+      "mode": "100644",
+      "git_object": "ebdcddf1e4b706574c2668b8bef1f37e48530d79",
+      "bytes": 11171,
+      "sha256": "3d3cfc34b53c11d28ade9caf267234189a8337b23685310e88e919cbc6f75bb9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/privacidade/page.tsx",
+      "mode": "100644",
+      "git_object": "fd526465fb4b562b036c1c51c31cdd1a79091b19",
+      "bytes": 157,
+      "sha256": "d16ff2140c3cd46119b02c4994863a1eb97858bdbf5f95cbad9a55efe0982db6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/public-header-refinement.css",
+      "mode": "100644",
+      "git_object": "2f7aa7daf875a1240edbaf5afe00c0942ad726d9",
+      "bytes": 6191,
+      "sha256": "2d03f8237fb85a07779d2a0cb35f88bf3c8be08c01077605f51de3205b390443",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/public-theme-audit.css",
+      "mode": "100644",
+      "git_object": "5bc66b99cafc33a920e0af8ea7bca7920f8fba3e",
+      "bytes": 5217,
+      "sha256": "10df2cdf9064c8220d181e03f9b6a21174745c8e2a3780703d20847ead7828ce",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/recuperar-senha/page.tsx",
+      "mode": "100644",
+      "git_object": "725772c381b7d1dd6ebc5ca9bef78b9013c073de",
+      "bytes": 117,
+      "sha256": "23572a28880b3ee0276eb0320dc9b6c7935f94afe157f8cf6da1fa040065b2f1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/reembolso/page.tsx",
+      "mode": "100644",
+      "git_object": "5fe1ee67c54aef4d0527371acab38bc0899c1c48",
+      "bytes": 157,
+      "sha256": "2db7887224eb69f31fcfa23daa4d00116f898537ca63dce0dba887aeaff3fb46",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/regras/page.tsx",
+      "mode": "100644",
+      "git_object": "e1e0feeaf8eb967fff69306cf6139b88731e35e9",
+      "bytes": 155,
+      "sha256": "25f8621733f45b9731aa9ee27f0fa3f42de24bcd66114ba2d0a1ff75f599e0be",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/ritmo.tsx",
+      "mode": "100644",
+      "git_object": "36ce9ca2873bffeab74c95b3d4fad8e1390a9403",
+      "bytes": 103794,
+      "sha256": "6084e85bdfc1d9d225d31deea2f9b6a2ac793923c41191d53ea5e67b255cdfc8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/routine-social.css",
+      "mode": "100644",
+      "git_object": "5a36fb7db1beee8c4dd4197d712d3304c8a3399c",
+      "bytes": 9027,
+      "sha256": "84667245ce05817a9ba04416cc560ac7fe391406b675719c42579de845005dcf",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/sair/page.tsx",
+      "mode": "100644",
+      "git_object": "ca2abd461b49d75060ef45d14e4dbe5169620010",
+      "bytes": 116,
+      "sha256": "38e4a861c7500443cf31438a9ad7de142f778f621ef414130c387bcff9537c7b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/scheduled-notices.css",
+      "mode": "100644",
+      "git_object": "3de91cb60d0c3cd9832e3216d5e49cd9e02a034e",
+      "bytes": 1930,
+      "sha256": "3386b393f704248581fb6f107e5de3bf34b375029bdcb617f91269a125914687",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/session.ts",
+      "mode": "100644",
+      "git_object": "721ef8995d3fa9282bdc43a96806aad5f817c013",
+      "bytes": 550,
+      "sha256": "e106a9110029b7c4ade8981427861186fd24ee0ae4a3db34a8f36c7e8fdc9379",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/shared-space-notifications.css",
+      "mode": "100644",
+      "git_object": "b3fac8cab463e06799f1b7d7e7997bb276bb9d23",
+      "bytes": 7121,
+      "sha256": "852281ecfb76b92e9dd062d1c9cd5450f47aef1b78da871becf309f2372f3421",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/shared-spaces.css",
+      "mode": "100644",
+      "git_object": "534319ca3b257bfed0827ed1cb20053ccc2dabac",
+      "bytes": 10075,
+      "sha256": "81146b309cacb78c997a48595d62c37b32ba83096dc52d0ffb582dec991227f6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/sidebar-shared-polish.css",
+      "mode": "100644",
+      "git_object": "d0a50105b8c3de0b9360d289994a333b50c32345",
+      "bytes": 3072,
+      "sha256": "2bf1d36475c43697d13d6b0ca274ba6572c09299e4e6616cba0d7ba1ae6dc596",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/studio-action-theme.css",
+      "mode": "100644",
+      "git_object": "29be670f344d6a80d5934647e98ebce31b4639d5",
+      "bytes": 1764,
+      "sha256": "dc1b91f5c6b3db1f987d8047075a87b7274cecdfbe960a340ff2b3342357969c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/support-security.css",
+      "mode": "100644",
+      "git_object": "18c3210a607d278b5dc0b306039cf0ea978fc8f2",
+      "bytes": 3228,
+      "sha256": "49bbb3e93c3736e199b0dfa6a47149016dfc51ec483035ddd4656a18ae8bc215",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/termos/page.tsx",
+      "mode": "100644",
+      "git_object": "9f3451c770949af383afb4d3c4230e16de4d901b",
+      "bytes": 155,
+      "sha256": "2aebf46e3f88c15def163cce4e85dc4fdfad44396c2199e69834bbabd144b977",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/theme-calendar-alarm-contrast.css",
+      "mode": "100644",
+      "git_object": "f06a005ed68c78f7cc70eff402983a6193dbc9f9",
+      "bytes": 2751,
+      "sha256": "cde364d73640f2f721165e4101d1ada7a884d2ed3e938e5ea24835b0fdf15ff6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/theme-contrast-audit.css",
+      "mode": "100644",
+      "git_object": "86056b1e828e29f5b100406d74371f93cdd39497",
+      "bytes": 9364,
+      "sha256": "c2fd95134966c07efb18316b9475d296416094f787c104ddf0da4fc58a45ffc0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/typography-refinement.css",
+      "mode": "100644",
+      "git_object": "ec8573c72f4c451c275a3d91fc24338f126b212a",
+      "bytes": 2314,
+      "sha256": "9e308fcced20967bc13bcc7fc203a3d7158278073bb9e6b505d89ff5ede3fe5b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "app/workspace-redesign.css",
+      "mode": "100644",
+      "git_object": "2da816d617728ce3a9cbc987ac3e4657daefb85d",
+      "bytes": 4309,
+      "sha256": "136fcb0c29f17d78eebc666ade56c4b1c1219f536fcedf4a66ddd4aed3bf97a3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "cloudflare-env.d.ts",
+      "mode": "100644",
+      "git_object": "da9c1376900e608d3efdd71f98ae48c81deeea54",
+      "bytes": 220,
+      "sha256": "942d63083aeeba48573c17e5d04fb7818b2e8252533bf878b0e30373447f07f9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components.json",
+      "mode": "100644",
+      "git_object": "c8f5bb16f79ed774f67415a8dc2b4a38243e3e90",
+      "bytes": 420,
+      "sha256": "31f4ca67a4a62572571003d3d5aac85ee6fbfca67a192924bac6b168d95e98fd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/account-security.tsx",
+      "mode": "100644",
+      "git_object": "b3ae5665a48ebf3df74567fb5e60e05d2c8704c7",
+      "bytes": 2778,
+      "sha256": "038073731d13613689d4b240fef553485adbf008773daae6f22f65c5ef014b3a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/admin-audit-history.tsx",
+      "mode": "100644",
+      "git_object": "9a062e8a761d3268dcfd987ab2475ce1c0a5b911",
+      "bytes": 6821,
+      "sha256": "dee0862daff55b7230ac8b311d580e9ded4df4868b9b43165b676784ab2a6957",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/admin-billing.tsx",
+      "mode": "100644",
+      "git_object": "1587faed87a532ed27fb544506f9eb3f3c7a7f95",
+      "bytes": 6648,
+      "sha256": "ed1fda183e39c6e256c843914acbb2d749403d0ae8adf72959b5d3c0ae88c89d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/admin-extras.tsx",
+      "mode": "100644",
+      "git_object": "aef6ceff21fb6b2706565ff069ec38bc37c7868d",
+      "bytes": 16702,
+      "sha256": "bff782a7b4b760125b9af6be379ef5ac2fef20ce331fbeb9fa0e455c5f8d6fa4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/admin-feedback.tsx",
+      "mode": "100644",
+      "git_object": "9491a9b4914a5cd6e0b36d277700e671df9eaa0c",
+      "bytes": 6059,
+      "sha256": "77878446cf4a6ef1e2699eac8fba1be6ca2404a4299c4e7bfea468496a581495",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/admin-panel.tsx",
+      "mode": "100644",
+      "git_object": "b26634b785fbf503e975aad36a2c2bcead29c522",
+      "bytes": 24475,
+      "sha256": "8499898267a4267866942b416f5d9b194998bbc6d519340c63a79268f863f5de",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/admin-support.tsx",
+      "mode": "100644",
+      "git_object": "0e2eeff7685ed2ed962f219251b30dbe104e2986",
+      "bytes": 4301,
+      "sha256": "fc9300dc484818644a8d3027f54f1e6e362ffdd701c1d25fe12979cad00a96c4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/alarm-player.tsx",
+      "mode": "100644",
+      "git_object": "508a4fff328f61018b53a73ad21ea094b4de4e9a",
+      "bytes": 7738,
+      "sha256": "5484e24ee449d15abdb0fbe4226b34677f3404a0fadc550ef43e71b880b1e6f1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/alert-center.tsx",
+      "mode": "100644",
+      "git_object": "6ffa6c66bf8062ab3679279d0dab13b279deeffd",
+      "bytes": 3100,
+      "sha256": "25657cb247d41a7347522f1ff29fcd8a3b3fb543ba6ed85ba7a4f509ea5175e8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/analytics.tsx",
+      "mode": "100644",
+      "git_object": "1e2b7ac1efd1440a49bd66f3678275ce90c94198",
+      "bytes": 1729,
+      "sha256": "28389a8f819a1edf950ab17d80d38a44a469b832c26b3634beccb9279f01f727",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/app-dialog-provider.tsx",
+      "mode": "100644",
+      "git_object": "f9c769f7ee7609ce6f1ed6df9c718007c895b1ae",
+      "bytes": 6056,
+      "sha256": "9412f2501bf5e4284f169371260d787f125ab020f138e3f7529c83daa80c4f3c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/auth-form.tsx",
+      "mode": "100644",
+      "git_object": "f5b84b1a9935311461ac2ff3f14f3028531a1abd",
+      "bytes": 18351,
+      "sha256": "ff56cd6d3c63b465ec6104c3968ccf47b1f5fc238be0e779ef64196132111ba1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/category-illustration.tsx",
+      "mode": "100644",
+      "git_object": "babd7d938a5b371c79736b339c7227b937a29b5a",
+      "bytes": 1304,
+      "sha256": "8db134a091aed875935e3eff7ef20f599f8515838622b2e1f8d0255cf49b3dc1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/change-password-form.tsx",
+      "mode": "100644",
+      "git_object": "f3f680555a621d90712d1293af4007a5c82240db",
+      "bytes": 2958,
+      "sha256": "ee77e2e368be4bd8bbd9401877b611cfd73852521d9ad7861ebb2b8331a62324",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/community-routine-composer.tsx",
+      "mode": "100644",
+      "git_object": "67aafe2bfdd0ac3e1c51c46ba9e2a4e421b257ac",
+      "bytes": 6502,
+      "sha256": "7fb85c25b50ab79a16b9756c14acfa2766f9d4de091b9b5960105bbb8921edf4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/community.tsx",
+      "mode": "100644",
+      "git_object": "35997bb7eb578400a273cb4acd49469b914f4f24",
+      "bytes": 17582,
+      "sha256": "8e2d43ca0cd30daef6814c13962985ea2ffba999ac78293bd5e9e6b96fdb0736",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/context-illustration.tsx",
+      "mode": "100644",
+      "git_object": "46a749f779a9bf63b806e9c2c5530e0be1dcddc0",
+      "bytes": 951,
+      "sha256": "84a0119bafef4895878fb334abd5a3b8d42e036fc453287be24cdfb0bf7a07aa",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/cookie-consent.tsx",
+      "mode": "100644",
+      "git_object": "616927975c7911bec77443e894b21c69198b3986",
+      "bytes": 3790,
+      "sha256": "06b1411c3a5f30f8143e1b14a0fc17bd46be26ed3aa874920efd8ca1004567fe",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/country-calling-codes.ts",
+      "mode": "100644",
+      "git_object": "ecfd67c90bc09ecb31468492764440f5ba7536ca",
+      "bytes": 3337,
+      "sha256": "50945f8034d4c0063c770b5c58dfef6ce4635d10179551cefc3574423c3660cc",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/daily-motivation.tsx",
+      "mode": "100644",
+      "git_object": "a3611c552ba361408d2efea6d4d3229f38174de1",
+      "bytes": 1169,
+      "sha256": "cf06d3fadcd75cb564d0c2735757b772baaa4409a1f094124cdc02be65f2c99b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/feedback-center.tsx",
+      "mode": "100644",
+      "git_object": "5f07f6da891b9aba97a0f41578033fb2a8b9bf5a",
+      "bytes": 7501,
+      "sha256": "401a899a777201b8ab64f9bb714e0591686b260b4f3ea81927022a95a3541aa7",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/language-selector.tsx",
+      "mode": "100644",
+      "git_object": "4d5cd72312778f3a88026cae1ebcfa905af3d2e8",
+      "bytes": 212055,
+      "sha256": "609a84122641649e0a922e1f6103e5a1a6f3e2ec426680d87e5312556e1c3125",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/legal-localized-text.tsx",
+      "mode": "100644",
+      "git_object": "5f305996def5a9d52a0a87b773c1228380585274",
+      "bytes": 27992,
+      "sha256": "1800b95ccae0558c665bc329ffe5b6e020bf0d03784af56ff262599daa851c12",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/legal-page.tsx",
+      "mode": "100644",
+      "git_object": "cb2d4a980bd2adc5c420e7b8152294f919378b32",
+      "bytes": 17892,
+      "sha256": "ff2666d388cede935d8fb18c72a647addbe8512f3b5df35c6daf826fd5f3892e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/organizing-illustration.tsx",
+      "mode": "100644",
+      "git_object": "356fde4692d9fcd458af8ee853cdc737751c2efa",
+      "bytes": 3193,
+      "sha256": "dd77e0c85551f882785dc0f77038096a90eec6a7b40883b25cb1eb228aa03e4b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/plan-comparison.tsx",
+      "mode": "100644",
+      "git_object": "8e91e06d057e4c510839520077e120d41fb27730",
+      "bytes": 4855,
+      "sha256": "ada0bb114439f9ec34e45121201386099e8a28d36ae2ea5447a752f14dd85746",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/premium-studio.tsx",
+      "mode": "100644",
+      "git_object": "225ccb98eaf142055488af81a086b3c4fda08745",
+      "bytes": 23891,
+      "sha256": "bc278854bafc8020066022ae9ad48600994e52892b6aa6d55bca9b3d5cd6021e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/privacy-center.tsx",
+      "mode": "100644",
+      "git_object": "6388df6477e463fc05a485d5d50df9d188f81b36",
+      "bytes": 5447,
+      "sha256": "59f2a558563b57ec47664a7f49e69a16e73fac564b619b1cf2d37eafd2086e50",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/profile-editor.tsx",
+      "mode": "100644",
+      "git_object": "245ea0ff057939421643011a3bc850ef444d8109",
+      "bytes": 7060,
+      "sha256": "2a20482de02f99b91a0c8db2c14fdeef6f7284267e80df33fb9f853416c1cb68",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/quiet-illustration.tsx",
+      "mode": "100644",
+      "git_object": "d37ff7fc8ba59679f5bdeb81685d2901f761141f",
+      "bytes": 4795,
+      "sha256": "93fd76ad736b98ceb4bf5bb03a54bd6ede8dcd8ad9a4dfc87873a1fdd66ba83b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/registration.tsx",
+      "mode": "100644",
+      "git_object": "e9262d0c632c99748152a49c131c19b08be11d97",
+      "bytes": 729,
+      "sha256": "5522b0b5be12c0e29496b21a37d62801157f0f4b899f1ee51f494e9f4c3bdb66",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/shared-space-batch-editor.tsx",
+      "mode": "100644",
+      "git_object": "b3c6130625379f7fb35fc74ad54f7d67cad5bd86",
+      "bytes": 5461,
+      "sha256": "cc23be3034860e84abeaec3375534645a5c5149da33b91e2c38a00a663588790",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/shared-space-inbox.tsx",
+      "mode": "100644",
+      "git_object": "8e3d0bbdc1fcb27952df6e192a8a0058aad66687",
+      "bytes": 1580,
+      "sha256": "0b2cfc634c06bc53460baecb40246560da946bacabaf869cbb4dca7dc573bd5d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/shared-spaces.tsx",
+      "mode": "100644",
+      "git_object": "9d9475d4b1d7fb7fa96c1614917cd54b00e7edf3",
+      "bytes": 22158,
+      "sha256": "8ff842c7c41b1f14d949aeeec1be9e4b8f9eb19cc77cee38f9ac9d67bc4ced18",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/smart-assistant.tsx",
+      "mode": "100644",
+      "git_object": "d78ce1c210ffb8b1d2b9867b704df025f928ac02",
+      "bytes": 11136,
+      "sha256": "11626dd4c2770c9ac3921d66ca2c8863a141aead3a4ef2e9fd13b46df69651cb",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/support-center.tsx",
+      "mode": "100644",
+      "git_object": "8a9f26483ac21646f06baa55f679d9e9aeb3ec8d",
+      "bytes": 4885,
+      "sha256": "698962c08ada105dcb3bf66bae70a6a32dc02b422668cfd644c17f627a606eda",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/turnstile-captcha.tsx",
+      "mode": "100644",
+      "git_object": "52edcb20000c69a9c691fc1e331800286015c4a9",
+      "bytes": 2074,
+      "sha256": "cd996967c96371d21f73cd65c2c06ba7b4491b46f4d70f673197297a5b87bd8c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/accordion.tsx",
+      "mode": "100644",
+      "git_object": "91e3a250ce6ee0797b0258454d774800650adcc8",
+      "bytes": 2048,
+      "sha256": "a4f153089ba886dfcf73fac26b5c01ca933fa12fbe88df6fb723912bfffdfbb0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/alert-dialog.tsx",
+      "mode": "100644",
+      "git_object": "dad327341382f200b84d5f833eb1b7a74b0e7469",
+      "bytes": 5439,
+      "sha256": "9a8d950f2b9b4352d5ebb762fb44d5c28c2d353aa29712071973656a8736e311",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/alert.tsx",
+      "mode": "100644",
+      "git_object": "f99164ed4b320790482f514342dab5e72f284aca",
+      "bytes": 1614,
+      "sha256": "2cc59b5f7bda91c1670884b1bf46bfc8a2a6f226cef184f5762acc037188885b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/aspect-ratio.tsx",
+      "mode": "100644",
+      "git_object": "57e38fa96f9c0cb767d7b8de0d6dbc171d1b921a",
+      "bytes": 274,
+      "sha256": "b1c157886236782cb92d8fbcd4749532aaf6d8aabefd6e157ca40358f902f407",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/attachment.tsx",
+      "mode": "100644",
+      "git_object": "5bdd1ce7db5800eb55198cd0291a1e47dc67fb0d",
+      "bytes": 6002,
+      "sha256": "ae8a25dd1a896d3964e3ef54d97e51221b418cde287dfd794428b89951c5c790",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/avatar.tsx",
+      "mode": "100644",
+      "git_object": "ea658505703a577fe93341e5e1a0b478c27245f7",
+      "bytes": 2916,
+      "sha256": "58a846bf1617b94b9681921db9b8461d0145f311424663d11678a06b6153cb34",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/badge.tsx",
+      "mode": "100644",
+      "git_object": "6eb2a057aae0e23a74368cc4daf9657210e9a740",
+      "bytes": 1776,
+      "sha256": "46a0de5224f6a5d5d63d45246534288518dce888f031064bff925bbc7fe6ad97",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/breadcrumb.tsx",
+      "mode": "100644",
+      "git_object": "004bb63a4c92229e612b6126d79fb7b078aa7565",
+      "bytes": 2350,
+      "sha256": "d4c0831bba2212e778248f54a6ace6ef378df8bba4616d1abf27787a31eabae5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/bubble.tsx",
+      "mode": "100644",
+      "git_object": "792146e61d80ef595d032d5d09a3d572d50f1374",
+      "bytes": 4699,
+      "sha256": "870cc0c5cfc8a515053f7e41e706a6bd017a909b45f1305fd3b164a52cc4483b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/button-group.tsx",
+      "mode": "100644",
+      "git_object": "cd550d7afca6562548afe3f595b352406f7f3951",
+      "bytes": 2202,
+      "sha256": "784c89d8ee683e1bc972ae69e6ea8225a7f63abe22aa1b5fc3423ae8a2a399c0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/button.tsx",
+      "mode": "100644",
+      "git_object": "4d38506cee5430d95a59ec6a2a0cef2b79217e7a",
+      "bytes": 2392,
+      "sha256": "cc36af0f8b5019c33cc039fbf03bb952a513072b15b55b53c592b78af3e5f4c4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/calendar.tsx",
+      "mode": "100644",
+      "git_object": "5d31419b130a18c52320f5a21546a9236123b6bf",
+      "bytes": 7832,
+      "sha256": "3855fbe0d3f8ad3a4b93071f98b76a9f6782d46ec8b05f5d2ddbee1e4e39bc84",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/card.tsx",
+      "mode": "100644",
+      "git_object": "acf57dc5a534792273b8fb86227e92e001f3dc53",
+      "bytes": 1987,
+      "sha256": "c48dd3b96be90a7066f1aebf294f0af9d00ebcdc367d5d4aca55429ade570c1c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/carousel.tsx",
+      "mode": "100644",
+      "git_object": "0e05a77ea155fde6af5d9a4848b1d3953df6ea5a",
+      "bytes": 5556,
+      "sha256": "b7ea0dda3903d972c186f739e23da61f547bc83b5a0bf13b16856577846d5fc3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/chart.tsx",
+      "mode": "100644",
+      "git_object": "9813c584e125847d88e9e7e7f9edff7e9ba45a97",
+      "bytes": 10614,
+      "sha256": "45aa5ea4a386f4fb5b8869ff4bab3a08cf89255190ee322043baf84c3e950b6a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/checkbox.tsx",
+      "mode": "100644",
+      "git_object": "f5a7e433f3795b82a00c5c06a1fc6decf116a84a",
+      "bytes": 1214,
+      "sha256": "b23ab9d4deeedf2ac8f512c368361ede681aa383437ef48563a6f9b7dbe95f27",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/collapsible.tsx",
+      "mode": "100644",
+      "git_object": "2f7a4e7fc64a8874373c1584646a63f28cd63c47",
+      "bytes": 795,
+      "sha256": "c6598e5584f4258b5d9fefadbc5ad6a66888ad58729f4b634a0bb2d9c513188b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/combobox.tsx",
+      "mode": "100644",
+      "git_object": "2415bd801031a16bbcee8343058825feecfaea69",
+      "bytes": 9158,
+      "sha256": "2d68e78b2dc7e38a085f222dede60a80b4f8229a6e91732c484605e204d46735",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/command.tsx",
+      "mode": "100644",
+      "git_object": "8fe3ccb406be52d28961b0c0220e87ecd19596ca",
+      "bytes": 4818,
+      "sha256": "361193df1e3d64a9e9b5048f045264782fcb387aab3f00f2b805fdcbf538b16a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/context-menu.tsx",
+      "mode": "100644",
+      "git_object": "5aaca76552cf0468b1def03c9e2c42f1f0b60734",
+      "bytes": 8268,
+      "sha256": "2cf1fcf59df0649a3e2a126d1df2f639145f6b6bf5689ee54af1f40ab1245017",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/dialog.tsx",
+      "mode": "100644",
+      "git_object": "84bdef4bb307087da1bfaf3cadf7be5dbda73f24",
+      "bytes": 4303,
+      "sha256": "dce39c6adc47d997bd2567f8b7a72f466b0134715105cd42f9194007b8ecdb14",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/direction.tsx",
+      "mode": "100644",
+      "git_object": "22e165774bd595fbf41d0c45efef1cf996897983",
+      "bytes": 506,
+      "sha256": "84ae2ad658207f0e0f367978e5508cd8027cd00c29c41d3d13db21a708c3d1e6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/drawer.tsx",
+      "mode": "100644",
+      "git_object": "ad08671442203fe345093f364696bdf43528e0b7",
+      "bytes": 4255,
+      "sha256": "cb6eaf58eb0757ca91af284e5d925b89a42ad7eb19cb3f44c575a3487aa9350f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/dropdown-menu.tsx",
+      "mode": "100644",
+      "git_object": "ae1fcf62f1e3b648554789b8fe02943d92bf00fc",
+      "bytes": 8418,
+      "sha256": "98f0dcdae38225b73734aceeb9213dd751fea2c72ea520df31003cd133deac8a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/empty.tsx",
+      "mode": "100644",
+      "git_object": "ce4b0095f6d19d2eae2e465060e9060b0c210856",
+      "bytes": 2396,
+      "sha256": "ae95bdcf367a076ae02e7925f14522a148798f72d9651749c6d55497dba584c0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/field.tsx",
+      "mode": "100644",
+      "git_object": "ec849dae4d3dd06a973ba22e4b2248a25cf18148",
+      "bytes": 6159,
+      "sha256": "ba67d76f017ac059fc86cf8c344e0b2991c4322d3619e125498c19b87f6eefbd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/form.tsx",
+      "mode": "100644",
+      "git_object": "f371fea1bc35380d28678c6cf53df8f65deb2776",
+      "bytes": 3757,
+      "sha256": "315b46bb75ab7d1c6061b5d750aa4bedf6e7a455e15e2d7f9182f053d5972b1e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/hover-card.tsx",
+      "mode": "100644",
+      "git_object": "91e869c0d3091cbeddf5cb0266e82ddf56f829a6",
+      "bytes": 1526,
+      "sha256": "f5d8df42c59370ec14d61bcc54f7d68e9bb7dfa0d6a872b2f7cffc2aafbf23b8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/input-group.tsx",
+      "mode": "100644",
+      "git_object": "a7652d936fffd9c5bca4b88e6b9715bf559e667d",
+      "bytes": 5065,
+      "sha256": "6afbd58fea4c438e6252dc4568bddc122e84ababead4ad5cee50ace01100c9a0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/input-otp.tsx",
+      "mode": "100644",
+      "git_object": "6a556afacd71996bf0e385ff2b04869fb2ee4523",
+      "bytes": 2254,
+      "sha256": "161946daa89f0eda2575b9271c0494e35807c4ffb55598a49f67160c17fec299",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/input.tsx",
+      "mode": "100644",
+      "git_object": "f1124aea14eee062fc2f4c55dad5f0d9de0ccc1a",
+      "bytes": 962,
+      "sha256": "8c4612a7c41319ac5049daa3b34b080f9784b6245c17780eb87c127e58e473db",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/item.tsx",
+      "mode": "100644",
+      "git_object": "d5dbb1a9c2e70456e45a39887a4b7cc56d484a45",
+      "bytes": 4486,
+      "sha256": "6e2144d6d87142dbbe56d568810bf546318c8aa661447ebb0d76ebbf382cb45f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/kbd.tsx",
+      "mode": "100644",
+      "git_object": "2459224fbc531f6306b73aaeb22e9022d9985332",
+      "bytes": 862,
+      "sha256": "6088c3a5432338b1719c17e9b5d0e1fa74fd1f66060f248fc88909d33a82cd13",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/label.tsx",
+      "mode": "100644",
+      "git_object": "1ac80f701ebfe9dc02d632c08cafade732e46625",
+      "bytes": 606,
+      "sha256": "a476e41f08b9de5bd447de66a33d8bc2ad18f2fa6b96c064778bab4b6f439f4c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/marker.tsx",
+      "mode": "100644",
+      "git_object": "cfa76c6c014ab342befcbf7571eb932917406522",
+      "bytes": 1864,
+      "sha256": "3d798763f094b2bb5e7ade2d5cd1b9bab498bc8ca7fd4cfaf4e5835bdedc34a0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/menubar.tsx",
+      "mode": "100644",
+      "git_object": "4af16a428377f81cbb3f66adfe518308e0b690d8",
+      "bytes": 8389,
+      "sha256": "9243af8afcea03703398ccd1c2a8c0a87ad6cbaf2bd272fb609f5b79fe46aebb",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/message-scroller.tsx",
+      "mode": "100644",
+      "git_object": "0b05011259c026a357380c3834bce0ead8565d22",
+      "bytes": 3992,
+      "sha256": "bb7660a248e4e9589c3816c7c1c199ea1381a70d2c8476ae895b567a7a4d86cf",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/message.tsx",
+      "mode": "100644",
+      "git_object": "53437e8db2b0fad1da06a7499e54ddaf116295c2",
+      "bytes": 2232,
+      "sha256": "9d2952bf3b641081f09aa2739535e6bbd1be0a4946789752a2c20d8aaef43185",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/native-select.tsx",
+      "mode": "100644",
+      "git_object": "3058398399ad6c029ad527052475b360b114715b",
+      "bytes": 1995,
+      "sha256": "007516b111fca8c98a6c40c94ab91bb68cc5b52afce1ed1f5e510c3d86e7347c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/navigation-menu.tsx",
+      "mode": "100644",
+      "git_object": "0a673f513c97fbeaae0872403b7582ab2ba7e3c3",
+      "bytes": 6658,
+      "sha256": "889d358a77de88e9cb6f39ea4895ea4c76eaf01d731b74e44f1c41e97a78a044",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/pagination.tsx",
+      "mode": "100644",
+      "git_object": "1dcfb0cc050c5f2bdd930522d627313d03d3690c",
+      "bytes": 2717,
+      "sha256": "374ad135c3d4ff3ec080a0009cd9745cdd0e12faa89d2b0e86074f11e5127fd1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/popover.tsx",
+      "mode": "100644",
+      "git_object": "30058c4ec284ca9cad1ed1162d084ce3cd94e2b0",
+      "bytes": 2357,
+      "sha256": "31c350309ff5d3034e6ecf1b0eda75ba8855bdbf987fc7ad6d71f0ef07c5a447",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/progress.tsx",
+      "mode": "100644",
+      "git_object": "b3ae25089ad549b7f13125e482f99b43dd895bd2",
+      "bytes": 755,
+      "sha256": "c8c26e8f5f041c3cdf4915347dc1d9c022f9448f149990fadcaf303e952fa57d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/radio-group.tsx",
+      "mode": "100644",
+      "git_object": "fe514536ed771f7adef0a6b9e4d1aeadc2c95481",
+      "bytes": 1460,
+      "sha256": "fe5ce39636d0818c2bf9c4eebddff893d1225fa2c81b5fa4bb8cbb39a8c913ce",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/resizable.tsx",
+      "mode": "100644",
+      "git_object": "a76832a10b4c5c2a137e25c16478567ba86daf0d",
+      "bytes": 1815,
+      "sha256": "bc63958467aa00557c551bb0d96a5ae4c965c1e1ba2380e595949d933b132f7c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/scroll-area.tsx",
+      "mode": "100644",
+      "git_object": "73c4eb1cdcd4a699b150a9ddc3e87bfb90b63d09",
+      "bytes": 1639,
+      "sha256": "8bd9d986b2844c9a87de825c6de4787b6739b36c3dc9a05ccf3eb107160e4043",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/select.tsx",
+      "mode": "100644",
+      "git_object": "c0dc7120b4f78008ae5efc6d1c8b7ec8205c35d5",
+      "bytes": 6353,
+      "sha256": "0b796a108a4eb5ba52d9ad938b7aea36dc56ae66c703a6d0a23dbc24f96daff3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/separator.tsx",
+      "mode": "100644",
+      "git_object": "cd873e3631b571060f166897b7b62e033e87c18f",
+      "bytes": 694,
+      "sha256": "6da346505c8629a4668420d2a5ca48891383bbe0b0ceb14163537c671879427e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/sheet.tsx",
+      "mode": "100644",
+      "git_object": "cb53bb28b6850745c9519e8e7462e05f85a50c93",
+      "bytes": 4188,
+      "sha256": "63863cf2df8f8973e52b3459ac9bdbf81be1262dbc70eb53d5271ffb03488e16",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/sidebar.tsx",
+      "mode": "100644",
+      "git_object": "f5f6c5aefc88ffa2e999e284b299472215c05161",
+      "bytes": 21526,
+      "sha256": "4a8d73e7730a2b1fcecfca31299ed26db65c2307b84197a59c6ec7c01c7ad28e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/skeleton.tsx",
+      "mode": "100644",
+      "git_object": "3ec6be770b846170b8e7f8916e5f165e2d1730df",
+      "bytes": 276,
+      "sha256": "ba48dd5be5a6a1378bd4e011028654b5bf419f1e7d20ee4b9f8330c1264e7239",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/slider.tsx",
+      "mode": "100644",
+      "git_object": "46ebc4b4df1e9baf1f3997a4b6c08ef80c84a9c9",
+      "bytes": 1991,
+      "sha256": "0e37484f4b416e79ac18c655cac961aefacf6e67085cfc2b320ea8af545635a3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/sonner.tsx",
+      "mode": "100644",
+      "git_object": "9b20afe2e10fd9b94d1abc1ae732054b2fb9821c",
+      "bytes": 1034,
+      "sha256": "13ccc9b0fe4248e622f83a1d3b2f0566b72b5e04162d7d0c8db8945ecc71b55f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/spinner.tsx",
+      "mode": "100644",
+      "git_object": "a70e713c5b4ecb2af186efe3fadea51805f26ba5",
+      "bytes": 331,
+      "sha256": "3e6e6e8d37fb4069f8e43e55318f8db06fbc36e6c8be0096da3c9337c1c798b9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/switch.tsx",
+      "mode": "100644",
+      "git_object": "8baa844fdb17d668b3ce07cfbd6a7ef52e2eb5eb",
+      "bytes": 1408,
+      "sha256": "386d4d4deb39f34126f9700fe9bf5393d238485dd94018bba9d154dda84c62ae",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/table.tsx",
+      "mode": "100644",
+      "git_object": "7add5f1a22db954ac6cb3446f1bf8c8a9fc5c335",
+      "bytes": 2478,
+      "sha256": "20e5a7f224959c6b75802995706a97e9da171f693d4b6b1b436388fcd9df96f3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/tabs.tsx",
+      "mode": "100644",
+      "git_object": "b463afd170637df477e36184aa27d2ad1bd3c3e0",
+      "bytes": 3782,
+      "sha256": "865d0194331b9b2be36723fa79d3575dc83078b4cb941cafee87cb72fc2cff46",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/textarea.tsx",
+      "mode": "100644",
+      "git_object": "e67d8fefe50c41dfa2deed9a5096d5be7691581a",
+      "bytes": 759,
+      "sha256": "253cdeb487c73beaaccdf47fc163e36e7d5b7ae6ddf09a4f64998a109a112979",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/toggle-group.tsx",
+      "mode": "100644",
+      "git_object": "9894607b212ff7182bf2024f4262da03df0a8973",
+      "bytes": 2308,
+      "sha256": "69f643e889e933f05c1439084480d8646f66a161c7d1cf0730ee926382ade35e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/toggle.tsx",
+      "mode": "100644",
+      "git_object": "5250c98ff7f11f531af38c227230a76b7d25bf19",
+      "bytes": 1565,
+      "sha256": "ba4d0b0a2b2fee75dc36dfc19e32082e721024b919050c97fd5dc70faa924e16",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/ui/tooltip.tsx",
+      "mode": "100644",
+      "git_object": "ec65c1e4255f050d9555c6cdade90a5f8a6c0c29",
+      "bytes": 1830,
+      "sha256": "a0784eb77831a799fad7991df4f1b666f876201565a80175e1aa68733574a2e4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/upcoming-events-inbox.tsx",
+      "mode": "100644",
+      "git_object": "c0949923c3a61bf2034ad23ddbad4c181fd30224",
+      "bytes": 1375,
+      "sha256": "ed663eed5aa4ab8091fc6a1b0f865dcaf7994b2d23142a272b0048f6870b5a6b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/upcoming-schedule-banner.tsx",
+      "mode": "100644",
+      "git_object": "ad30454dbe791b5497f8dacf713f379901686b76",
+      "bytes": 1173,
+      "sha256": "6d9dd17a5a16573fe666903fba76ff077f21b2d39f9800e36dea4bbafce3fc37",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/use-dialog-focus.ts",
+      "mode": "100644",
+      "git_object": "8494672cefac7e3fec1475ca946917823320f96f",
+      "bytes": 1232,
+      "sha256": "5ced85c4bf6619d0068be226b3b5ebe4256f43c9a48bb85a262e4c9f19a1a5be",
+      "lfs_pointer": false
+    },
+    {
+      "path": "components/weather-widget.tsx",
+      "mode": "100644",
+      "git_object": "76de5e235ce9d9eca9925795a4b18ea308553f7e",
+      "bytes": 8751,
+      "sha256": "6a1460260cef7d0a08e8bd87310f4ec5e710e5f87f0a560c76284f5937fa7618",
+      "lfs_pointer": false
+    },
+    {
+      "path": "db/index.ts",
+      "mode": "100644",
+      "git_object": "0905f790604a1219f7ebd6a5ca437fa690e8fd0f",
+      "bytes": 332,
+      "sha256": "85424361f318b412b2ebfcfc3edb5284a2f5226b3bdd3d77500f75dc31a078a6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "db/schema.ts",
+      "mode": "100644",
+      "git_object": "a2be1de51d8aab6a63a901fa28dc89e81bf548f6",
+      "bytes": 6966,
+      "sha256": "1a53fc9c6cd2e32d9a20a4ef43fcbb7f1ce3d050dc1f207221489a27bf6e8218",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "mode": "100644",
+      "git_object": "3e69f52ead4226fa730864308d1f89f7d905ee9a",
+      "bytes": 306,
+      "sha256": "e455d18821c8ac1f4ebe8caa994ab99089b28b897d6ee78b1d1422016428ad03",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/asaas-ativacao.md",
+      "mode": "100644",
+      "git_object": "f5f133cadb59aeed8a3c496a2cbbbde331b4c7d4",
+      "bytes": 8464,
+      "sha256": "77100f80b07408e0aafde46352797067faa357e1be3cbdc49e4899fd98224688",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/asaas-cartao-diagnostico-2026-11-16.md",
+      "mode": "100644",
+      "git_object": "116b61abac903d2f94e76a00aae898a5adcdbc06",
+      "bytes": 5115,
+      "sha256": "658e6880cd79c169e78f43bdb9ec6a06d35bec3c6bebd661882ed3cfe530ddc6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/asaas-sandbox-deploy-isolado.md",
+      "mode": "100644",
+      "git_object": "0887c44679eb612870c96c8a93092541eaa262b2",
+      "bytes": 3787,
+      "sha256": "5ed376babf5efa051ddc9ebc6c43c1e083c3c49a14ee80b5a83d4aca19ac79f6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/asaas-sandbox-verificacao.md",
+      "mode": "100644",
+      "git_object": "33a9e8e2a0393d0c9cb46604931bf654c5a3584b",
+      "bytes": 1158,
+      "sha256": "4f01c6f02f117756bba0f096c12252947509541ef0fe4d3aeab5e46e64227f88",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/assistente-e-feedback.md",
+      "mode": "100644",
+      "git_object": "a5783cdae7b16c149de4a14a34e9d0feefc6db97",
+      "bytes": 4064,
+      "sha256": "5e8884b6e48887096dfb4c77d0e38cae75264e55ac0ad658abc607081db1c22c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/confirmacao-cadastro-otp.md",
+      "mode": "100644",
+      "git_object": "2fda2a183ee5edb2f6962d2ff3046cba5c4fde45",
+      "bytes": 1607,
+      "sha256": "84462721f812a71379dd90de9eab31877f44db9f1e47e649c7790fc031b2d4b1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/lancamento-comercial-pix-2026-11-17.md",
+      "mode": "100644",
+      "git_object": "4cd2b2bada534fa172985eb72535726c48f27d1b",
+      "bytes": 4882,
+      "sha256": "e2d828eed6351a631a7d1e650906c7ee13e98276d2958d93215fe26aec590f06",
+      "lfs_pointer": false
+    },
+    {
+      "path": "docs/production-operations.md",
+      "mode": "100644",
+      "git_object": "605ca8e9d36b6121b96c1b0a1b7b70afa8c2a571",
+      "bytes": 3014,
+      "sha256": "287fe7506edccba97a5311000684bba6c8f90c951a242b919852a527f6a64146",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle.config.ts",
+      "mode": "100644",
+      "git_object": "c2b2f34376984744343453838ce66658ad9d9b6a",
+      "bytes": 148,
+      "sha256": "af081f7384aaeb0082cf422e29f139d137ca2f6a57c69b2c37b9fb1f8479867b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0000_redundant_mongu.sql",
+      "mode": "100644",
+      "git_object": "a814fe362208a06bfed5d3d4acaf07dad6de8589",
+      "bytes": 132,
+      "sha256": "7f4e6647d47e0f751c81eaf6060401191bec199603adf6cccd3de60875ddadae",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0001_magenta_magneto.sql",
+      "mode": "100644",
+      "git_object": "41988db64711da00a49791f1948b070247a3f153",
+      "bytes": 446,
+      "sha256": "0f7f5ed161f1327a4e59a6d94c216225fe400e08437fc048efa2ad9193706e53",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0002_past_wendell_vaughn.sql",
+      "mode": "100644",
+      "git_object": "8f25321eb76dff4ab8856e152c6f49ab1d746184",
+      "bytes": 54,
+      "sha256": "ee8fc24f5c775ce43827d98985c4f473829c50aaca672e89ada9ba38c465f35f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0003_same_gabe_jones.sql",
+      "mode": "100644",
+      "git_object": "0907729a3e0ba23744c7b01b5f1add73e7002add",
+      "bytes": 1961,
+      "sha256": "67afe9b4ff1747c756e5c55090362ccfd08d0d5dda335b37a6203a10dd7495ad",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0004_smiling_speed.sql",
+      "mode": "100644",
+      "git_object": "2cb6a036cbf096562dfcad258c2e18a49a0d83f7",
+      "bytes": 249,
+      "sha256": "6d93d0a2533540502c4026bf3aab3ef344736249b40a25e5db8eb135f4f01a75",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0005_nostalgic_sir_ram.sql",
+      "mode": "100644",
+      "git_object": "95fdb340f91bd51fcff7d89ea4edf6277d1a7fff",
+      "bytes": 2679,
+      "sha256": "b50ca0c487cf0cee306965c691641bb627c29352e666f954d11b448306b088a2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0006_smiling_frightful_four.sql",
+      "mode": "100644",
+      "git_object": "eb9a87d9156e917750fbf55384f18a1073a921bd",
+      "bytes": 122,
+      "sha256": "34157d6408c29953022c14cd7c9e488aa81f7bdcfcab4a9dc7a7ee83ecae3f87",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0007_flippant_tomorrow_man.sql",
+      "mode": "100644",
+      "git_object": "72f3e45a0be4c5b7f313a8cc7eb907301d0ac65c",
+      "bytes": 104,
+      "sha256": "6e57fa4337614b17e3ca13f71303f567c17ca27d464ec337695d26f7734e18b9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0008_asaas_billing.sql",
+      "mode": "100644",
+      "git_object": "1def295f4fb22f6584e3c54a45e3a073ada04948",
+      "bytes": 1596,
+      "sha256": "ee848ed1a4b41d2e87b710532a4453635736719d3f4260df492f128e14a55c1d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0008_independent_auth.sql",
+      "mode": "100644",
+      "git_object": "df4d944c119b755a98745ba9266252feb30fc17e",
+      "bytes": 602,
+      "sha256": "6b37a4568be99806780ef9accbe6bbceb0f80e50784c25a1d6dff29e2fc60aa1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0009_appearance_links.sql",
+      "mode": "100644",
+      "git_object": "9db502623b9412364768443f03fc70d84bb510e7",
+      "bytes": 319,
+      "sha256": "f418f38261e82a31dfebc95dcf6972bbe1fe0f7c3f4e19dd6319c0e1204e04ac",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0009_identity_moderation.sql",
+      "mode": "100644",
+      "git_object": "51fb53c637cb5881545efe5b71a8430b6c8ef938",
+      "bytes": 1016,
+      "sha256": "45df550bf32517347a00f96bdd0b5da2cc7d35c82e598f91e48d9a880615a89c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0010_session_refresh_lock.sql",
+      "mode": "100644",
+      "git_object": "99f3711c6b8d09e016232826963b22e6e602d871",
+      "bytes": 304,
+      "sha256": "2af232b306b852ca63b7c7be142ab0875695893b7e9aae94e4f04441070dd86e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0010_shared_spaces.sql",
+      "mode": "100644",
+      "git_object": "bd22ac6bb269ebfb2ca375a6fe9a97e18f297f56",
+      "bytes": 646,
+      "sha256": "03b9fa32ca9cd33cec7b7a3995942be73a56acf54c0bf97ae55f9303c7d93f12",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0011_asaas_consents.sql",
+      "mode": "100644",
+      "git_object": "03191e9bd4c220291320b8a33a775c0ec74c6111",
+      "bytes": 684,
+      "sha256": "3f225715333e4a174e9f22a9e7893c58e824dc7c46c5bf528a483adbc1157b17",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0012_asaas_card_checkouts.sql",
+      "mode": "100644",
+      "git_object": "5029eb91e75441698ed0058061d70f271c73c9f7",
+      "bytes": 580,
+      "sha256": "7aa2692a313da06a1659e62cc4f90fc212c5af768e1fe87cf278d65837183d08",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0013_feedback.sql",
+      "mode": "100644",
+      "git_object": "a0aeca20851209ce873634e778c99461eeed7a5a",
+      "bytes": 1033,
+      "sha256": "42bef8cf09ece1ca74076423cc93d079f82ec0f67dc75238b514c420e19a8a0e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0014_shared_space_notifications.sql",
+      "mode": "100644",
+      "git_object": "bd7d829b0da1527bca99ee20ff2fb71221f3453f",
+      "bytes": 652,
+      "sha256": "05aeba90ec617dfd63303a3d601879d6b7270f9144d105680ca028e2d025bf6e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0015_asaas_webhook_reviews.sql",
+      "mode": "100644",
+      "git_object": "860f249b65877b150efb126a2086b2740ae7a148",
+      "bytes": 437,
+      "sha256": "a404f9e803a75a7826ff8a29fff23d1283a88fe2a3c9c9666b91168ad8029206",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0016_asaas_hosted_pix_checkouts.sql",
+      "mode": "100644",
+      "git_object": "6bffa73934d3b2c6da2ac7266be65d5473f1d76a",
+      "bytes": 547,
+      "sha256": "5a6cc4a1797132cbbee5dcccf003ebed28e8261f195deba3119c071f5b5d345d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0017_asaas_checkout_failure_diagnostics.sql",
+      "mode": "100644",
+      "git_object": "e591c5d4df10845cee793ac05bc1b3317c2f2bff",
+      "bytes": 384,
+      "sha256": "270ea156576c252271ae55322428af6bc289241953031487e122fd0428766081",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0018_support_contact_security.sql",
+      "mode": "100644",
+      "git_object": "5381d3146404ee009ac5e2540b084a8d268f19b6",
+      "bytes": 2270,
+      "sha256": "ecb3472ad1cb446185e217113bfc2d62251e071a8172814cae919a9475a8b490",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/0019_coupon_archive.sql",
+      "mode": "100644",
+      "git_object": "5f6bf5a4ef1bfafe8392ff0f0b7d66aa71d4dcf6",
+      "bytes": 375,
+      "sha256": "53ff22cd61426d04df7408e72cbe28977a52f0bc1f2c4421efaaf3e98984bb21",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0000_snapshot.json",
+      "mode": "100644",
+      "git_object": "8e7fdac02c5e3d34e45cc24b0431afbe25ff95b5",
+      "bytes": 1083,
+      "sha256": "ef77968e4a67a69cb42131a07e53084e4178edf978129e232e5b48b8fc1ef217",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0001_snapshot.json",
+      "mode": "100644",
+      "git_object": "f7d78347087612e3bc0f0abed718200b2b6917ef",
+      "bytes": 3414,
+      "sha256": "ee7bd719d190bc0da50c749116fd895f283d5ba94faba09c456c60e4cbe060c1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0002_snapshot.json",
+      "mode": "100644",
+      "git_object": "98c0f0c8d1d3982d99a2e25c5f2b2bc0adf7920e",
+      "bytes": 3604,
+      "sha256": "8ec4536e77efc64f0ca384df7874ea388d9329512ac038f8526383d34eed6cb6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0003_snapshot.json",
+      "mode": "100644",
+      "git_object": "e233a11e56a08978b4dd746e6d9c5bf7ba6c46f5",
+      "bytes": 13546,
+      "sha256": "9f6f3fc312fe6cf3efb091bf1a39d119bfd15884549073bdbce43210a4ccdf58",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0004_snapshot.json",
+      "mode": "100644",
+      "git_object": "e1b20156c3a27bc99be004d8a59f7686cb52c8d3",
+      "bytes": 14087,
+      "sha256": "53ba888c4764aa9998caefc3c1e93945e1cd9affd01ad47da5e0de72c6c99ec6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0005_snapshot.json",
+      "mode": "100644",
+      "git_object": "4bb4d2acbe22482466edcbf1e893891ffe96defc",
+      "bytes": 27750,
+      "sha256": "3631ffd85b3d2f89632293d9448304e2ef3bcd06309f4aea0861539195026ae3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0006_snapshot.json",
+      "mode": "100644",
+      "git_object": "2ad6cf1fc6523822c58a72ca52ae684beaf2b266",
+      "bytes": 28509,
+      "sha256": "758ce325bd6366ff97e52fbc86ed47db24ac522e6fadf867c009a30922983a41",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/0007_snapshot.json",
+      "mode": "100644",
+      "git_object": "405cef455955eb7c189d8ef3c92ff90588afe41a",
+      "bytes": 29103,
+      "sha256": "efee51c7252012193fc75f694c8d485e30b9057b306d5666bb9ef42b2ce32d48",
+      "lfs_pointer": false
+    },
+    {
+      "path": "drizzle/meta/_journal.json",
+      "mode": "100644",
+      "git_object": "8324accb40639f3f1ef542e72dfa600ce99da398",
+      "bytes": 2083,
+      "sha256": "d024472411a7a3b617a4b60f15fc652483a94175054b463e99533698a53ab728",
+      "lfs_pointer": false
+    },
+    {
+      "path": "eslint.config.mjs",
+      "mode": "100644",
+      "git_object": "6600a56ae006c77b1143fcddc8e8ded4e724309b",
+      "bytes": 791,
+      "sha256": "eeda7faabe9560fa9fdb26675b0011fa78461ca7061989732f5da9245b87e315",
+      "lfs_pointer": false
+    },
+    {
+      "path": "hooks/use-mobile.ts",
+      "mode": "100644",
+      "git_object": "2b0fe1dfef3b17850bbac040665f514a8ffd0f15",
+      "bytes": 565,
+      "sha256": "ad0936f84f1df79d3697bfbff9c18f8ad58431c1cbaf2359c6a853b0fcc9f28b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "hooks/use-shared-space-notifications.ts",
+      "mode": "100644",
+      "git_object": "601a9d7981cbb479bbe5eabee5a9fdff5389e48f",
+      "bytes": 3932,
+      "sha256": "b3fa444dd484df52e6efba4cc1434cc7b055938db77bb22df119e55f82105527",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/admin-access.ts",
+      "mode": "100644",
+      "git_object": "cbcf644dd626601425fca8ee0dda19832996140f",
+      "bytes": 1585,
+      "sha256": "b58cf7846496c6e2b48e6cb4c4ccf4fb14e387042228bc972d19b8159e2f8114",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/admin-audit.ts",
+      "mode": "100644",
+      "git_object": "fb9a4adf965b5321818241c3d14c4981564ebee7",
+      "bytes": 3210,
+      "sha256": "bbf7a99a56c4c6b3392c8189d19da0aaa7e8904931259913c88a803fadc6abe1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/alerts.ts",
+      "mode": "100644",
+      "git_object": "d2cd9d97a54dd46c50838928c6b64fb1acf0c83c",
+      "bytes": 2718,
+      "sha256": "96df61d49244f1e1d488ba208b5496d00c801f20b27262f3117cce13b8a1b01e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/android-release.json",
+      "mode": "100644",
+      "git_object": "ab269b3fbd14e104ce8836a30033a23f514ecc7e",
+      "bytes": 266,
+      "sha256": "c6190563b78b9cdb42cbab57f76443d399d9b6d6cae4cfc039d76928ccb35d9f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas-card-webhook.ts",
+      "mode": "100644",
+      "git_object": "cbb889fdc12a37f460306619cc33b116fbdbfa4f",
+      "bytes": 7435,
+      "sha256": "6ca1cebf139546f90a00d6479ec4270cf049114982716fce03a9a759f59ce911",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas-coupons.ts",
+      "mode": "100644",
+      "git_object": "8175f0c5894fa4a3136c67543d44d29fa7aa5a51",
+      "bytes": 2887,
+      "sha256": "74defa82193be6aac20f8231cdcbbbe165f17730261b6e522b103ed736080b99",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas-hosted-card.ts",
+      "mode": "100644",
+      "git_object": "5d5e09ef5ef585d557cdcb255f0b779c7d229729",
+      "bytes": 2441,
+      "sha256": "ef87800559b94ec777a18d5ded65b89ef31796f14e0038bd3b6ac0fa66ef6af2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas-hosted-pix-settlement.ts",
+      "mode": "100644",
+      "git_object": "e29d732de4c357548eef222ac8f96b9f44e11951",
+      "bytes": 8783,
+      "sha256": "d859a7b63f16f1e0aa314a12b645712f54fc6792aa399e12341d1301b7b6497f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas-hosted-pix.ts",
+      "mode": "100644",
+      "git_object": "84e28a9d69cdaf4b62f1890d37b7d8345a1140a6",
+      "bytes": 2553,
+      "sha256": "a75871560c9f34c398e4e3262a74aa1f591115c59b24e8ef95e8f52a35691ad3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas-webhook-review.ts",
+      "mode": "100644",
+      "git_object": "d5286b9011b855deb96cded4b239d394c7ea9b98",
+      "bytes": 1565,
+      "sha256": "fa32eca0593ddc34e579ff40ab7ad06d2142353b4da69681f3653fcfe2e0e3de",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/asaas.ts",
+      "mode": "100644",
+      "git_object": "5b84960e47684acee56e0d45a5fb1937a155f136",
+      "bytes": 5834,
+      "sha256": "a706c0c0db6e0fa4299a2262f8cbbbf59580e1e5cb994c821911c7c6005534c1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/assistant-planner.ts",
+      "mode": "100644",
+      "git_object": "8b0d41b42624d09f6512e68181c1cd94f54cb9ea",
+      "bytes": 17743,
+      "sha256": "5421d52ec9b930e073bc4f49dee4f5a9dc4e52df5b18c9fcdb0388470f51964f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/auth-captcha.ts",
+      "mode": "100644",
+      "git_object": "d3aa4607261d741425dd6b69d5abd824d33d9a3c",
+      "bytes": 1652,
+      "sha256": "23d24de20fa93f5274c03ded6b70b9fabe01e6205e0c4fc26d40868c95eafd23",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/auth-context.ts",
+      "mode": "100644",
+      "git_object": "0ec45b4061d842343dd032507376b8f0a2666c1f",
+      "bytes": 472,
+      "sha256": "e3c9b734f389f66b078b0f4abad585bca5377c4de2af0a42c7e94779c55f7a40",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/auth-redirect.ts",
+      "mode": "100644",
+      "git_object": "279ddbff331eaefe7a1b3ecc4603b876b4ee037c",
+      "bytes": 193,
+      "sha256": "6a3e0ffe8d23edbd990384f720096841e5f1d763f36806ed2840ae51cc973eda",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/auth-routes.ts",
+      "mode": "100644",
+      "git_object": "659ae7c388a45d1610b50bef8a82d4827c5fbf2b",
+      "bytes": 16442,
+      "sha256": "b32eeb96b9a7a1b1cb13952496e830fc3fc26f646a05f3837b019f1b56157415",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/auth-security.ts",
+      "mode": "100644",
+      "git_object": "1b26c824e7fa62e7937f6dfe632ebda27e26a235",
+      "bytes": 8684,
+      "sha256": "4e54cb82c681e599384dc40e59d83f3e03eaacf241773aa95fcec9ec58e7a82d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/auth-server.ts",
+      "mode": "100644",
+      "git_object": "300c5fb8ac06bf28946a796641b811fc47b05f7c",
+      "bytes": 10839,
+      "sha256": "21143d3897e4beaa5e1492d766d3c4d24d845bc90492224102d28a984f02e31a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/avatar-image.ts",
+      "mode": "100644",
+      "git_object": "af720cfbd53a09912bb24bf94d35650c6ac7cc4e",
+      "bytes": 1955,
+      "sha256": "954cd4b47fadbb3edb460b3cb7834777c6a80f11c08e45ad94be7d5dacf7cd0e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/avatar-store.ts",
+      "mode": "100644",
+      "git_object": "29d80001a500afc465679ed0e89220f41859a5f5",
+      "bytes": 1523,
+      "sha256": "6d6d8174e57cc628366567e4677ed73bc0089235493733820c6fb7200da79976",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/billing.ts",
+      "mode": "100644",
+      "git_object": "4e0c30a36f652f8041cec7083cfccfd62fea190d",
+      "bytes": 1385,
+      "sha256": "2a7495abf8d4d7f1e5ea05839125786cc335f9716d75f0a7e263f48b8d170705",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/brazil-tax-id.ts",
+      "mode": "100644",
+      "git_object": "4c5a651da1dc938f82e976d52b0e930e984a65a5",
+      "bytes": 901,
+      "sha256": "5a33b9e38049e50b9d20781bcf504e9ac8ca2cdb7b4f5e1af6351e7178ba850c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/budget.ts",
+      "mode": "100644",
+      "git_object": "699ab2988c92394be7e35de6903f28f716575d69",
+      "bytes": 2277,
+      "sha256": "32522ca1c12586fb113974b6ad146931cc003b4fca205c73194e00b4b4048566",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/daily-motivation.ts",
+      "mode": "100644",
+      "git_object": "b3df580f126382d7a4d09d8bb80684e12aa1265e",
+      "bytes": 4281,
+      "sha256": "80219bfea21c6452b310f864eb4a9ff87b2934033caf05157b76ae7b71447350",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/discounts.ts",
+      "mode": "100644",
+      "git_object": "db16e3b17fc6d552ca2d963a4caafdd2a680b3ff",
+      "bytes": 1688,
+      "sha256": "79b4fa2637ad97e8847f85a86fb1743268df41c4f7ae7a0acb5a5fe67456d701",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/entitlements.ts",
+      "mode": "100644",
+      "git_object": "47df0556bcca59ff0169ecc124543b09dc70eadc",
+      "bytes": 1634,
+      "sha256": "7e154dc5dfb4655fd60b55f3371b178c1f533eadcfaabaea4e421a4d287e1d5a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/feedback.ts",
+      "mode": "100644",
+      "git_object": "22ec25940ee4bbc65f9361ff72fd25f5865e73a3",
+      "bytes": 1210,
+      "sha256": "93631d97e9fe84b270eef2ed30ececc05ad6b886cda59248693f27a73e1a5878",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/legal-settings.ts",
+      "mode": "100644",
+      "git_object": "d4e9b276bf382aec0bbb0f41041453c156059d70",
+      "bytes": 796,
+      "sha256": "109d4ff1d9ab48cd95f15a6962fd68b8ed165d6c88397c06c02bb83436eabbd4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/password-policy.ts",
+      "mode": "100644",
+      "git_object": "b569ffa34d57cc1a1e7bb0535310b50f30ad471c",
+      "bytes": 515,
+      "sha256": "b615931e10e72efc17d92994fa88a15ea97e109840846491d27ff7c26ff7467c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/plans.ts",
+      "mode": "100644",
+      "git_object": "a4e0285e11f2688fa1d158970ca4122edc0f9943",
+      "bytes": 17029,
+      "sha256": "d447f66fd0106ce7963a5746cd5fe6f892d40248251127a94c430ad01ef69d52",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/profile-name-policy.ts",
+      "mode": "100644",
+      "git_object": "bce87243d6ef8b7c3d8aee0d60cb9ac4d9fa4019",
+      "bytes": 2366,
+      "sha256": "8b009d966ceea95e770f70bf7bbc28aa2497173a07299104439922fee72f871a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/request-security.ts",
+      "mode": "100644",
+      "git_object": "f03cfbc725437a082879edd4f9a3d0578aa3b10d",
+      "bytes": 5299,
+      "sha256": "5bbc0c0109e005b90cb53a3b9e48ceb039f5b8118a7e61c942ac938a7e7d9066",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/return-path.ts",
+      "mode": "100644",
+      "git_object": "c7498a5a0043066f27784ef5a3d4c16cd273f5c0",
+      "bytes": 325,
+      "sha256": "63321c8f867326afc3c0d8ccf0aaf723debae14b5b0ab46b6f1f2a129a19f07a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/ritmo-domain.ts",
+      "mode": "100644",
+      "git_object": "aafca06bff7f3a0191e5aaa225d5b1b489005ac4",
+      "bytes": 2428,
+      "sha256": "0e23fe13cd0fea2843a27976bfdef03c200cb61fea34d91bc03409c8e00dc6f4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/social.ts",
+      "mode": "100644",
+      "git_object": "6fdb5ba2cdfc803b1cbd67faec10d1cb158ef699",
+      "bytes": 3177,
+      "sha256": "7e1217c8b87d176f22ca021a40c28c47979a458a0c2e16f0145122678d803d70",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/state-validation.ts",
+      "mode": "100644",
+      "git_object": "a8f82de414b82d12ffb3f7543ada6f10a7594edb",
+      "bytes": 2998,
+      "sha256": "3cc7a81e6b45f86f9ef41d0e958ad20a4de5566f8382ac0ec25b02c7bd5d9830",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/support.ts",
+      "mode": "100644",
+      "git_object": "940be575965d0f1acda511757a0b724aeb8b7407",
+      "bytes": 1101,
+      "sha256": "deacfe02a36b14a6c674ae4a51585356b7ea44c24cefb41ce40c9bb95b20c6f0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/utils.ts",
+      "mode": "100644",
+      "git_object": "b500fb167fdaa78785feb0ff03b51f8a182a44ae",
+      "bytes": 177,
+      "sha256": "53f3d3d070f0a9082934da25b875f9499855c2b0693868dd28be8c23d8730f68",
+      "lfs_pointer": false
+    },
+    {
+      "path": "lib/webhook-signature.ts",
+      "mode": "100644",
+      "git_object": "546ac171deeca0d1127303689e5e5b161aeffad0",
+      "bytes": 805,
+      "sha256": "d24241b293eeb88ecc0f9d3bdbf617a154efd883020a4922e08fe04e1e00e891",
+      "lfs_pointer": false
+    },
+    {
+      "path": "next.config.ts",
+      "mode": "100644",
+      "git_object": "874874e20ad28b0d26c208380c3ea20a981d3491",
+      "bytes": 719,
+      "sha256": "f162420ecc1598809cda2464e5a5f2e92761d6083e6669bf533c56cd31af9b77",
+      "lfs_pointer": false
+    },
+    {
+      "path": "package-lock.json",
+      "mode": "100644",
+      "git_object": "4efd18cf385e5f5936db8d4121d8ea91fc827b6c",
+      "bytes": 504116,
+      "sha256": "628af7306413ee0739d52dc6415cc2574f86d13a7b8a5e0818deb0805fb3aa46",
+      "lfs_pointer": false
+    },
+    {
+      "path": "package.json",
+      "mode": "100644",
+      "git_object": "1dd3c3eefb93138fedf8e909cf60350de81f9576",
+      "bytes": 1903,
+      "sha256": "661d2c3bec9515cc5ad249b45bce16ef892bfb651d0c3f4a9988a5ec0a5d4d8d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "postcss.config.mjs",
+      "mode": "100644",
+      "git_object": "61e36849cf7cfa9f1f71b4a3964a4953e3e243d3",
+      "bytes": 94,
+      "sha256": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/android-version.json",
+      "mode": "100644",
+      "git_object": "59186fe71d5f2c7af9d17e0e2a361f6eace41d57",
+      "bytes": 358,
+      "sha256": "f53ac6c800fc8b5b5dbf05d352612609621b04e5a7b479733aef2f1fb4b9355d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/favicon-mr-v3.png",
+      "mode": "100644",
+      "git_object": "4576c5c8f8d6bd3d05b93277b8c0eb88cf050907",
+      "bytes": 5281,
+      "sha256": "49d96711c42976396c69705a5306269aebce45316ece10ad545c38437e6ec69e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/favicon-mr-v3.svg",
+      "mode": "100644",
+      "git_object": "964d079e0cdb22be5ce3731c495e930113be8388",
+      "bytes": 1302,
+      "sha256": "7eb1c606586f5fded959206427aadd1626ad114156277acff34505b920dab156",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/favicon.ico",
+      "mode": "100644",
+      "git_object": "662f1271fc0d38afa7d9bca7893b24e2276bbc21",
+      "bytes": 12460,
+      "sha256": "e7415bd482135ac377442a7b1f21732b7a33a3831373893a48d3961639e4fd2f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/favicon.svg",
+      "mode": "100644",
+      "git_object": "964d079e0cdb22be5ce3731c495e930113be8388",
+      "bytes": 1302,
+      "sha256": "7eb1c606586f5fded959206427aadd1626ad114156277acff34505b920dab156",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/fonts/LICENSE.txt",
+      "mode": "100644",
+      "git_object": "244e102f07eaa2388b83ac9ce7fe2f91c7b16069",
+      "bytes": 1031,
+      "sha256": "94d4b78643f99d7cfa872145b38da578299f401405ca5cba66a5c95bf13933b0",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/fonts/MeuRitmo-Bold.ttf",
+      "mode": "100644",
+      "git_object": "fd79d43bea0293ac1b20e8aca1142627983d2c07",
+      "bytes": 224592,
+      "sha256": "5894a3649b213cf5b2d673b6e7a871815fd1d120fa68a463592f27db14eae323",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/fonts/MeuRitmo-Regular.ttf",
+      "mode": "100644",
+      "git_object": "db433349b7047f72f40072630c1bc110620bf09e",
+      "bytes": 217360,
+      "sha256": "e64e508b2aa2880f907e470c4550980ec4c0694d103a43f36150ac3f93189bee",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/fonts/MeuRitmo-Semibold.ttf",
+      "mode": "100644",
+      "git_object": "1a7679e3949fb045f152f456bc4adad31e8b9f55",
+      "bytes": 221328,
+      "sha256": "aa3b0ef53db12e3d45094030cac0e69d384e44cc5978643dd4390041cad546e2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/licenses/lucide.txt",
+      "mode": "100644",
+      "git_object": "718bb3f0e44153809972abed31839375804bf652",
+      "bytes": 3208,
+      "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "mode": "100644",
+      "git_object": "523b0a0dbf221299e832b14e1e882caf5923552b",
+      "bytes": 413,
+      "sha256": "254c8a1a48f16e24ac36f64051ed394fc15740c16968a4a072652a1f1331ad74",
+      "lfs_pointer": false
+    },
+    {
+      "path": "public/sw.js",
+      "mode": "100644",
+      "git_object": "69b503d6a5257efca8e586ee8305a199ffd8103c",
+      "bytes": 273,
+      "sha256": "45834a674bfe63771d0523faf98e1e4e61c656b4290bf6f961d45af497a4b110",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-card-readback-audit.mjs",
+      "mode": "100644",
+      "git_object": "b8048ca522d50ceba77febb962b0d85ac35db5d4",
+      "bytes": 3747,
+      "sha256": "395359bc3426664713bf6e135ed89ced25637aee9a5470850418a890f0d34336",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-hosted-pix-sandbox-smoke.mjs",
+      "mode": "100644",
+      "git_object": "d68cff7219c5e8eed2eb61614cab5e7d64de7020",
+      "bytes": 2377,
+      "sha256": "742b1dd0529454e441be517622259a0f137d5dc5ca7bc8b87430fb6e16b2a217",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-pix-production-readiness.mjs",
+      "mode": "100644",
+      "git_object": "d04571367defab21d998833605366af6b43ac7da",
+      "bytes": 1127,
+      "sha256": "95ffbdc8254bed0b6c8c0a8651cbcbdf95c595f5cb78670c0688463d84c37171",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-pix-sandbox-e2e.mjs",
+      "mode": "100644",
+      "git_object": "24791f6efac2771a5491f5149fb6a681271e4dde",
+      "bytes": 8045,
+      "sha256": "c1f79e44b08eb7d47ede972cc844ee863941df594d90c8a512ae5f5813bb8a7d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-production-audit.mjs",
+      "mode": "100644",
+      "git_object": "51093c68ac0bb22fc00e022cfd334a8d9e4af94f",
+      "bytes": 4766,
+      "sha256": "2f6fb6e5102af636b925ef9f871fcba274b9ff7965fae9b005e98e17a2e18220",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-production-card-checkout-smoke.mjs",
+      "mode": "100644",
+      "git_object": "f3c58268ced25fe14af19f75f83ed167e0a1f647",
+      "bytes": 2464,
+      "sha256": "a5613a7868eca057b65d972da2196e5def704460c440c328d28c01c5b035e190",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-production-customer-checkout-diagnostic.mjs",
+      "mode": "100644",
+      "git_object": "3af775c80929ed77d89db78f525ce6f755b0499f",
+      "bytes": 7128,
+      "sha256": "11da29a0cf58562f24280f73c76d4458991638bd0e67bfb3077eb59b7ea7f5b3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-production-ledger-audit.mjs",
+      "mode": "100644",
+      "git_object": "35eb55accd201fe300b6d2ab0ed82099d52b8710",
+      "bytes": 4887,
+      "sha256": "8416a5ee83b5591c3b10fd1db156d22067355d2c05ccb97212edf1dff0fe7a55",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-production-pix-checkout-smoke.mjs",
+      "mode": "100644",
+      "git_object": "522da4ceb20ddebbd1cbdcd5ba4c005eb86c706a",
+      "bytes": 2834,
+      "sha256": "c7be8c910e6d572f7ec29925759736c20cd02944ce0464709fe55dbc72380281",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-production-repair-webhook.mjs",
+      "mode": "100644",
+      "git_object": "da471b4a0ed0ffb6c21a09a7e22da58ac7cd156a",
+      "bytes": 3147,
+      "sha256": "800ee76dbd80e0814bdbcea573b839a9a0a3c619f36257a4b5aa08cb96eb62d2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-register-production-pix-key.mjs",
+      "mode": "100644",
+      "git_object": "2138532e4a81a1b82ec40b93ac8015f39436863f",
+      "bytes": 2054,
+      "sha256": "47ac5bd18f3b0a75d156eb487ef2820f9f55b7ebd1e16af96d5db50e9d1c73b7",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-sandbox-e2e.mjs",
+      "mode": "100644",
+      "git_object": "c2a99a2639714bb1429ac58df141cdbf447768b1",
+      "bytes": 20272,
+      "sha256": "53fc9dab804e9c21d86f3cb014eeb0437b9e16e4d0667535255b77103feedf65",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-sandbox-refresh-pix-key.mjs",
+      "mode": "100644",
+      "git_object": "67467197a1df32ad3c3578874a55566c7725eeb0",
+      "bytes": 3266,
+      "sha256": "0278f74f75b2460e4fa3ac5befe0e6582d1463d0c3db7a63fc2288a3a8d62802",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-sandbox-repair-webhook.mjs",
+      "mode": "100644",
+      "git_object": "3162567b46a54138261e2e688aa39c3735402171",
+      "bytes": 2979,
+      "sha256": "787db1a40d550d3cdd434af27b35e2ba78af5fb8d0f7d0ddb3ef34d987201619",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-sandbox-resume-webhook.mjs",
+      "mode": "100644",
+      "git_object": "398f0cabb2ec146b047feb4f24dcd8b9a0bbea2d",
+      "bytes": 4293,
+      "sha256": "59d47e2779c90944c999635b5163b223cdaebb70c359ddc06acdeb1a1cd0849e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-sandbox-smoke.mjs",
+      "mode": "100644",
+      "git_object": "af3534e31d4f4aec8ead3051d946ad9ba29a10e5",
+      "bytes": 4654,
+      "sha256": "7b2cdb697e5ad6f61424a944f1b5485dccd7f5263e6294e09b043326f630648e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/asaas-webhook-d1-readonly-audit.mjs",
+      "mode": "100644",
+      "git_object": "860fb1b69615983ce5df7c3f7db38418926dd379",
+      "bytes": 1672,
+      "sha256": "392eacc11150f4c11aaae3654af481554eff98b864def8ac979c882d10775427",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/deploy-sandbox.mjs",
+      "mode": "100644",
+      "git_object": "79b5422491bcc74cd477ec892605d72ecefe026b",
+      "bytes": 4809,
+      "sha256": "9f1f04de6f9133f82a3604ff618a8842f0373621b301d221b0a7612c71a1a910",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/deploy.mjs",
+      "mode": "100644",
+      "git_object": "e7f4d0662a33fbb2b0af3839529aedae785e4070",
+      "bytes": 3135,
+      "sha256": "bfa86ac47859b514246394ce9d6c8ba426dca8a55c69e13dc82f8a8abf156860",
+      "lfs_pointer": false
+    },
+    {
+      "path": "scripts/visual-check/run.mjs",
+      "mode": "100644",
+      "git_object": "6afe136b4cad97df822db5a7462c3fed1dbb6540",
+      "bytes": 3093,
+      "sha256": "1f30b6c924024d1b8b3a1d1de7e3933f5ea5403234586fac56180266d3d5b4df",
+      "lfs_pointer": false
+    },
+    {
+      "path": "supabase/avatar-policies.sql",
+      "mode": "100644",
+      "git_object": "ca9e4a860350e814dd7d0a176bdf0efef7e57df2",
+      "bytes": 695,
+      "sha256": "db731beef07c8e178784ea7aba6ba50e84fbe1165b337263a2166fbe2b50dc03",
+      "lfs_pointer": false
+    },
+    {
+      "path": "supabase/templates/confirm-signup-otp.html",
+      "mode": "100644",
+      "git_object": "009ff31d548d2cb4c82246f8a361180bb8e1a331",
+      "bytes": 1307,
+      "sha256": "3f87161966dae004e758473394011838b5b2712d05006191f54994745c9978fb",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin-audit-history.test.mjs",
+      "mode": "100644",
+      "git_object": "896b809812b31ed6974d9dc59dfbd75a379aa944",
+      "bytes": 3546,
+      "sha256": "608b27a50e86d94e8ddb1890df6cba0704332a575fef141cedb86a5534171382",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin-billing-layout-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "762a05fabbc7405906388366a52381c85bd29f0c",
+      "bytes": 2201,
+      "sha256": "cfc2d23949c7ad417749e5ce3933b769d9e4a1d76fd36eb6b411e300772d6456",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin-coupon-visibility-deletion-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "37797a19e7bfcd3aa777db1803ac813733859861",
+      "bytes": 7964,
+      "sha256": "a56caf9219c7729cd5267fe326fcc92f99fa25e062f537a0afb5b35d03f56488",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin-logo-consistency-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "ffe8fd2ab2fa88a0b8765cfa50b5c3ff8a0639d3",
+      "bytes": 1763,
+      "sha256": "30ac2d0fda910dea8e35477ededf1010710e1d9efea73541822508c43ccaa424",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin-promo-button-placement-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "e63f3fbee0b44cc5fe400f299d7a4218109a50c8",
+      "bytes": 1570,
+      "sha256": "ad674a7f668b24664097891c55f156e3605a09f2a8b2cd3b07b168ea2f7e6e8f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin-return-link-contrast-20261116.test.mjs",
+      "mode": "100644",
+      "git_object": "3e89b8b834fa0e2ad843138d71529b7447b63fb5",
+      "bytes": 1800,
+      "sha256": "e83cfcffd212d27ae7ba35e1e916041ab7dabd7f5c4f6a630ba0638f7e5d1ca9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/admin.test.mjs",
+      "mode": "100644",
+      "git_object": "b691a50bb26ec637fb9431e0fa46d3e857d904fc",
+      "bytes": 8202,
+      "sha256": "613793deefd9caba07064bb80c8c6fdd451289702771496e0358b31420d9c1a4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/alarm-sound-prompt-reload-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "edc58c97cb57a51f63a7d7896e8ddf381af0ae9c",
+      "bytes": 1048,
+      "sha256": "04d25103dbd8645904d3ad518ea206ee0ca724adc9b6c59d92863717aab7d18a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/alerts.test.mjs",
+      "mode": "100644",
+      "git_object": "728814843ce91a97b0cad1c0d4008d808de4ee4e",
+      "bytes": 2292,
+      "sha256": "3a8a56f459c2ace3256259e1c06ec979f91893cad855debee175d3f56f823b90",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/android-release-metadata.test.mjs",
+      "mode": "100644",
+      "git_object": "2fc1e7a822b84701624e2744cb58168e9b3e9d0d",
+      "bytes": 812,
+      "sha256": "3dc2d9b49e9848c51858f5c854892122c0dfed84f2e8a97e0fa2599a9a9da05a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/api.test.mjs",
+      "mode": "100644",
+      "git_object": "622b1c141a22ce3de508b00004c6919cad158dea",
+      "bytes": 8447,
+      "sha256": "f89efbddbd9a2da14e1fc355ddb792c62261e9a8456bef60029f171c9b3d5773",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/appearance-sync.test.mjs",
+      "mode": "100644",
+      "git_object": "b99fca9c9da63cbde9a2ffedd6f8c1dd9465682e",
+      "bytes": 940,
+      "sha256": "a986b9f8f79a8a9a70e58637fbce61bde9ae25aa2bee30b8f12d275066e9e74a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-checkout-failure-recovery-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "e21cae8e9cb3cfd9613a4c180bfff17568037278",
+      "bytes": 5167,
+      "sha256": "9b613c4d42e0de903a715387fde656cfa7c519a30f88d9cab42640e3925afbca",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-discount-coupons-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "700f28e9f2fe72331fb0564234035f96166f5132",
+      "bytes": 5858,
+      "sha256": "88d7ddee9997c5a856999e5c83170197b6d1e77d34ed432b4553aa6036ee34f6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-hosted-card.test.mjs",
+      "mode": "100644",
+      "git_object": "1846ec35bbd1a89fcccd529e3ce6bf44b2840845",
+      "bytes": 2598,
+      "sha256": "49b93d4206ee6c2c32e6e6f31300585651da151c9b0cced09645bae975260510",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-hosted-pix-sandbox-guard.test.mjs",
+      "mode": "100644",
+      "git_object": "4d39b2fa131ce4c3631337e21f897593021ed024",
+      "bytes": 681,
+      "sha256": "2f0b36a8d6bf80c264173afdf17e02f3c0b1a4b456befe21f0b938e4b7c14a65",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-hosted-pix-settlement.test.mjs",
+      "mode": "100644",
+      "git_object": "3d7056993a47de288ad98fb6f0f652a61c7a4261",
+      "bytes": 8262,
+      "sha256": "63b07821bcf6f77c27bde08bc069644ebbea0f159a2be81e044e0997602b2bcd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-hosted-pix.test.mjs",
+      "mode": "100644",
+      "git_object": "e986d9835e2ba57906ad3eeb4eaeb5e99efa24c3",
+      "bytes": 1983,
+      "sha256": "8a9ffa924174d30e6f1bc55ccc8bf2dc329c4446c0d0366133d50f93ea3902b4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-payer-details-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "15a45de46d6277ab487f10d782479dc893aad439",
+      "bytes": 1610,
+      "sha256": "2229c93e0cffc4b78a37fac364483308b13193a337646f207033a4e95ae88ba6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-pix-only.test.mjs",
+      "mode": "100644",
+      "git_object": "b9f2dcdec83176382b8e0db155be8f47275ec2d2",
+      "bytes": 5153,
+      "sha256": "c87454365c75e0f2982aba4ce7edc38f90bc5415975722787e683b498e843609",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-probe.test.mjs",
+      "mode": "100644",
+      "git_object": "be907c74f43be1249ce7d77d214020bdda5a8f8b",
+      "bytes": 4440,
+      "sha256": "b53042bc98dcab93b99fb286dd0e9133516b7b573e1845501cd0396d77fc16f1",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-production-card-checkout-smoke.test.mjs",
+      "mode": "100644",
+      "git_object": "29ad7290c2a0048806efac074571c2d865d70cfb",
+      "bytes": 538,
+      "sha256": "5e4559bbafb60c4d9e1efdfdc2fb29a61703fe7e094af25f1dbdc5aeaa77cf94",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-production-customer-checkout-diagnostic-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "43faf3b0a34f4cdd9a35a4923803aca7900345f8",
+      "bytes": 1678,
+      "sha256": "b53687c64769167b629a1e0fb423c9113ce25475917f54dba1f31c3a24e9d571",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-production-ledger-audit.test.mjs",
+      "mode": "100644",
+      "git_object": "f83619a680f81f5633c36ea14e0b358c8e7dda97",
+      "bytes": 1029,
+      "sha256": "a15129bb1377e10f2b63cf137bd39a4640ecc47b8ad796408b9248bf68379c9c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-production-pix-checkout-smoke.test.mjs",
+      "mode": "100644",
+      "git_object": "ea1baa69bc5be64a5357101b5b615535cb9af29b",
+      "bytes": 760,
+      "sha256": "cb7f55b5d092087ebb19e3190d39aebd1dc0b310e94a1c2e13a1ca937648bc6a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-production-pix-key-guard.test.mjs",
+      "mode": "100644",
+      "git_object": "5cf81810bccf3b6dc3618229d0a54d38cf53e40a",
+      "bytes": 700,
+      "sha256": "b7bfcbe0026bdd95380770eb466eafd443553c76e471cc894a1150b3374d99f2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-readiness.test.mjs",
+      "mode": "100644",
+      "git_object": "1432585833e3ba1ae052ed820bd7841239407e8c",
+      "bytes": 3434,
+      "sha256": "09bfd10a5ebd0af80233c3766d2a058272b2811913bf9653371df26e6a6fb5d6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-sandbox-e2e-guard.test.mjs",
+      "mode": "100644",
+      "git_object": "a045da1cb54b014098c540f5c1fe9731e8f8515e",
+      "bytes": 1743,
+      "sha256": "cf650026e8fa0eeff512bde89af5cd85af039e59fd9edcfccf906710add23597",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-sandbox-refresh-pix-key.test.mjs",
+      "mode": "100644",
+      "git_object": "63a588e101c179a9049fb8891c713b2336b5106e",
+      "bytes": 703,
+      "sha256": "a19d4a28dfdda2a2573b1df6d6d95fa405b432d8d728b2e6af015166327efe3f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-sandbox-resume-webhook.test.mjs",
+      "mode": "100644",
+      "git_object": "23d9eb054a7877b6f905c268d2a2c644f358131d",
+      "bytes": 1076,
+      "sha256": "dfefcf6b655148d905661a97dfdad804d090d6168296b098014810cde2c43779",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/asaas-webhook-review.test.mjs",
+      "mode": "100644",
+      "git_object": "7ec6d2de7aeb4b5a057ee848689ec776312f0256",
+      "bytes": 3827,
+      "sha256": "7ad7340061b9170fa0c3157f1680e4777a7ae319917371f4a6a0ddee53bc8e51",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/assistant-disclosures.test.mjs",
+      "mode": "100644",
+      "git_object": "2039b5dedd784260064c00e7f50ecfad9d28b83c",
+      "bytes": 1009,
+      "sha256": "25e4f2211ddd63ee51851ff4eac5e42d0244ab4cbb41147fe6d88662d5bd7c06",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/assistant-feedback-api.test.mjs",
+      "mode": "100644",
+      "git_object": "ff11d4d20e6c3465a750316602249c3cdb53b1d4",
+      "bytes": 8449,
+      "sha256": "34b635ce2248e019a684fc0b4840e9cc0b723506cbf94a11583129681ae2714d",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/assistant-mobile-time-spacing-20261119.test.mjs",
+      "mode": "100644",
+      "git_object": "1551112f47f9dfaf2e56bb471b0fd8d21659f9d8",
+      "bytes": 1103,
+      "sha256": "d2f85f86dce2f64b6167a7c14e61370df3273a3618d3f60dc56a596f72c3fc67",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/assistant-planner.test.mjs",
+      "mode": "100644",
+      "git_object": "51aca7a3190f6d60e9c6fc0ec6120e13ef929469",
+      "bytes": 11794,
+      "sha256": "2faf6af8f4f88de03f988cf4949678ea9cd87ba13ff108adbb7fe8c3ec5505fb",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/auth-captcha-seven-days-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "4e56fa49abc3956d6954f1739f78a6fb4bfe7235",
+      "bytes": 2226,
+      "sha256": "9a2c86b5f51d76e094b5a58d65b4e4545d2fbcc885afcbfdba6c791ebb109504",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/auth-recovery-origin.test.mjs",
+      "mode": "100644",
+      "git_object": "6bd9fbffff017828c044bfea8a795c409478eb52",
+      "bytes": 1207,
+      "sha256": "672d81823b09bc50f5a90be079104048c0425620414a51e93f29bbcb7d1854a8",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/auth.test.mjs",
+      "mode": "100644",
+      "git_object": "1b68b9a7f2a18936970e914dcbf94c86e3b600f6",
+      "bytes": 9677,
+      "sha256": "89d039d5710696ed1a5803914537de117e65a3284f233dd9965567e23d9cdb84",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/billing-select-arrow-spacing-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "fe44228144f2804f29677acd4960907186515a1d",
+      "bytes": 923,
+      "sha256": "15e8a5ec8982b3930785d5e3b82fed5a3016079d45aad3254366a81ac5282578",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/calendar-alarm-theme-contrast-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "faecf685d42973b24cf9507107095382a1f5294a",
+      "bytes": 2889,
+      "sha256": "ea8b6c8da2523cc54a5f1cf98a4b18317dbf6a3b86c466a3da4a80a979be6c7a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/comfort-fonts-checkout-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "002fc3a023dcdd70f01970b3ceddfa347c33a511",
+      "bytes": 2941,
+      "sha256": "24fd15bb076d6ce9807878196ca554c9f7efad50708855c6a365cbcaab326de2",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/commercial-launch-gating.test.mjs",
+      "mode": "100644",
+      "git_object": "ef684506233697aac7a6e7a17fab0cbbc39ad4bd",
+      "bytes": 549,
+      "sha256": "76558da1bcf055fae8b27eeda34789591a47fd55b0a00b4fe3742211315ae500",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/commercial-plan-entitlements-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "140e712a1a188a9f834e6b8e1ff2fa7e36229d96",
+      "bytes": 2089,
+      "sha256": "656f96b3af4264534e5e7c960663d69bfff2386a4589800fb9e661327ff59b2e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/commercial-release-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "9e773c3365a98b5f85f1ef7eca80021ab16e5b9b",
+      "bytes": 3096,
+      "sha256": "ee134f4015709272f6be5edb520d51794d9fc1413773d8b19af63b4d266c6578",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/current-plan-legal-review-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "f483d284413e04c8aad9af30d90c882af3402af8",
+      "bytes": 2110,
+      "sha256": "a94ae91c4dae13316e08571ffa7aabc34a723c0c552099d273daa8c06941444f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/d1-promotions.test.mjs",
+      "mode": "100644",
+      "git_object": "aa3911221b222627cb7b94648bca79bcbeefb97e",
+      "bytes": 3147,
+      "sha256": "14ab80eafba1800ac3c65febe71507853a616abf294bd3721e6e971c2b233458",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/deploy-sandbox-safety.test.mjs",
+      "mode": "100644",
+      "git_object": "a4e3b1f33fdebb5c62ae3f2cce4a4778402858f6",
+      "bytes": 3105,
+      "sha256": "e7f3c96ce780b04f57bfc07d75980575638707af192f5e076fdf8a76dee9cdbd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/dialog-system.test.mjs",
+      "mode": "100644",
+      "git_object": "1f2235eb31afe0119bc96c589ed15ea11620a8d5",
+      "bytes": 3766,
+      "sha256": "08abc574984a200009b8d4be549182a140118593f26732966ba4d2037b3340dd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/domain.test.mjs",
+      "mode": "100644",
+      "git_object": "075effe700b0990f93466d1c2283dd299ea9dc41",
+      "bytes": 3925,
+      "sha256": "3de364838fa9a13dfe9980c0d319b27cf6673ba5f97057dc932e430ce1dd8f13",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/download-route-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "0bc5f6d119658a009c0163aa59c9b341580dc365",
+      "bytes": 1916,
+      "sha256": "304fbe4b7941da52290bd1e59cc897a460c2b505b3209e2d06adb6cb126730f5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/email-only-auth-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "47657b58279d715447c818f3d2fadf37b6991e1c",
+      "bytes": 2353,
+      "sha256": "e084ab4dfa26c1068f6c94e877b44b32e14a9ad3c7d51b9c97378ad36040ed1b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/finance-actions.test.mjs",
+      "mode": "100644",
+      "git_object": "005386e7ea2077b4b5691306a24dbad670c1f356",
+      "bytes": 1201,
+      "sha256": "1688a95e13ea9fbc4a9f5b186365dc522428c2e49f936260557a7d670dc00e82",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/finance-consistency-20261123.test.mjs",
+      "mode": "100644",
+      "git_object": "5198fbc9e49fb624b363f26466b5fffe5ab9a521",
+      "bytes": 4480,
+      "sha256": "d1f08988136576f5edd4088e593297f9f2e4b689efb2771630c93a658dd9ce30",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/finance-expense-colors.test.mjs",
+      "mode": "100644",
+      "git_object": "c56cf0a31ac69b389138c041c0a011702d4df4f8",
+      "bytes": 1240,
+      "sha256": "adfe6b347fe0685d136d00eeee2b8f5f666d8f2a3dad4b95b137a419dc9cf902",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/i18n-auxiliary-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "383e59c7ccd9a8904fc364a42639a71c504d9388",
+      "bytes": 2465,
+      "sha256": "90d1f9ffb2451b278ad4ddfa6209a5d958f0b3747aa32dbbd1d0ce391ca60cf5",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/i18n-coverage.test.mjs",
+      "mode": "100644",
+      "git_object": "08bfe1a576c265fee8c51275f1e5887f6fe7f9fc",
+      "bytes": 2461,
+      "sha256": "d6fcdec024d92846de8f62f6e0e1b5221b1b02998107b1e29f618d9d2d5f636a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/i18n-dictionary.test.mjs",
+      "mode": "100644",
+      "git_object": "369d74ef324f9fc1421fb556c1c69db1efd36efd",
+      "bytes": 1096,
+      "sha256": "b4bb6fb9850565c39ae84b0ca9820ef418fb6fb19ba2c80831d56a1f60eaaf03",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/illustration-coverage.test.mjs",
+      "mode": "100644",
+      "git_object": "63a3cea153f952f1c8d86098f2888b1930885603",
+      "bytes": 2060,
+      "sha256": "b6dd6849557f4616e5b2f4d4dd4d1135668a55cbad82b793ba961952f1f76aef",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/income-finances.test.mjs",
+      "mode": "100644",
+      "git_object": "8b35218b042be4ac7d227acd4325af907449dc84",
+      "bytes": 1923,
+      "sha256": "b3609caf0de7c364f7b728582dea00018d0c45a3e5b777092f793b687cbf7427",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/legal-language-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "8e0b18b98e8722aee0c4d1338a68f0184bc81efb",
+      "bytes": 2264,
+      "sha256": "2d68ca7f9c4412c933e33d2f118358b05ae6dbfb8c9b78a95cafedbaea972682",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/mobile-sidebar-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "ad924888cf94133a93c048575f8ea981b9911bbb",
+      "bytes": 2628,
+      "sha256": "125486aec04eeb83b992b4e534cd0be60cd05f7688f8eb12266eea47d36d534c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/paid-plans-themes-i18n-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "b6aa3eeeb0efc2b0b14af69d7c4daadd7d46fbc2",
+      "bytes": 3508,
+      "sha256": "abf82300809523f484b3aa67767016b09c2c68349e05c02fce768d0464c1324f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/password-policy.test.mjs",
+      "mode": "100644",
+      "git_object": "fbf48c29d92e5ad258d6d7dab80cf638c0a42458",
+      "bytes": 7194,
+      "sha256": "4dc63e56a7ca8ee8b87ccf41d9de3929d32a6f7ba52d6b44cbccc05d5e857d76",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/pix-checkout-resume-20261117.test.mjs",
+      "mode": "100644",
+      "git_object": "0a9222fad5a3c28cc0aacb726a7df43e2d847ea3",
+      "bytes": 3449,
+      "sha256": "ec8fc7fbfa0de1151e70b524f652a6abba1c83d1bfd908a7f69a15b3be9a212c",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/pix-coupon-ui-unblocked-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "c6bc95c8025d4e40b1ac2e4b4a32b5b23ebdbee8",
+      "bytes": 3402,
+      "sha256": "9fa3b34b1a3e9563efe1a7a31122b02fc0cf27c7b6f8727b1b5a4cf853f29957",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/plan-footer-admin-visual-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "de07ae5450354c993c35fbbe81f6ff338263cbc0",
+      "bytes": 3200,
+      "sha256": "c24710d063b7433f4be09c09355700b748b28a2206dd704d061685ed55a42879",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/plus-theme-default-accent-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "3c2be588d2e20eec676e05ecd4048e9d8a61e0d1",
+      "bytes": 2995,
+      "sha256": "15642dee53dbf53e077bb428a972a320fe68a94aebd2453278550b55061681d9",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/product-voice-visual-consistency-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "de2cdac52f3698f146cc25ef177e8b37c8a70574",
+      "bytes": 3156,
+      "sha256": "dd2bdd10aa59f5bdc79947a7d4aeb74a9038d2ad195a75ba7e56fe04ffb0b588",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/production-support-security-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "6920f5ee409f27fbc3d365b4605c2a1a132b670a",
+      "bytes": 3110,
+      "sha256": "f9af644cf0e60a49c35075c129acc0c1fa8b4568072f10d4de4b0d5ded89f140",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/profile-name-policy.test.mjs",
+      "mode": "100644",
+      "git_object": "f4f46197e63596841105a6965f9c6dd4d6b38307",
+      "bytes": 1370,
+      "sha256": "1276c91ba500db52a87809114d90dfd1c683be7cb724c63ee7dae5107b063e37",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/recovery-otp-flow.test.mjs",
+      "mode": "100644",
+      "git_object": "e82d09e62b2076e7974f12c004fdc7e63fc178d1",
+      "bytes": 1365,
+      "sha256": "2b9fe64d8730d2c926f08c6c59a796c1bd5e58428a35a9d1807a5a46e94b3a91",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/review-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "5aa8fb844d01dace1db6d3f80be1e5646096b7c0",
+      "bytes": 4225,
+      "sha256": "939d0fdab254b9b21027523ca9cc3829fb7a32f3dd061ad5031f25cc163349e6",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/routine-social-pro-20261115.test.mjs",
+      "mode": "100644",
+      "git_object": "d9150a91de798f928f473944b9a1ef06e5f0297c",
+      "bytes": 4719,
+      "sha256": "12a24f03c503d86b435af812c460600be30f15c9b6df8c3323ebf6ea8622e17a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/scheduled-notices.test.mjs",
+      "mode": "100644",
+      "git_object": "5961f3a1b5c45ede4d643e36d5e1c6d65142cb2a",
+      "bytes": 5395,
+      "sha256": "599c095cf8545373a039c39ca2219770aad83d4c00e54424b67daff74cd41a4b",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/security.test.mjs",
+      "mode": "100644",
+      "git_object": "a583174b999f8566a6c26a7be0e50692e3aa711e",
+      "bytes": 5395,
+      "sha256": "468fcf4e2f0e1ab8446e359a9f68198b44172f1f4a55b1ae040e7c0f26f91210",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/shared-space-inbox.test.mjs",
+      "mode": "100644",
+      "git_object": "77c4e2e400b30841a9631e87d6a5b880774c2cf6",
+      "bytes": 1096,
+      "sha256": "cfb6b5f1cb08fc9e7fbf3743f761eaedb575f470d8091ab188a6ada19bb993f3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/shared-space-notifications.test.mjs",
+      "mode": "100644",
+      "git_object": "cb98688f17059bdbc4ad282ceaa43128ebb63810",
+      "bytes": 6727,
+      "sha256": "71ddd4f60d09df7f182df30d0700907485abf5a277905a371ae7b4b05728d5a4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/shared-space-spacing.test.mjs",
+      "mode": "100644",
+      "git_object": "8d2622a546ef0b5217767ffd8717e4e275767002",
+      "bytes": 879,
+      "sha256": "243df313a2e041d0a75a4531255f33586fd587d53547da9838a85e66b35b6d12",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/shared-spaces.test.mjs",
+      "mode": "100644",
+      "git_object": "50301779cfdf8b359fd835353718fb5f2a3d1c3f",
+      "bytes": 8852,
+      "sha256": "855e8d0f4430e75186ccf486a9b67dfea651029045105baafa15531e1a8587dd",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/sidebar-plans.test.mjs",
+      "mode": "100644",
+      "git_object": "12983dd3b1816b114e5d8f2aa067176c39546fe9",
+      "bytes": 824,
+      "sha256": "d3972f1eaa721c618fb5144baba0f4bf2af4850b84c3a5b6953b7859cedc61d3",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/sidebar-theme-i18n-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "b3b6f68a08169e89ccce462c1c7974718ba4ff06",
+      "bytes": 3119,
+      "sha256": "6c89d0d9a139b5df80193c47e7debd0cce7c0afa09429ed76e740484e575fc9e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/signup-otp-email.test.mjs",
+      "mode": "100644",
+      "git_object": "6693fd1aeca6c0af59fcc65d99e0a4102475ab6f",
+      "bytes": 3967,
+      "sha256": "b22b5a873d4fc0e3da46f722773e4e219fc6e43f7644fff62ff9c1643443a5c4",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/social.test.mjs",
+      "mode": "100644",
+      "git_object": "67958021c9ff5561f923982eb3296e2b7d2952b4",
+      "bytes": 45218,
+      "sha256": "ad14520a47ad3d716628bf30dc41982de0efd029c43dd1c09b7a9ba091621883",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/studio-reset-theme-20261118.test.mjs",
+      "mode": "100644",
+      "git_object": "93a2a325aea1f9bc6a23196614c1fccdebdc1b1c",
+      "bytes": 1379,
+      "sha256": "b7f58320ad5c5443266e75a98c92f9b6318202ca1fbc8a01935fe2e014405eaa",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/theme-contrast.test.mjs",
+      "mode": "100644",
+      "git_object": "dc938d553f568307f4667dc290b8556af56246a4",
+      "bytes": 1897,
+      "sha256": "342090defd15494a54a6a7429c621bd7a016199c12114d131a650f53772099fb",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/verification-email-input.test.mjs",
+      "mode": "100644",
+      "git_object": "58840164cf8d005391b4521af5304e46472935c9",
+      "bytes": 876,
+      "sha256": "2a620f4be27d1982ecacb28f384bda23428e875a313a07365b643cd64f1c4239",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tests/visual-audit.test.mjs",
+      "mode": "100644",
+      "git_object": "52387108676250c99a97f278648a11fe5e70fa5e",
+      "bytes": 7705,
+      "sha256": "5e9566205f58479e7463436cd0b3643c1663dafe3a35977bc2619dab12008067",
+      "lfs_pointer": false
+    },
+    {
+      "path": "tsconfig.json",
+      "mode": "100644",
+      "git_object": "b96b030395279e33ceb96d41da84e734b5a93078",
+      "bytes": 893,
+      "sha256": "a4c1cc83b63ef9d39641d3babaefffa063dccbbc93338e18017b5013d713163e",
+      "lfs_pointer": false
+    },
+    {
+      "path": "vendor/shadcn-tailwind-4.13.0.LICENSE.md",
+      "mode": "100644",
+      "git_object": "fad4d887a681dd49233e5ed01ee2c7a1513089a0",
+      "bytes": 1063,
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f",
+      "lfs_pointer": false
+    },
+    {
+      "path": "vendor/shadcn-tailwind-4.13.0.css",
+      "mode": "100644",
+      "git_object": "7807c58eb94de8b764b9b6b7b5d8cde6d012b17f",
+      "bytes": 16041,
+      "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a",
+      "lfs_pointer": false
+    },
+    {
+      "path": "vite.config.ts",
+      "mode": "100644",
+      "git_object": "0064d764f7d51d94057bc17c50fd5e1cdb777af5",
+      "bytes": 280,
+      "sha256": "40bed6d26faf73c00684f305f83251a17aa7dbfd51294b0b8255d0f7d45a22b7",
+      "lfs_pointer": false
+    },
+    {
+      "path": "worker/index.ts",
+      "mode": "100644",
+      "git_object": "bcd4e0eac5eda7b9f97474db41720b10931ab444",
+      "bytes": 1809,
+      "sha256": "ce09e3633e0090be34f66b1bdcb9a9e9057c978fa7ac26f93efb70c90d60b4da",
+      "lfs_pointer": false
+    },
+    {
+      "path": "wrangler.jsonc",
+      "mode": "100644",
+      "git_object": "4b3c4ef4c95d11bc4a0c6f28eb4a34c32df7e82e",
+      "bytes": 358,
+      "sha256": "59d795876368dfc2b6631a5a8da87e390f10736aca651618cf8ed2bbec9ad206",
+      "lfs_pointer": false
+    }
+  ],
+  "scope": "Exact tracked Git blob bytes; excludes untracked files, external services/media, LFS content and submodule content. LinkPilot snapshot contains documentation only."
+}
