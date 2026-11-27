@@ -7,3 +7,8 @@ Open Sans: arquivos locais em public/fonts, com licença e créditos originais p
 Ícones: pacote lucide-react, sob licença ISC. Uma cópia da licença está em public/licenses/lucide.txt e pode ser consultada pelo rodapé → Créditos.
 
 Fotos e conteúdos publicados por participantes permanecem de responsabilidade dos respectivos autores, sujeitos aos termos e à moderação. Este inventário verifica os ativos distribuídos pelo projeto; não certifica direitos de futuros uploads.
+
+
+## License audit supplement (2026-11-26)
+
+For the version-resolved dependency inventory (893 lockfile entries), MPL/LGPL distribution requirements and review scope, see [license audit](AUDITORIA-LICENCAS-2026-11-26.md) and [npm inventory](AUDITORIA-NPM-2026-11-26.md).
