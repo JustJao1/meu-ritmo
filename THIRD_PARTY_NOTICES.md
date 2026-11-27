@@ -12,3 +12,6 @@ Fotos e conteúdos publicados por participantes permanecem de responsabilidade d
 ## License audit supplement (2026-11-26)
 
 For the version-resolved dependency inventory (893 lockfile entries), MPL/LGPL distribution requirements and review scope, see [license audit](AUDITORIA-LICENCAS-2026-11-26.md) and [npm inventory](AUDITORIA-NPM-2026-11-26.md).
+
+
+O CSS vendorizado do shadcn conserva sua licença MIT em vendor/shadcn-tailwind-4.13.0.LICENSE.md e public/licenses/shadcn-tailwind.txt. O inventário público em public/licenses/npm-inventory.txt identifica licenças declaradas e origens por versão; não substitui avisos integrais. Consulte /creditos.
