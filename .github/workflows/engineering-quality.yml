@@ -1,0 +1,49 @@
+name: Engineering quality
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run db:local
+      - run: npm install --prefix tests/browser --no-audit --no-fund
+      - run: npx --prefix tests/browser playwright install --with-deps chromium
+      - run: npm --prefix tests/browser test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: meu-ritmo-browser-results
+          path: quality-results/
+          if-no-files-found: warn
+          retention-days: 30
+  core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - name: Run core tests and capture measured coverage
+        run: |
+          mkdir -p quality-results
+          set -o pipefail
+          node --experimental-test-coverage --test tests/*.test.mjs 2>&1 | tee quality-results/core-tests.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: meu-ritmo-core-results
+          path: quality-results/
+          if-no-files-found: warn
+          retention-days: 30
