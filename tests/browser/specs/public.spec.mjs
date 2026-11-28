@@ -8,6 +8,11 @@ test.beforeEach(async ({page})=>{
   });
   await page.route('**/api/auth/channels',route=>route.fulfill({json:{stepUpEnabled:false,captchaRequired:false}}));
 });
+async function openAuth(page,path){
+  // Server-rendered controls appear before React attaches event handlers.
+  // The auth channel request is initiated by the mounted component's effect.
+  await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/auth/channels'&&r.ok()),page.goto(path)]);
+}
 test('landing page renders and does not overflow',async({page})=>{
   const response=await page.goto('/');
   expect(response?.status()).toBe(200);
@@ -15,7 +20,7 @@ test('landing page renders and does not overflow',async({page})=>{
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+5)).toBeTruthy();
 });
 test('login navigation and password visibility',async({page})=>{
-  await page.goto('/entrar');
+  await openAuth(page,'/entrar');
   const form=page.locator('form');
   await expect(form.locator('[name=email]')).toBeVisible();
   const password=form.locator('[name=password]');
@@ -28,7 +33,7 @@ test('login navigation and password visibility',async({page})=>{
 });
 test('login error from mocked API is visible',async({page})=>{
   await page.route('**/api/auth/login',route=>route.fulfill({status:401,json:{error:'E-mail ou senha incorretos.'}}));
-  await page.goto('/entrar');
+  await openAuth(page,'/entrar');
   await page.locator('input[name=email]').fill('qa@example.invalid');
   await page.locator('input[name=password]').fill('Fake!Password');
   await page.locator('form button[type=submit]').click();
@@ -37,7 +42,7 @@ test('login error from mocked API is visible',async({page})=>{
 });
 test('recovery response is displayed without sending email',async({page})=>{
   await page.route('**/api/auth/recover',route=>route.fulfill({json:{message:'Resposta de recuperação de teste.'}}));
-  await page.goto('/recuperar-senha');
+  await openAuth(page,'/recuperar-senha');
   await page.locator('input[name=email]').fill('qa@example.invalid');
   await page.locator('form button[type=submit]').click();
   await expect(page.getByRole('status')).toContainText('Resposta de recuperação de teste.');
@@ -45,7 +50,7 @@ test('recovery response is displayed without sending email',async({page})=>{
 test('signup checks password confirmation before network request',async({page})=>{
   let requests=0;
   await page.route('**/api/auth/signup',route=>{requests++;return route.abort();});
-  await page.goto('/criar-conta');
+  await openAuth(page,'/criar-conta');
   await page.locator('input[name=email]').fill('qa@example.invalid');
   await page.locator('input[name=password]').fill('Valid!Password');
   await page.locator('input[name=passwordConfirmation]').fill('Different!Password');
