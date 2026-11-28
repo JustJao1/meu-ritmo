@@ -54,3 +54,11 @@ Os testes locais cobrem isolamento, permissões, dados, cupons, recorrências, a
 ## Direitos
 
 A publicação do código não concede licença geral de reutilização do código próprio ou da marca. Dependências mantêm suas licenças em THIRD_PARTY_NOTICES.md. Chaves de assinatura, senhas e dados pessoais ficam fora do repositório.
+
+## Evidências de engenharia / Engineering evidence
+
+[Arquitetura, decisões e demonstração PT/EN](docs/engineering-quality.md) · [GitHub Actions — execução validada](https://github.com/JustJao1/meu-ritmo/actions/runs/46111126504).
+
+Em 28/11/2026, 392 testes Node e 12 testes Playwright (desktop e mobile) passaram; Docker Compose e verificação HTTP aprovados. Cobertura instrumentada Node: 71,92% de linhas, 77,46% de ramificações e 87,10% de funções. Os testes de navegador exercitam interface pública, formulários e respostas simuladas; não homologam autenticação, e-mail ou pagamentos reais. Cenários adicionais de demonstração: [PR #71](https://github.com/JustJao1/meu-ritmo/pull/71).
+
+On 2026-11-28, 392 Node and 12 Playwright tests passed, and the Docker Compose HTTP health check succeeded. Coverage applies only to instrumented code. Browser tests do not validate real authentication, email delivery or checkout.
