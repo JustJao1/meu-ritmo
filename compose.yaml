@@ -7,8 +7,8 @@ services:
       ASAAS_BILLING_ENABLED: "false"
       BILLING_TEST_ENABLED: "false"
     healthcheck:
-      test: ["CMD","node","-e","fetch('http://127.0.0.1:4173').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      test: ["CMD","node","-e","require('node:http').get('http://127.0.0.1:4173/entrar',r=>{r.destroy();process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 12
       start_period: 30s
